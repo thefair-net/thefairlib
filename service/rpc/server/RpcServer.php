@@ -33,6 +33,6 @@ class RpcServer
 
     public static function start(){
         $server = new \Yar_Server(new static());
-        $server->handel();
+        $server->handle();
     }
 }
