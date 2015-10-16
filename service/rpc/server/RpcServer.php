@@ -7,7 +7,7 @@
  * @copyright 2015-2025 TheFair
  */
 
-namespace TheFairLib\Service\Server;
+namespace TheFairLib\Service\Rpc\Server;
 use Yaf;
 class RpcServer
 {
