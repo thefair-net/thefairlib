@@ -32,7 +32,6 @@ class RpcServer
     }
 
     public static function start(){
-        die('123123');
         $server = new \Yar_Server(new static());
         $server->handel();
     }
