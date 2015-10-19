@@ -16,7 +16,7 @@ class Cache extends Base
     public function config($name){
         $config = Config::load(self::_getConfigPath());
         $conf   = $config->cache;
-        if(isset($conf[$name])){
+        if(!isset($conf[$name])){
             throw new Exception('Redis Conf Error');
         }else{
             return $conf[$name];
