@@ -8,10 +8,14 @@
  */
 namespace TheFairLib\DB\Redis;
 
+use TheFairLib\Db\Exception;
+use TheFairLib\Config\Config;
+
 class Storage extends Base
 {
     public static function config($name){
-        $conf = parent::config('storage');
+        $config = Config::load(self::_getConfigPath());
+        $conf   = $config->storage;
         if(isset($conf[$name])){
             throw new Exception('Redis Conf Error');
         }else{

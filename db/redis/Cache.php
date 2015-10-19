@@ -9,11 +9,13 @@
 namespace TheFairLib\DB\Redis;
 
 use TheFairLib\Db\Exception;
+use TheFairLib\Config\Config;
 
 class Cache extends Base
 {
     public static function config($name){
-        $conf = parent::config('cache');
+        $config = Config::load(self::_getConfigPath());
+        $conf   = $config->cache;
         if(isset($conf[$name])){
             throw new Exception('Redis Conf Error');
         }else{
