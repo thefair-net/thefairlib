@@ -53,12 +53,7 @@ class Base
 
     public static function getInstance($name = 'default'){
         if (!isset(self::$instance[$name])) {
-
-            if(!self::$instance[$name]->config)
-            {
-                self::$instance[$name]->config = self::config($name);
-            }
-            self::$instance[$name] = new self(self::$instance[$name]->config);
+            self::$instance[$name] = new self(self::config($name));
         }
 
         return self::$instance[$name];
