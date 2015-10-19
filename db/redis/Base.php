@@ -19,9 +19,9 @@ class Base
 
     protected static $configs;
     /*
-     * redis实例
+     * redis配置
      */
-    private $redis = array();
+    protected static $_redisConfPath = 'db.redis';
     /*
      * config
      */
@@ -36,7 +36,16 @@ class Base
     }
 
     public static function config($name){
+        $config = Config::load('db.redis');
+        return $config->$name;
+    }
 
+    public function _getConfigPath(){
+        return self::$_redisConfPath;
+    }
+
+    public function _setConfigPath($path){
+        self::$_redisConfPath = $path;
     }
 
     public static function getInstance($name = 'default'){
@@ -44,14 +53,9 @@ class Base
             self::$instance[$name] = new self;
         }
 
-        if(!static::$configs)
-        {
-            static::$configs = Config::load('db.redis');
-        }
-
         if(!self::$instance[$name]->config)
         {
-            self::$instance[$name]->config = static::$configs[$name];
+            self::$instance[$name]->config = self::config($name);
         }
         self::$instance[$name]->_init();
         return self::$instance[$name];
