@@ -25,7 +25,7 @@ abstract class Base
      */
     public $config = array();
 
-    final public function __construct($name){
+    final protected function getRedisInstance($name){
         $this->_init();
         $parameters = $this->config($name);
         $options = array('cluster' => 'redis');

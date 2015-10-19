@@ -25,7 +25,8 @@ class Cache extends Base
 
     public static function getInstance($name = 'default'){
         if (!isset(self::$instance[$name])) {
-            self::$instance[$name] = new self($name);
+            $base = new self();
+            self::$instance[$name] = $base->getRedisInstance($name);
         }
 
         return self::$instance[$name];
