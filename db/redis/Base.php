@@ -27,8 +27,11 @@ class Base
      */
     public $config = array();
 
-    final public function __construct(){
+    final public function __construct($parameters){
         $this->_init();
+        $options = array('cluster' => 'redis');
+        return new \Predis\Client($parameters, $options);
+
     }
 
     protected function _init(){
@@ -36,28 +39,28 @@ class Base
     }
 
     public static function config($name){
-        $config = Config::load('db.redis');
+        $config = Config::load(self::_getConfigPath());
         return $config->$name;
     }
 
-    public function _getConfigPath(){
+    public static function _getConfigPath(){
         return self::$_redisConfPath;
     }
 
-    public function _setConfigPath($path){
-        self::$_redisConfPath = $path;
+    public static function _setConfigPath($path){
+        return self::$_redisConfPath = $path;
     }
 
     public static function getInstance($name = 'default'){
         if (!isset(self::$instance[$name])) {
-            self::$instance[$name] = new self;
+
+            if(!self::$instance[$name]->config)
+            {
+                self::$instance[$name]->config = self::config($name);
+            }
+            self::$instance[$name] = new self(self::$instance[$name]->config);
         }
 
-        if(!self::$instance[$name]->config)
-        {
-            self::$instance[$name]->config = self::config($name);
-        }
-        self::$instance[$name]->_init();
         return self::$instance[$name];
     }
 }

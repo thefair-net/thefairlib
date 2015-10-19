@@ -10,5 +10,12 @@ namespace TheFairLib\DB\Redis;
 
 class Storage extends Base
 {
-
+    public static function config($name){
+        $conf = parent::config('storage');
+        if(isset($conf[$name])){
+            throw new Exception('Redis Conf Error');
+        }else{
+            return $conf[$name];
+        }
+    }
 }

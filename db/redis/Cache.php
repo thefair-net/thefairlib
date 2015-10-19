@@ -8,7 +8,16 @@
  */
 namespace TheFairLib\DB\Redis;
 
+use TheFairLib\Db\Exception;
+
 class Cache extends Base
 {
-
+    public static function config($name){
+        $conf = parent::config('cache');
+        if(isset($conf[$name])){
+            throw new Exception('Redis Conf Error');
+        }else{
+            return $conf[$name];
+        }
+    }
 }
