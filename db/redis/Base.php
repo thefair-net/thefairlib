@@ -27,8 +27,9 @@ class Base
      */
     public $config = array();
 
-    final public function __construct($parameters){
+    final public function __construct($name){
         $this->_init();
+        $parameters = $this->config($name);
         $options = array('cluster' => 'redis');
         return new \Predis\Client($parameters, $options);
 
@@ -38,7 +39,7 @@ class Base
 
     }
 
-    public static function config($name){
+    public function config($name){
         $config = Config::load(self::_getConfigPath());
         return $config->$name;
     }
@@ -53,7 +54,7 @@ class Base
 
     public static function getInstance($name = 'default'){
         if (!isset(self::$instance[$name])) {
-            self::$instance[$name] = new self(self::config($name));
+            self::$instance[$name] = new self($name);
         }
 
         return self::$instance[$name];

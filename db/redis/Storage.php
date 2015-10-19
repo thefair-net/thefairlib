@@ -13,7 +13,7 @@ use TheFairLib\Config\Config;
 
 class Storage extends Base
 {
-    public static function config($name){
+    public function config($name){
         $config = Config::load(self::_getConfigPath());
         $conf   = $config->storage;
         if(isset($conf[$name])){

@@ -13,7 +13,7 @@ use TheFairLib\Config\Config;
 
 class Cache extends Base
 {
-    public static function config($name){
+    public function config($name){
         $config = Config::load(self::_getConfigPath());
         $conf   = $config->cache;
         if(isset($conf[$name])){
