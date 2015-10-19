@@ -22,4 +22,16 @@ class Cache extends Base
             return $conf[$name];
         }
     }
+
+    public static function getInstance($name = 'default'){
+        if (!isset(self::$instance[$name])) {
+            self::$instance[$name] = new self($name);
+        }
+
+        return self::$instance[$name];
+    }
+
+    protected function _init(){
+
+    }
 }

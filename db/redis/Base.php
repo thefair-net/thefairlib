@@ -8,14 +8,12 @@
  */
 namespace TheFairLib\DB\Redis;
 
-use TheFairLib\Config\Config;
-
-class Base
+abstract class Base
 {
     /*
      * 单例
      */
-    private static $instance;
+    protected static $instance;
 
     protected static $configs;
     /*
@@ -35,14 +33,9 @@ class Base
 
     }
 
-    protected function _init(){
+    abstract protected function _init();
 
-    }
-
-    public function config($name){
-        $config = Config::load(self::_getConfigPath());
-        return $config->$name;
-    }
+    abstract public function config($name);
 
     public static function _getConfigPath(){
         return self::$_redisConfPath;
@@ -52,11 +45,5 @@ class Base
         return self::$_redisConfPath = $path;
     }
 
-    public static function getInstance($name = 'default'){
-        if (!isset(self::$instance[$name])) {
-            self::$instance[$name] = new self($name);
-        }
-
-        return self::$instance[$name];
-    }
+    abstract public static function getInstance($name = 'default');
 }
