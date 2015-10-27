@@ -4,12 +4,14 @@ namespace TheFairLib\Aliyun\AliOSS;
 use \TheFairLib\Aliyun\AliOSS\util\OSS_Exception as Exception;
 
 /**
- * $file = new TheFairLib\Aliyun\AliOSS\Upload('file', [
- * "savePath" => Yaf\Registry::get('config')->cache['temp'],
- * "ossPath" => APP_NAME,
- * "maxSize" => 2000, //单位KB
- * "allowFiles" => [".gif", ".png", ".jpg", ".jpeg", ".bmp"]
- * ]);
+ *  Demo
+    $file = new TheFairLib\Aliyun\AliOSS\Upload('file', [
+        "host" => Yaf\Registry::get('config')->static['cdn'],
+        "savePath" => Yaf\Registry::get('config')->cache['temp'],
+        "ossPath" => APP_NAME,
+        "maxSize" => 2000, //单位KB
+        "allowFiles" => [".gif", ".png", ".jpg", ".jpeg", ".bmp"]
+    ]);
  *
  * Class Upload
  * @package TheFairLib\Aliyun\AliOSS
