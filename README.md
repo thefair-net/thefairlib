@@ -74,3 +74,16 @@ $code->validate($_GET['code']);
 echo $code->getCode();
 ```
 
+### 上传普通文件
+
+**Demo**
+
+```
+$file = new TheFairLib\Uploader\Upload('files', [
+    "savePath" => '/tmp',//上传文件的路径
+    "maxSize" => 2000, //单位KB
+    "allowFiles" => [".gif", ".png", ".jpg", ".jpeg", ".bmp", ".css", ".js"]
+]);
+$status = $file->getFileInfo();
+
+```
