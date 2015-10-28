@@ -1,8 +1,6 @@
-### 阿里云OOS上传
+### 阿里云OSS上传
 
-
-
-**Config目录下新建App.php文件，不能使用其他名称**
+**config目录下新建AliYun.php文件，不能使用其他名称**
 
 ```
 <?php
