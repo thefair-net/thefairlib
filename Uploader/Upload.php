@@ -5,7 +5,7 @@ namespace TheFairLib\Uploader;
      * @package Uploader
      */
 /*
-$file = new Upload('files', array(
+$file = new TheFairLib\Uploader\Upload('files', array(
     "savePath" => Registry::get('config')->cache['temp'],
     "maxSize" => 2000, //单位KB
     "allowFiles" => array(".gif", ".png", ".jpg", ".jpeg", ".bmp")
