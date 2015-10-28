@@ -10,17 +10,17 @@ namespace TheFairLib\Smarty;
 use \Yaf\View_Interface;
 use \Yaf\Loader;
 
-define('SMARTY_PATH',dirname(__FILE__));
-Loader::import( SMARTY_PATH.DIRECTORY_SEPARATOR."libs/Smarty.class.php");
-Loader::import( SMARTY_PATH.DIRECTORY_SEPARATOR."libs/sysplugins/smarty_internal_templatecompilerbase.php");
-Loader::import( SMARTY_PATH.DIRECTORY_SEPARATOR."libs/sysplugins/smarty_internal_templatelexer.php");
-Loader::import( SMARTY_PATH.DIRECTORY_SEPARATOR."libs/sysplugins/smarty_internal_templateparser.php");
-Loader::import( SMARTY_PATH.DIRECTORY_SEPARATOR."libs/sysplugins/smarty_internal_compilebase.php");
-Loader::import( SMARTY_PATH.DIRECTORY_SEPARATOR."libs/sysplugins/smarty_internal_write_file.php");
+define('SMARTY_PATH', dirname(__FILE__));
+Loader::import(SMARTY_PATH . DIRECTORY_SEPARATOR . "libs/Smarty.class.php");
+Loader::import(SMARTY_PATH . DIRECTORY_SEPARATOR . "libs/sysplugins/smarty_internal_templatecompilerbase.php");
+Loader::import(SMARTY_PATH . DIRECTORY_SEPARATOR . "libs/sysplugins/smarty_internal_templatelexer.php");
+Loader::import(SMARTY_PATH . DIRECTORY_SEPARATOR . "libs/sysplugins/smarty_internal_templateparser.php");
+Loader::import(SMARTY_PATH . DIRECTORY_SEPARATOR . "libs/sysplugins/smarty_internal_compilebase.php");
+Loader::import(SMARTY_PATH . DIRECTORY_SEPARATOR . "libs/sysplugins/smarty_internal_write_file.php");
 
 /**
  *  DEMO
- *  $config = Registry::get("config")->smarty->toArray();
+    $config = Registry::get("config")->smarty->toArray();
     $config['template_dir'] = $config['template_dir'] . $request->module . '/';
     $smarty = new TheFairLib\Smarty\Adapter(null, $config);
     Dispatcher::getInstance()->setView($smarty);
@@ -28,7 +28,8 @@ Loader::import( SMARTY_PATH.DIRECTORY_SEPARATOR."libs/sysplugins/smarty_internal
  * Class Adapter
  * @package TheFairLib\Smarty
  */
-class Adapter implements View_Interface {
+class Adapter implements View_Interface
+{
     /**
      * Smarty object
      * @var Smarty
@@ -38,14 +39,15 @@ class Adapter implements View_Interface {
     /**
      * 实现yaf_view模板
      *
-     * @param null $tmplPath
+     * @param null $tplPath
      * @param array $extraParams
      * @throws \Yaf\Exception
      */
-    public function __construct($tmplPath = null, $extraParams = array()) {
+    public function __construct($tplPath = null, $extraParams = array())
+    {
         $this->_smarty = new \Smarty();
-        if (null !== $tmplPath) {
-            $this->setScriptPath($tmplPath);
+        if (null !== $tplPath) {
+            $this->setScriptPath($tplPath);
         }
         foreach ($extraParams as $key => $value) {
             $this->_smarty->$key = $value;
@@ -57,7 +59,8 @@ class Adapter implements View_Interface {
      *
      * @return Smarty
      */
-    public function getEngine() {
+    public function getEngine()
+    {
         return $this->_smarty;
     }
 
@@ -76,6 +79,7 @@ class Adapter implements View_Interface {
 
         throw new \Yaf\Exception('Invalid path provided');
     }
+
     /**
      * Retrieve the current template directory
      *
@@ -132,6 +136,7 @@ class Adapter implements View_Interface {
     {
         return (null !== $this->_smarty->get_template_vars($key));
     }
+
     /**
      * Allows unset() on object properties to work
      *
@@ -156,7 +161,8 @@ class Adapter implements View_Interface {
      * use this as the value.
      * @return void
      */
-    public function assign($spec, $value = null) {
+    public function assign($spec, $value = null)
+    {
         if (is_array($spec)) {
             $this->_smarty->assign($spec);
             return;
@@ -173,7 +179,8 @@ class Adapter implements View_Interface {
      *
      * @return void
      */
-    public function clearVars() {
+    public function clearVars()
+    {
         $this->_smarty->clear_all_assign();
     }
 
@@ -183,11 +190,13 @@ class Adapter implements View_Interface {
      * @param string $name The template to process.
      * @return string The output.
      */
-    public function render($name, $value = NULL) {
+    public function render($name, $value = NULL)
+    {
         return $this->_smarty->fetch($name);
     }
 
-    public function display($name, $value = NULL) {
+    public function display($name, $value = NULL)
+    {
         echo $this->_smarty->fetch($name);
     }
 
