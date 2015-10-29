@@ -9,8 +9,25 @@
 namespace TheFairLib\Controller\Api;
 
 use TheFairLib\Controller\Base;
+use TheFairLib\Http\Response;
+use TheFairLib\Http\Response\Api;
 
 class Controller extends Base
 {
+    protected function init(){
+
+    }
+
+    public function showResult(Api $response){
+        $this->_setResponse($response->send());
+    }
+
+    public function showError(Api $response){
+        $code = $response->getCode();
+        if(empty($code)){
+            $response->setCode(10000);
+        }
+        $this->showResult($response);
+    }
 
 }

@@ -91,7 +91,7 @@ final class Config
     /**
      * 加载配置文件
      *
-     * @param $configTag 文件路径，例如：path.to.file 解析为 APP_PATH/config/path/to/file.php
+     * @param string $configTag 文件目录，例如：path.to.file 解析为 APP_PATH/config/path/to/file.php
      * @param string $type 支持yaf的两种配置文件模式，simple或者ini
      * @return mixed
      * @throws Exception

@@ -9,50 +9,40 @@
 
 namespace TheFairLib\Controller;
 
-class Base extends \Yaf\Controller_Abstract
+use TheFairLib\Http\Response;
+
+abstract class Base extends \Yaf\Controller_Abstract
 {
+    protected static $instance;
+
     /**
      * Controller初始化需要的操作
      */
-    protected final function init(){
-        //@todo do something
-    }
+    abstract protected function init();
 
     /**
-     * 渲染接口返回结果
+     * 显示正确结果
      *
-     * @param mixed $result 结果集
-     * @param string $msg 提示信息
-     * @param int $code 提示代码
+     * @return mixed
      */
-    protected final function showResult($result, $msg = '', $code = 0){
-        $this->_setRpcServiceResponse(array(
-            'code' => $code,
-            'message' => $msg,
-            'result' => $result,
-        ));
+    public function showResult($response){
+
     }
 
-    /**
-     * 渲染接口返回的错误信息
-     *
-     * @param string $err 错误内容
-     * @param int $code 错误编码
-     * @param array $data 扩展错误信息
-     */
-    protected final function showError($err, $code = 10000, $data = array()){
-        return self::showResult($data, $err, $code);
+    public function showError($response)
+    {
+
     }
 
-    /**
-     * 将接口的返回结果设置到Yaf得Response中
-     *
-     * @param mixed $content 接口返回结果
-     */
-    private function _setRpcServiceResponse($content){
-        if(is_object($content) || is_array($content)){
-           $content = json_encode($content);
-        }
+    final protected function _setResponse($content){
         $this->getResponse()->setBody($content);
+    }
+
+    /**
+     * @return null
+     */
+    public static function getInstance(){
+        if (is_null(static::$instance)) static::$instance = new static();
+        return static::$instance;
     }
 }
