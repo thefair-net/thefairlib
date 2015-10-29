@@ -9,8 +9,8 @@
 
 namespace TheFairLib\Controller;
 
-
-use TheFairLib\Exception\Base as Exception;
+use TheFairLib\Http\Response\Api;
+use \Yaf\Exception as Exception;
 
 abstract class ErrorBase extends Base
 {
@@ -31,22 +31,22 @@ abstract class ErrorBase extends Base
      *
      * @param Exception $e
      */
-    public function errorAction(Exception $e){
-        switch ($e->getCode()) {
+    public function errorAction(Exception $exception){
+        switch ($exception->getCode()) {
             case \Yaf\ERR\NOTFOUND\MODULE:
-                $this->_errorNotfoundModule($e);
+                $this->_errorNotfoundModule($exception);
                 break;
             case \Yaf\ERR\NOTFOUND\CONTROLLER:
-                $this->_errorNotfoundController($e);
+                $this->_errorNotfoundController($exception);
                 break;
             case \Yaf\ERR\NOTFOUND\ACTION:
-                $this->_errorNotfoundAction($e);
+                $this->_errorNotfoundAction($exception);
                 break;
             case \Yaf\ERR\NOTFOUND\VIEW:
-                $this->_errorNotfoundView($e);
+                $this->_errorNotfoundView($exception);
                 break;
             default :
-                $this->_errorDefault($e);
+                $this->_errorDefault($exception);
                 break;
         }
     }
@@ -109,5 +109,17 @@ abstract class ErrorBase extends Base
      */
     private function _DealWithException(Exception $e){
         throw $e;
+    }
+
+    public function showResult(Api $response){
+        $this->_setResponse($response->send());
+    }
+
+    public function showError(Api $response){
+        $code = $response->getCode();
+        if(empty($code)){
+            $response->setCode(10000);
+        }
+        $this->showResult($response);
     }
 }

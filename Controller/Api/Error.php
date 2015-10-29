@@ -9,15 +9,20 @@
 namespace TheFairLib\Controller\Api;
 
 use TheFairLib\Controller\ErrorBase;
-use \TheFairLib\Exception\Api\Exception as Exception;
+use \Yaf\Exception as Exception;
 use TheFairLib\Http\Response\Api;
 
 class Error extends ErrorBase
 {
     protected function _errorDefault(Exception $e){
-        Controller::getInstance()->showError(
-            new Api($e->getExtData(), $e->getMessage(), $e->getExtData(), $e->getHttpStatus())
-        );
+        if($e instanceof \TheFairLib\Exception\Api\Exception){
+            $this->showError(
+                new Api($e->getExtData(), $e->getMessage(), $e->getExtData(), $e->getHttpStatus())
+            );
+        }else{
+            $this->_DealIllegalRequest();
+        }
+
     }
 
     protected function _errorNotfoundModule(Exception $e){
@@ -37,11 +42,13 @@ class Error extends ErrorBase
     }
 
     protected function _DealIllegalRequest(){
-        //@todo
+        $this->showError(
+            new Api(array(), 'Illegal Request', 40000, 404)
+        );
     }
 
     protected function _DealNotfoundRequest(){
-        Controller::getInstance()->showError(
+        $this->showError(
             new Api(array(), 'Illegal Request', 40000, 404)
         );
     }
