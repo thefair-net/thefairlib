@@ -103,7 +103,8 @@ abstract class Response
         foreach ($headers as $header) {
             header($header);
         }
-        if (!empty($cookies = $this->getCookies())) {
+        $cookies = $this->getCookies();
+        if (!empty($cookies)) {
             foreach ($cookies as $cookie) {
                 setcookie($cookie->getName(), $cookie->getValue(),
                     $cookie->getExpire(), $cookie->getPath(),
