@@ -26,7 +26,7 @@ class Controller extends Base
         if(empty($response->getCode())){
             $response->setCode(10000);
         }
-        return $this->showResult($response);
+        $this->showResult($response);
     }
 
 }
