@@ -23,7 +23,8 @@ class Controller extends Base
     }
 
     public function showError(Api $response){
-        if(empty($response->getCode())){
+        $code = $response->getCode();
+        if(empty($code)){
             $response->setCode(10000);
         }
         $this->showResult($response);
