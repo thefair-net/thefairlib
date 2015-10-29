@@ -37,12 +37,4 @@ abstract class Base extends \Yaf\Controller_Abstract
     final protected function _setResponse($content){
         $this->getResponse()->setBody($content);
     }
-
-    /**
-     * @return null
-     */
-    public static function getInstance(){
-        if (is_null(static::$instance)) static::$instance = new static();
-        return static::$instance;
-    }
 }
