@@ -6,7 +6,7 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
-namespace TheFairLib\Aliyun;
+namespace TheFairLib\Verify;
 use TheFairLib\Exception\Base;
 
 class Exception extends Base
