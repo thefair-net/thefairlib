@@ -16,8 +16,7 @@ class Mobile
     {
         $class = get_called_class();
         if (empty(self::$instance[$class])) {
-            $obj = new $class();
-            self::$instance[$class] = $obj->_setOptions();
+            self::$instance[$class] = (new $class())->_setOptions();
         }
         return self::$instance[$class];
     }
@@ -37,6 +36,9 @@ class Mobile
             throw new Exception('common.mobileVerify error');
         }
         $class = "\\TheFairLib\\Verify\\Mobile\\" . $config['mobileVerify']['name'];
+        if (!class_exists($class)) {
+            throw new Exception('is none' . $class);
+        }
         return new $class;
     }
 
