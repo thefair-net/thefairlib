@@ -8,7 +8,7 @@
 
 namespace TheFairLib\Verify\Mobile\Inter;
 
-interface Mobile
+interface Sms
 {
     //发送单条信息
     public function sendMessage($mobile, $msg);

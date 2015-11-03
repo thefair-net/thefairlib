@@ -12,9 +12,9 @@ use TheFairLib\Config\Config;
 use TheFairLib\Http\Curl;
 use TheFairLib\Utility\Utility;
 use TheFairLib\Verify\Exception;
-use TheFairLib\Verify\Mobile\Inter\Mobile;
+use TheFairLib\Verify\Mobile\Inter\Sms;
 
-class YunPian implements Mobile
+class YunPian implements Sms
 {
     const SEND_URL = 'http://yunpian.com/v1/sms/send.json';
     const SEND_URL_TPL = 'http://yunpian.com/v1/sms/tpl_send.json';
