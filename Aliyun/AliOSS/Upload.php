@@ -27,7 +27,7 @@ class Upload
     private $newName;              //文件名
     private $ossPath;              //上传到阿里云OSS
     private $fileSize;             //文件大小
-    private $fileType;             //文件类型
+    private $fileType = '.png';             //文件类型
     private $stateInfo;            //上传状态信息,
     private $stateMap = [    //上传状态映射表，国际化用户需考虑此处数据的国际化
         "SUCCESS",                //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
@@ -114,17 +114,20 @@ class Upload
     /**
      * 上传文件到阿里云中
      *
+     * @param bool $base64
      * @throws Exception
      */
-    private function uploadOSS()
+    private function uploadOSS($base64 = false)
     {
         $OSS = Base::Instance();
         $state = $OSS->getALIOSSSDK()->createObjectDir($OSS->getBucketName(), $this->ossPath);//创建目录，如果存在也会返回true
         if ($state->isOK()) {
-            $file = $OSS->getALIOSSSDK()->uploadFileByFile($OSS->getBucketName(), $this->ossPath . DIRECTORY_SEPARATOR . $this->newName . $this->_getFileExt(), $this->fullName);
+            $path = $this->ossPath . DIRECTORY_SEPARATOR . $this->newName;
+            $obj = $base64 ? $path . $this->fileType : $path . $this->_getFileExt();
+            $file = $OSS->getALIOSSSDK()->uploadFileByFile($OSS->getBucketName(), $obj, $this->fullName);
             $this->_rm();//删除本地文件
             if ($file->isOK()) {
-                $this->ossPath = $this->config['host'] . $this->ossPath . DIRECTORY_SEPARATOR . $this->newName . $this->_getFileExt();
+                $this->ossPath = $this->config['host'] . $obj;
                 return;
             }
             throw new Exception("上传阿里云OSS文件失败：" . json_encode($file));
@@ -140,16 +143,16 @@ class Upload
     private function _base64ToImage($base64Data)
     {
         $img = base64_decode($base64Data);
-        $this->fileType = ".png";
         $this->newName = md5(time() . rand(1, 10000));
         $this->fileName = $this->newName;
         $this->fullName = $this->_getFolder() . '/' . $this->fileName . $this->fileType;
         $this->ossPath = $this->_getOssFolder();
+
         if (!file_put_contents($this->fullName, $img)) {
             $this->stateInfo = $this->_getStateInfo("IO");
             return;
         }
-        $this->uploadOSS();
+        $this->uploadOSS(true);
         $this->oriName = "";
         $this->fileSize = strlen($img);
     }
@@ -164,6 +167,7 @@ class Upload
             "originalName" => $this->oriName,
             "url" => $this->ossPath,
             "name" => $this->fileName,
+            "path" => $this->fullName,
             "size" => $this->fileSize,
             "type" => $this->fileType,
             "state" => $this->stateInfo
