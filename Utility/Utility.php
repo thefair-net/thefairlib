@@ -9,7 +9,8 @@
 
 namespace TheFairLib\Utility;
 
-class Utility {
+class Utility
+{
     private static $registry = array();
 
     /**
@@ -19,27 +20,28 @@ class Utility {
      * @param $arguments
      * @return bool|mixed
      */
-    public function __call($func, $arguments){
+    public function __call($func, $arguments)
+    {
 
         $funcAry = explode('_', $func);
-        if(empty($funcAry)){
+        if (empty($funcAry)) {
             return false;
         }
-        $type   = current($funcAry);
+        $type = current($funcAry);
         array_shift($funcAry);
-        $key    = implode('_', $funcAry);
+        $key = implode('_', $funcAry);
 
-        if(!in_array($type, array('set','get')) || $key==''){
+        if (!in_array($type, array('set', 'get')) || $key == '') {
             return false;
         }
 
-        switch($type){
+        switch ($type) {
             case 'set':
-                self::arraySet(self::$registry, $key.(!empty($arguments[1]) ? '.'.$arguments[1] : ''), $arguments[0]);
-                return self::arrayGet(self::$registry, $key.(!empty($arguments[1]) ? '.'.$arguments[1] : ''), false);
+                self::arraySet(self::$registry, $key . (!empty($arguments[1]) ? '.' . $arguments[1] : ''), $arguments[0]);
+                return self::arrayGet(self::$registry, $key . (!empty($arguments[1]) ? '.' . $arguments[1] : ''), false);
                 break;
             case 'get':
-                return self::arrayGet(self::$registry, $key.(!empty($arguments[0]) ? '.'.$arguments[0] : ''), false);
+                return self::arrayGet(self::$registry, $key . (!empty($arguments[0]) ? '.' . $arguments[0] : ''), false);
                 break;
             default:
         }
@@ -55,13 +57,14 @@ class Utility {
      * @param null $default
      * @return mixed
      */
-    public static function arrayGet($array, $key, $default = null){
+    public static function arrayGet($array, $key, $default = null)
+    {
         if (is_null($key)) return $array;
 
         if (isset($array[$key])) return $array[$key];
 
-        foreach (explode('.', $key) as $segment){
-            if ( ! is_array($array) || ! array_key_exists($segment, $array)){
+        foreach (explode('.', $key) as $segment) {
+            if (!is_array($array) || !array_key_exists($segment, $array)) {
                 return value($default);
             }
 
@@ -79,15 +82,16 @@ class Utility {
      * @param $value
      * @return mixed
      */
-    public static function arraySet(&$array, $key, $value){
+    public static function arraySet(&$array, $key, $value)
+    {
         if (is_null($key)) return $array = $value;
 
         $keys = explode('.', $key);
 
-        while (count($keys) > 1){
+        while (count($keys) > 1) {
             $key = array_shift($keys);
 
-            if ( ! isset($array[$key]) || ! is_array($array[$key])){
+            if (!isset($array[$key]) || !is_array($array[$key])) {
                 $array[$key] = array();
             }
 
@@ -104,9 +108,10 @@ class Utility {
      *
      * @return string
      */
-    public static function getPhase(){
+    public static function getPhase()
+    {
         $phase = \Config::get('app.phase');
-        if( $phase != 'staging' )
+        if ($phase != 'staging')
             $phase = '';
 
         return $phase;
@@ -118,7 +123,8 @@ class Utility {
      * @param $data
      * @return string
      */
-    public static function Encrypt($data, $key){
+    public static function Encrypt($data, $key)
+    {
         $cipher = MCRYPT_TRIPLEDES;
         $modes = MCRYPT_MODE_ECB;
 
@@ -139,7 +145,8 @@ class Utility {
      * @param $data
      * @return string
      */
-    public static function Decrypt($data, $key){
+    public static function Decrypt($data, $key)
+    {
         $cipher = MCRYPT_TRIPLEDES;
         $modes = MCRYPT_MODE_ECB;
 
@@ -163,16 +170,30 @@ class Utility {
      * @param string $default
      * @return array|float|int|string
      */
-    public static function getGpc($var, $target='R', $type='string', $default = NULL){
-        switch(strtoupper($target)) {
-            case 'R': $super = &$_REQUEST; break;
-            case 'P': $super = &$_POST; break;
-            case 'S': $super = &$_SERVER; break;
-            case 'C': $super = &$_COOKIE; break;
-            case 'G': $super = &$_GET; break;
-            default: $super = &$_GET; $type = $target; break;
+    public static function getGpc($var, $target = 'R', $type = 'string', $default = NULL)
+    {
+        switch (strtoupper($target)) {
+            case 'R':
+                $super = &$_REQUEST;
+                break;
+            case 'P':
+                $super = &$_POST;
+                break;
+            case 'S':
+                $super = &$_SERVER;
+                break;
+            case 'C':
+                $super = &$_COOKIE;
+                break;
+            case 'G':
+                $super = &$_GET;
+                break;
+            default:
+                $super = &$_GET;
+                $type = $target;
+                break;
         }
-        switch($type) {
+        switch ($type) {
             case 'int':
                 $value = isset($super[$var]) ? intval($super[$var]) : 0;
                 break;
@@ -195,7 +216,7 @@ class Utility {
                 break;
         }
 
-        return !empty($value) ? $value : $default ;
+        return !empty($value) ? $value : $default;
     }
 
     /**
@@ -204,15 +225,16 @@ class Utility {
      * @param $arr
      * @return array
      */
-    public static function dfsArray($arr){
+    public static function dfsArray($arr)
+    {
         $ret = array();
-        if(!empty($arr) && is_array($arr)){
-            foreach($arr as $k=>$v) {
-                if(is_array($v)) {
+        if (!empty($arr) && is_array($arr)) {
+            foreach ($arr as $k => $v) {
+                if (is_array($v)) {
                     $ret[$k] = self::dfsArray($v);
                 } else if (is_numeric($v)) {
                     $ret[$k] = $v;
-                } else/* if(is_string($v)) */{
+                } else/* if(is_string($v)) */ {
                     $ret[$k] = htmlspecialchars($v);
                 }
             }
@@ -244,9 +266,9 @@ class Utility {
      */
     public static function isStringEncodeWithUTF8MB4($string)
     {
-        $len = mb_strlen($string,'utf-8');
+        $len = mb_strlen($string, 'utf-8');
 
-        for ($i=0; $i<$len; $i++) {
+        for ($i = 0; $i < $len; $i++) {
             $str = mb_substr($string, $i, 1, 'utf-8');
 
             if (ord($str) >= 240) {
@@ -275,12 +297,13 @@ class Utility {
      * @param string $key
      * @return array
      */
-    public static function getResolution($key = ''){
+    public static function getResolution($key = '')
+    {
         $resolution = array();
-        $cookie     = self::getGpc('resolution', 'C');
-        if(!empty($cookie)){
+        $cookie = self::getGpc('resolution', 'C');
+        if (!empty($cookie)) {
             $tmpResolution = explode("*", $cookie);
-            $resolution     = array(
+            $resolution = array(
                 'resolution' => $cookie,
                 'width' => $tmpResolution[0],
                 'height' => $tmpResolution[1],
@@ -317,5 +340,16 @@ class Utility {
             $count++;
         }
         return $count;
+    }
+
+    /**
+     * 验证正确的手机号
+     *
+     * @param $mobile
+     * @return int
+     */
+    public static function isMobile($mobile)
+    {
+        return preg_match('/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/', $mobile);
     }
 }

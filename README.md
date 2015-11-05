@@ -134,4 +134,63 @@ public function _initPlugin(Yaf\Dispatcher $dispatcher)
 }
 ```
 
+<<<<<<< HEAD
+=======
+### 发送短信验证码
+
+**config目录下新建Verify.php文件，不能使用其他名称，使用之前请将服务器加入白名单中**
+
+```
+<?php
+namespace config;
+
+class Verify
+{
+
+
+    /**
+     * 默认手机验证码提供商云片网
+     *
+     * @var string
+     */
+    public $mobileVerify = [
+        'name' => 'YunPian',
+    ];
+
+    /**
+     * 手机验证码提供商
+     *
+     * @var array
+     */
+    public $mobileVerifyList = [
+        'YunPian',
+
+    ];
+    public $appKey = [
+        'YunPian' => [
+            'key' => '***11e86244daa8fe53c14e5fcc14edfa1d***'
+        ]
+    ];
+
+}
+
+```
+
+**Demo**
+
+```
+TheFairLib\Verify\Mobile::Instance()->sendMessage('18888888888','您的验证码是'.mt_rand(1000,9999));
+
+返回结果
+{
+    code: 0,
+    msg: "OK",
+    result: {
+    count: 1,
+        fee: 1,
+        sid: 3489475182
+    }
+}
+```
+>>>>>>> 10672179243771b7dc6458a64585439588d4d44c
 
