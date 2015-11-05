@@ -28,6 +28,7 @@ class Upload
     private $ossPath;              //上传到阿里云OSS
     private $fileSize;             //文件大小
     private $fileType;             //文件类型
+    private $imageInfo;            //图片信息
     private $stateInfo;            //上传状态信息,
     private $stateMap = [    //上传状态映射表，国际化用户需考虑此处数据的国际化
         "SUCCESS",                //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
@@ -107,6 +108,7 @@ class Upload
             if (!move_uploaded_file($file["tmp_name"], $this->fullName)) {
                 $this->stateInfo = $this->_getStateInfo("MOVE");
             }
+            if(file_exists($this->fullName)) $this->imageInfo = getimagesize($this->fullName);
             $this->uploadOSS();
         }
     }
@@ -166,7 +168,8 @@ class Upload
             "name" => $this->fileName,
             "size" => $this->fileSize,
             "type" => $this->fileType,
-            "state" => $this->stateInfo
+            "state" => $this->stateInfo,
+            "info" => $this->imageInfo,
         ];
     }
 
