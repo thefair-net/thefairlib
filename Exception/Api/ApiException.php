@@ -12,7 +12,7 @@ namespace TheFairLib\Exception\Api;
 use TheFairLib\Config\Config;
 use TheFairLib\Exception\Base;
 
-class Exception extends Base
+class ApiException extends Base
 {
     private $extData = array();
     private $extCode = '10000';

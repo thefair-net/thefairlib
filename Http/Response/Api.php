@@ -18,8 +18,8 @@ class Api extends Response
 
     private $_code = 0;
 
-    private $_jsonpCallbackName;
-    private $_jsonPrefix = '';
+    private static $_jsonpCallbackName = 'callback';
+    private static $_isJsonp = false;
 
     public function __construct(array $result, $msg = '', $code = 0, $httpCode = 200){
         $this->setResult($result);
@@ -57,14 +57,21 @@ class Api extends Response
         return $this->_code = $code;
     }
 
+    public static function setCallBack($callback){
+        return self::$_jsonpCallbackName = $callback;
+    }
+
+    public static function setIsJsonp($isJsonp){
+        return self::$_isJsonp = $isJsonp;
+    }
+
     protected function _serialize($content){
         $content = json_encode($content);
 
-        if (!empty($this->_jsonpCallbackName)){
-            $content = $this->_jsonpCallbackName.'('.$content.')';
-        }elseif (!empty($this->_jsonPrefix)){
-            $content = $this->_jsonPrefix.$content;
+        if(self::$_isJsonp === true){
+            $content = self::$_jsonpCallbackName . '(' . $content . ');';
         }
+
         return $content;
     }
 

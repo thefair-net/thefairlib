@@ -9,13 +9,14 @@
 namespace TheFairLib\Controller\Api;
 
 use TheFairLib\Controller\ErrorBase;
+use TheFairLib\Exception\Api\ApiException;
 use \Yaf\Exception as Exception;
 use TheFairLib\Http\Response\Api;
 
 class Error extends ErrorBase
 {
     protected function _errorDefault(Exception $e){
-        if($e instanceof \TheFairLib\Exception\Api\Exception){
+        if($e instanceof ApiException){
             $this->showError(
                 new Api($e->getExtData(), $e->getMessage(), $e->getExtData(), $e->getHttpStatus())
             );
