@@ -27,7 +27,8 @@ class Upload
     private $newName;              //文件名
     private $ossPath;              //上传到阿里云OSS
     private $fileSize;             //文件大小
-    private $fileType = '.png';             //文件类型
+    private $fileType = '.png';    //文件类型
+    private $imageInfo;            //图片信息
     private $stateInfo;            //上传状态信息,
     private $stateMap = [    //上传状态映射表，国际化用户需考虑此处数据的国际化
         "SUCCESS",                //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
@@ -125,6 +126,7 @@ class Upload
             $path = $this->ossPath . DIRECTORY_SEPARATOR . $this->newName;
             $obj = $base64 ? $path . $this->fileType : $path . $this->_getFileExt();
             $file = $OSS->getALIOSSSDK()->uploadFileByFile($OSS->getBucketName(), $obj, $this->fullName);
+            $this->imageInfo = getimagesize($this->fullName);//获得图片大小信息
             $this->_rm();//删除本地文件
             if ($file->isOK()) {
                 $this->ossPath = $this->config['host'] . $obj;
@@ -170,7 +172,8 @@ class Upload
             "path" => $this->fullName,
             "size" => $this->fileSize,
             "type" => $this->fileType,
-            "state" => $this->stateInfo
+            "state" => $this->stateInfo,
+            "info" => $this->imageInfo,
         ];
     }
 
