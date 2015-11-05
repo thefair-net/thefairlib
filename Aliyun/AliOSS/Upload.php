@@ -5,6 +5,15 @@ use \TheFairLib\Aliyun\AliOSS\util\OSS_Exception as Exception;
 
 /**
  *  Demo
+<<<<<<< HEAD
+    $file = new TheFairLib\Aliyun\AliOSS\Upload('file', [
+        "host" => Yaf\Registry::get('config')->static['cdn'],
+        "savePath" => Yaf\Registry::get('config')->cache['temp'],
+        "ossPath" => APP_NAME,
+        "maxSize" => 2000, //单位KB
+        "allowFiles" => [".gif", ".png", ".jpg", ".jpeg", ".bmp"]
+    ]);
+=======
  * $file = new TheFairLib\Aliyun\AliOSS\Upload('file', [
  * "host" => Yaf\Registry::get('config')->static['cdn'],
  * "savePath" => Yaf\Registry::get('config')->cache['temp'],
@@ -12,6 +21,7 @@ use \TheFairLib\Aliyun\AliOSS\util\OSS_Exception as Exception;
  * "maxSize" => 2000, //单位KB
  * "allowFiles" => [".gif", ".png", ".jpg", ".jpeg", ".bmp"]
  * ]);
+>>>>>>> 10672179243771b7dc6458a64585439588d4d44c
  *
  * Class Upload
  * @package TheFairLib\Aliyun\AliOSS
@@ -102,7 +112,11 @@ class Upload
             return;
         }
         $this->newName = $this->_getName();
+<<<<<<< HEAD
+        $this->fullName = $this->_getFolder() . '/' . $this->newName;
+=======
         $this->fullName = $this->_getFolder() . '/' . $this->newName . $this->_getFileExt();
+>>>>>>> 10672179243771b7dc6458a64585439588d4d44c
         $this->ossPath = $this->_getOssFolder();
         if ($this->stateInfo == $this->stateMap[0]) {
             if (!move_uploaded_file($file["tmp_name"], $this->fullName)) {
@@ -123,10 +137,17 @@ class Upload
         $OSS = Base::Instance();
         $state = $OSS->getALIOSSSDK()->createObjectDir($OSS->getBucketName(), $this->ossPath);//创建目录，如果存在也会返回true
         if ($state->isOK()) {
+<<<<<<< HEAD
+            $file = $OSS->getALIOSSSDK()->uploadFileByFile($OSS->getBucketName(), $this->ossPath . DIRECTORY_SEPARATOR . $this->newName, $this->fullName);
+            $this->_rm();//删除本地文件
+            if ($file->isOK()) {
+                $this->ossPath = $this->config['host'] . $this->ossPath . DIRECTORY_SEPARATOR . $this->newName;
+=======
             $file = $OSS->getALIOSSSDK()->uploadFileByFile($OSS->getBucketName(), $this->ossPath . DIRECTORY_SEPARATOR . $this->newName . $this->_getFileExt(), $this->fullName);
             $this->_rm();//删除本地文件
             if ($file->isOK()) {
                 $this->ossPath = $this->config['host'] . $this->ossPath . DIRECTORY_SEPARATOR . $this->newName . $this->_getFileExt();
+>>>>>>> 10672179243771b7dc6458a64585439588d4d44c
                 return;
             }
             throw new Exception("上传阿里云OSS文件失败：" . json_encode($file));
@@ -189,7 +210,11 @@ class Upload
      */
     private function _getName()
     {
+<<<<<<< HEAD
+        return $this->fileName = md5(time() . rand(1, 10000)) . $this->_getFileExt();
+=======
         return $this->fileName = md5(time() . rand(1, 10000));
+>>>>>>> 10672179243771b7dc6458a64585439588d4d44c
     }
 
     /**

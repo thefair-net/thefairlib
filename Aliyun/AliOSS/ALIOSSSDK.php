@@ -4,7 +4,11 @@ namespace TheFairLib\Aliyun\AliOSS;
 use TheFairLib\Aliyun\AliOSS\util\MimeTypes;
 use \SimpleXMLElement;
 use \SimpleXmlIterator;
+<<<<<<< HEAD
+use \Exception;
+=======
 use TheFairLib\Exception;
+>>>>>>> 10672179243771b7dc6458a64585439588d4d44c
 use TheFairLib\Aliyun\AliOSS\util\OSS_Exception;
 use TheFairLib\Aliyun\AliOSS\util\OSSUtil;
 use TheFairLib\Aliyun\AliOSS\lib\requestcore\RequestCore;
