@@ -42,8 +42,8 @@ class TranslateHelper
      * 翻译
      * 翻译的语言包配置到/app/root/path/config/i18n/$lang/
      *
-     * @param $type     针对语言包中的目录，比如api/error.php，对于type为api_error
-     * @param $label    具体的配置文件中的数值key，参考config使用方法
+     * @param string $type  针对语言包中的目录，比如api/error.php，对于type为api_error
+     * @param string $label 具体的配置文件中的数值key，参考config使用方法
      * @return mixed
      */
     static public function translate($type, $label){
