@@ -14,20 +14,25 @@ use TheFairLib\Http\Response\Api;
 
 class Controller extends Base
 {
+    protected static $_responseObj = false;
     protected function init(){
-
-    }
-
-    public function showResult(Api $response){
-        $this->_setResponse($response->send());
-    }
-
-    public function showError(Api $response){
-        $code = $response->getCode();
-        if(empty($code)){
-            $response->setCode(10000);
+        if(self::$_responseObj === false){
+            self::$_responseObj = new Api(new \stdClass());
         }
-        $this->showResult($response);
+    }
+
+    public function showResult($result, $msg = '', $code = '0'){
+        self::$_responseObj->setCode($code);
+        self::$_responseObj->setMsg($msg);
+        if(!empty($result)){
+            self::$_responseObj->setResult($result);
+
+        }
+        $this->_setResponse(self::$_responseObj->send());
+    }
+
+    public function showError($error, $result = array() , $code = '10000'){
+        $this->showResult($result, $error, $code);
     }
 
 }

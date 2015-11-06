@@ -113,7 +113,7 @@ abstract class Response
             }
         }
         if ($this->_sendBody) {
-            print $body;
+            print $this->_sendBody;
             exit;
         }else{
             return $body;
@@ -136,7 +136,7 @@ abstract class Response
     }
     private function _getBodyToSend(){
         $this->setHeader('Content-Type', $this->_getContentType());
-        return $this->_serialize($this->_body);
+        return $this->_sendBody = $this->_serialize($this->_body);
     }
 
 

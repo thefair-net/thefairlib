@@ -21,16 +21,12 @@ class Api extends Response
     private static $_jsonpCallbackName = 'callback';
     private static $_isJsonp = false;
 
-    public function __construct(array $result, $msg = '', $code = 0, $httpCode = 200){
+    public function __construct($result, $msg = '', $code = 0, $httpCode = 200){
         $this->setResult($result);
         $this->setMsg($msg);
         $this->setCode($code);
 
-        parent::__construct(array(
-            'code' => $this->getCode(),
-            'message' => $this->getMsg(),
-            'result' => $this->getResult(),
-        ), $httpCode);
+        parent::__construct($this->_buildApiBody(), $httpCode);
     }
 
     public function getResult(){
@@ -46,7 +42,7 @@ class Api extends Response
     }
 
     public function setResult($result){
-       return $this->_result = $result;
+        return $this->_result = $result;
     }
 
     public function setMsg($msg){
@@ -77,5 +73,18 @@ class Api extends Response
 
     protected function _getContentType(){
         return 'application/json;charset=utf-8';
+    }
+
+    public function send(){
+        $this->setBody($this->_buildApiBody());
+        parent::send();
+    }
+
+    private function _buildApiBody(){
+        return array(
+            'code' => $this->getCode(),
+            'message' => array('text' => $this->getMsg(), 'action' => 'toast'),
+            'result' => (object) $this->getResult(),
+        );
     }
 }

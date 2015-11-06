@@ -103,4 +103,31 @@ final class Config
 
         return self::_getInstance($configTag, $type);
     }
+
+    public function __call($func, $arguments){
+        $funcAry = explode('_', $func);
+        if (empty($funcAry)) {
+            return false;
+        }
+        $type = current($funcAry);
+        array_shift($funcAry);
+        $key = implode('_', $funcAry);
+
+        if (!in_array($type, array('set', 'get')) || $key == '') {
+            return false;
+        }
+
+        switch ($type) {
+            case 'set':
+                self::arraySet(self::$registry, $key . (!empty($arguments[1]) ? '.' . $arguments[1] : ''), $arguments[0]);
+                return self::arrayGet(self::$registry, $key . (!empty($arguments[1]) ? '.' . $arguments[1] : ''), false);
+                break;
+            case 'get':
+                return self::arrayGet(self::$registry, $key . (!empty($arguments[0]) ? '.' . $arguments[0] : ''), false);
+                break;
+            default:
+        }
+
+        return null;
+    }
 }
