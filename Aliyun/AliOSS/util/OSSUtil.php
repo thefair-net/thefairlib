@@ -4,11 +4,12 @@ namespace TheFairLib\Aliyun\AliOSS\util;
 // EXCEPTIONS
 use TheFairLib\Aliyun\AliOSS\lib\requestcore\ResponseCore;
 use TheFairLib\Aliyun\AliOSS\thirdparty\XML2Array;
+use TheFairLib\Aliyun\Exception;
 
 /**
  * OSS异常类，继承自基类
  */
-class OSS_Exception extends \Exception {}
+class OSS_Exception extends Exception {}
 class body
 {
     public $Part;
