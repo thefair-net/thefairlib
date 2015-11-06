@@ -28,7 +28,7 @@ class ApiException extends Base
                 $this->originalCode = $msg;
                 if(is_array($errorMsg)){
                     $code   = !empty($errorMsg['code']) ? $errorMsg['code'] : $msg;
-                    $langM  = TranslateHelper::translate('api_error', $errorMsg['lang_label']);
+                    $langM  = TranslateHelper::translate('api_error', $errorMsg['lang']);
                     $msg    = !empty($langM) ? $langM : (!empty($errorMsg['msg']) ? $errorMsg['msg'] : '');
                 }else{
                     $code   = $msg;
