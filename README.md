@@ -134,8 +134,6 @@ public function _initPlugin(Yaf\Dispatcher $dispatcher)
 }
 ```
 
-<<<<<<< HEAD
-=======
 ### 发送短信验证码
 
 **config目录下新建Verify.php文件，不能使用其他名称，使用之前请将服务器加入白名单中**
@@ -192,5 +190,4 @@ TheFairLib\Verify\Mobile::Instance()->sendMessage('18888888888','您的验证码
     }
 }
 ```
->>>>>>> 10672179243771b7dc6458a64585439588d4d44c
 
