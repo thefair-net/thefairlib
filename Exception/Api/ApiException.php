@@ -22,7 +22,7 @@ class ApiException extends Base
     public function __construct($msg, $data = array(), $code = '40001', $httpStatus = 400){
         //检查msg，如果是int，check下error配置，是否存在该错误码
         if(is_int($msg)){
-            $errorMsg = Config::load('error.'.$msg);
+            $errorMsg = Config::get_error($msg);
             if(!empty($errorMsg)){
                 $this->originalCode = $msg;
                 if(is_array($errorMsg)){

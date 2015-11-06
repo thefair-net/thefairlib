@@ -21,7 +21,7 @@ class Error extends ErrorBase
                 new Api($e->getExtData(), $e->getMessage(), $e->getExtData(), $e->getHttpStatus())
             );
         }else{
-            $this->_DealIllegalRequest();
+            $this->_DealIllegalRequest($e->getMessage());
         }
 
     }
@@ -42,9 +42,9 @@ class Error extends ErrorBase
         $this->_DealNotfoundRequest();
     }
 
-    protected function _DealIllegalRequest(){
+    protected function _DealIllegalRequest($msg = ''){
         $this->showError(
-            new Api(array(), 'Illegal Request', 40000, 404)
+            new Api(array(), 'Illegal Request: '.$msg, 40000, 404)
         );
     }
 
