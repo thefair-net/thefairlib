@@ -31,7 +31,7 @@ class Upload
     private $imageInfo;            //图片信息
     private $stateInfo;            //上传状态信息,
     private $stateMap = [    //上传状态映射表，国际化用户需考虑此处数据的国际化
-        "success",                //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
+        "SUCCESS",                //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
         "文件大小超出 upload_max_filesize 限制",
         "文件大小超出 MAX_FILE_SIZE 限制",
         "文件未被完整上传",
@@ -166,27 +166,29 @@ class Upload
      */
     public function getImageInfo($fileName) {
         if(file_exists($fileName)) {
-            $imageType = exif_imagetype($fileName);//判断是否为图片
-            $type = array(
-                IMAGETYPE_GIF => "gif",
-                IMAGETYPE_JPEG => "jpg",
-                IMAGETYPE_PNG => "png",
-                IMAGETYPE_SWF => "swf",
-                IMAGETYPE_PSD => "psd",
-                IMAGETYPE_BMP => "bmp",
-                IMAGETYPE_TIFF_II => "tiff",
-                IMAGETYPE_TIFF_MM => "tiff",
-                IMAGETYPE_JPC => "jpc",
-                IMAGETYPE_JP2 => "jp2",
-                IMAGETYPE_JPX => "jpx",
-                IMAGETYPE_JB2 => "jb2",
-                IMAGETYPE_SWC => "swc",
-                IMAGETYPE_IFF => "iff",
-                IMAGETYPE_WBMP => "wbmp",
-                IMAGETYPE_XBM => "xbm",
-                IMAGETYPE_ICO => "ico"
-            );
-            isset($type[$imageType]) ? $this->imageInfo = getimagesize($fileName) : $this->imageInfo = 'not image';//获得图片大小信息
+            if(function_exists('exif_imagetype')) {
+                $imageType = exif_imagetype($fileName);//判断是否为图片
+                $type = array(
+                    IMAGETYPE_GIF => "gif",
+                    IMAGETYPE_JPEG => "jpg",
+                    IMAGETYPE_PNG => "png",
+                    IMAGETYPE_SWF => "swf",
+                    IMAGETYPE_PSD => "psd",
+                    IMAGETYPE_BMP => "bmp",
+                    IMAGETYPE_TIFF_II => "tiff",
+                    IMAGETYPE_TIFF_MM => "tiff",
+                    IMAGETYPE_JPC => "jpc",
+                    IMAGETYPE_JP2 => "jp2",
+                    IMAGETYPE_JPX => "jpx",
+                    IMAGETYPE_JB2 => "jb2",
+                    IMAGETYPE_SWC => "swc",
+                    IMAGETYPE_IFF => "iff",
+                    IMAGETYPE_WBMP => "wbmp",
+                    IMAGETYPE_XBM => "xbm",
+                    IMAGETYPE_ICO => "ico"
+                );
+                isset($type[$imageType]) ? $this->imageInfo = getimagesize($fileName) : $this->imageInfo = 'not image';//获得图片大小信息
+            }
         }
 
     }
@@ -263,9 +265,6 @@ class Upload
     {
         if (file_exists($this->fullName)) {
             unlink($this->fullName);
-            if (is_dir($this->_getFolder())) {
-                rmdir($this->_getFolder());
-            }
             return true;
         }
         return false;
