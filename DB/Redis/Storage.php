@@ -14,8 +14,8 @@ use TheFairLib\Config\Config;
 class Storage extends Base
 {
     public function config($name){
-        $config = Config::load(self::_getConfigPath());
-        $conf   = $config->storage;
+        $config = Config::get_db_redis();
+        $conf   = $config['storage'];
         if(!isset($conf[$name])){
             throw new Exception('Redis Conf Error');
         }else{

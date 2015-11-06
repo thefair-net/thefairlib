@@ -14,8 +14,8 @@ use TheFairLib\Config\Config;
 class Cache extends Base
 {
     public function config($name){
-        $config = Config::load(self::_getConfigPath());
-        $conf   = $config->cache;
+        $config = Config::get_db_redis();
+        $conf   = $config['cache'];
         if(!isset($conf[$name])){
             throw new Exception('Redis Conf Error');
         }else{

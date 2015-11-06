@@ -11,6 +11,7 @@ namespace TheFairLib\Exception\Api;
 
 use TheFairLib\Config\Config;
 use TheFairLib\Exception\Base;
+use TheFairLib\I18N\TranslateHelper;
 
 class ApiException extends Base
 {
@@ -22,12 +23,13 @@ class ApiException extends Base
     public function __construct($msg, $data = array(), $code = '40001', $httpStatus = 400){
         //检查msg，如果是int，check下error配置，是否存在该错误码
         if(is_int($msg)){
-            $errorMsg = Config::load('error.'.$msg);
+            $errorMsg = Config::get_error($msg);
             if(!empty($errorMsg)){
                 $this->originalCode = $msg;
                 if(is_array($errorMsg)){
                     $code   = !empty($errorMsg['code']) ? $errorMsg['code'] : $msg;
-                    $msg    = !empty($errorMsg['msg']) ? $errorMsg['msg'] : '';
+                    $langM  = TranslateHelper::translate('api_error', $errorMsg['lang_label']);
+                    $msg    = !empty($langM) ? $langM : (!empty($errorMsg['msg']) ? $errorMsg['msg'] : '');
                 }else{
                     $code   = $msg;
                     $msg    = $errorMsg;

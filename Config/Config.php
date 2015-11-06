@@ -8,6 +8,8 @@
  */
 namespace TheFairLib\Config;
 
+use TheFairLib\Utility\Utility;
+
 final class Config
 {
     /**
@@ -50,22 +52,12 @@ final class Config
                 $fileName = implode(DIRECTORY_SEPARATOR, $pathAry);
             }
             $filePath   = APP_PATH . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $fileName . '.php';
+
             if(file_exists($filePath)){
                 switch($type){
                     case self::NORMAL_CLASS_TAG :
-                        if(strpos($configTag, '.') === false){
-                            $className = $configTag;
-                        }else{
-                            $tmpAry            = explode('.', $configTag);
-                            foreach($tmpAry as &$v){
-                                $v = ucwords($v);
-                            }
-                            $className = implode('\\', $tmpAry);
-                        }
+                        $return = require $filePath;
 
-                        $className  = '\\Config\\'.$className;
-                        require $filePath;
-                        $return =  new $className();
                         break;
                     case self::YAF_SIMPLE_CLASS_TAG :
                         $className = '\\Yaf\\Config\\'.ucwords($type);
@@ -104,26 +96,21 @@ final class Config
         return self::_getInstance($configTag, $type);
     }
 
-    public function __call($func, $arguments){
+    public static function __callStatic($func, $arguments){
         $funcAry = explode('_', $func);
         if (empty($funcAry)) {
             return false;
         }
         $type = current($funcAry);
         array_shift($funcAry);
-        $key = implode('_', $funcAry);
+        $key = implode('.', $funcAry);
 
-        if (!in_array($type, array('set', 'get')) || $key == '') {
+        if (!in_array($type, array('get')) || $key == '') {
             return false;
         }
-
         switch ($type) {
-            case 'set':
-                self::arraySet(self::$registry, $key . (!empty($arguments[1]) ? '.' . $arguments[1] : ''), $arguments[0]);
-                return self::arrayGet(self::$registry, $key . (!empty($arguments[1]) ? '.' . $arguments[1] : ''), false);
-                break;
             case 'get':
-                return self::arrayGet(self::$registry, $key . (!empty($arguments[0]) ? '.' . $arguments[0] : ''), false);
+                return Utility::arrayGet(self::load($key), (!empty($arguments[0]) ? $arguments[0] : ''));
                 break;
             default:
         }
