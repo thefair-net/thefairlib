@@ -31,7 +31,7 @@ class Upload
     private $imageInfo;            //图片信息
     private $stateInfo;            //上传状态信息,
     private $stateMap = [    //上传状态映射表，国际化用户需考虑此处数据的国际化
-        "SUCCESS",                //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
+        "success",                //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
         "文件大小超出 upload_max_filesize 限制",
         "文件大小超出 MAX_FILE_SIZE 限制",
         "文件未被完整上传",
@@ -200,12 +200,12 @@ class Upload
     public function getFileInfo()
     {
         return [
-            "originalName" => $this->oriName,
+            //"originalName" => $this->oriName,
             "url" => $this->ossPath,
             "name" => $this->fileName,
-            "path" => $this->fullName,
+            //"path" => $this->fullName,
             "size" => $this->fileSize,
-            "type" => $this->fileType,
+            //"type" => $this->fileType,
             "state" => $this->stateInfo,
             "info" => $this->imageInfo,
         ];

@@ -12,23 +12,23 @@ if (!defined('OSS_API_PATH'))
     define('OSS_API_PATH', dirname(__FILE__));
 
 //加载conf.inc.php文件,里面保存着OSS的地址以及用户访问的ID和KEY
-$config = Config::get_aliyun();
-define('OSS_ACCESS_ID', $config['OSS']['OSS_ACCESS_ID']);
-define('OSS_ACCESS_KEY', $config['OSS']['OSS_ACCESS_KEY']);
-define('OSS_ENDPOINT', $config['OSS']['OSS_ENDPOINT']);
-define('OSS_TEST_BUCKET', $config['OSS']['OSS_TEST_BUCKET']);
+$config = Config::get_aliyun('OSS');
+define('OSS_ACCESS_ID', $config['OSS_ACCESS_ID']);
+define('OSS_ACCESS_KEY', $config['OSS_ACCESS_KEY']);
+define('OSS_ENDPOINT', $config['OSS_ENDPOINT']);
+define('OSS_TEST_BUCKET', $config['OSS_TEST_BUCKET']);
 
 //是否记录日志
-define('ALI_LOG', $config['OSS']['ALI_LOG']);
+define('ALI_LOG', $config['ALI_LOG']);
 
 //自定义日志路径，如果没有设置，则使用系统默认路径，在./logs/
 //define('ALI_LOG_PATH','');
 
 //是否显示LOG输出
-define('ALI_DISPLAY_LOG', $config['OSS']['ALI_DISPLAY_LOG']);
+define('ALI_DISPLAY_LOG', $config['ALI_DISPLAY_LOG']);
 
 //语言版本设置
-define('ALI_LANG', $config['OSS']['ALI_LANG']);
+define('ALI_LANG', $config['ALI_LANG']);
 
 //检测语言包
 if (file_exists(OSS_API_PATH . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . ALI_LANG . '.inc.php')) {
