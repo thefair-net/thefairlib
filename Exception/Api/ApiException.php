@@ -35,10 +35,6 @@ class ApiException extends Base
             }
         }
 
-        if($code < '40000' && $httpStatus == 400){
-            $httpStatus = 405;
-        }
-
         parent::__construct((string)$msg);
         $this->extData      = $data;
         $this->extCode      = $code;
