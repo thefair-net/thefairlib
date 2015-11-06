@@ -110,7 +110,8 @@ final class Config
         }
         switch ($type) {
             case 'get':
-                return Utility::arrayGet(self::load($key), (!empty($arguments[0]) ? $arguments[0] : ''));
+                $config = self::load($key);
+                return !empty($arguments[0]) ? Utility::arrayGet($config, $arguments[0]) : $config;
                 break;
             default:
         }
