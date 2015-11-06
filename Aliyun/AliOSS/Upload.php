@@ -166,27 +166,29 @@ class Upload
      */
     public function getImageInfo($fileName) {
         if(file_exists($fileName)) {
-            $imageType = exif_imagetype($fileName);//判断是否为图片
-            $type = array(
-                IMAGETYPE_GIF => "gif",
-                IMAGETYPE_JPEG => "jpg",
-                IMAGETYPE_PNG => "png",
-                IMAGETYPE_SWF => "swf",
-                IMAGETYPE_PSD => "psd",
-                IMAGETYPE_BMP => "bmp",
-                IMAGETYPE_TIFF_II => "tiff",
-                IMAGETYPE_TIFF_MM => "tiff",
-                IMAGETYPE_JPC => "jpc",
-                IMAGETYPE_JP2 => "jp2",
-                IMAGETYPE_JPX => "jpx",
-                IMAGETYPE_JB2 => "jb2",
-                IMAGETYPE_SWC => "swc",
-                IMAGETYPE_IFF => "iff",
-                IMAGETYPE_WBMP => "wbmp",
-                IMAGETYPE_XBM => "xbm",
-                IMAGETYPE_ICO => "ico"
-            );
-            isset($type[$imageType]) ? $this->imageInfo = getimagesize($fileName) : $this->imageInfo = 'not image';//获得图片大小信息
+            if(function_exists('exif_imagetype')) {
+                $imageType = exif_imagetype($fileName);//判断是否为图片
+                $type = array(
+                    IMAGETYPE_GIF => "gif",
+                    IMAGETYPE_JPEG => "jpg",
+                    IMAGETYPE_PNG => "png",
+                    IMAGETYPE_SWF => "swf",
+                    IMAGETYPE_PSD => "psd",
+                    IMAGETYPE_BMP => "bmp",
+                    IMAGETYPE_TIFF_II => "tiff",
+                    IMAGETYPE_TIFF_MM => "tiff",
+                    IMAGETYPE_JPC => "jpc",
+                    IMAGETYPE_JP2 => "jp2",
+                    IMAGETYPE_JPX => "jpx",
+                    IMAGETYPE_JB2 => "jb2",
+                    IMAGETYPE_SWC => "swc",
+                    IMAGETYPE_IFF => "iff",
+                    IMAGETYPE_WBMP => "wbmp",
+                    IMAGETYPE_XBM => "xbm",
+                    IMAGETYPE_ICO => "ico"
+                );
+                isset($type[$imageType]) ? $this->imageInfo = getimagesize($fileName) : $this->imageInfo = 'not image';//获得图片大小信息
+            }
         }
 
     }
@@ -263,9 +265,6 @@ class Upload
     {
         if (file_exists($this->fullName)) {
             unlink($this->fullName);
-            if (is_dir($this->_getFolder())) {
-                rmdir($this->_getFolder());
-            }
             return true;
         }
         return false;
