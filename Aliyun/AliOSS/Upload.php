@@ -200,12 +200,12 @@ class Upload
     public function getFileInfo()
     {
         return [
-            "originalName" => $this->oriName,
+            //"originalName" => $this->oriName,
             "url" => $this->ossPath,
             "name" => $this->fileName,
-            "path" => $this->fullName,
+            //"path" => $this->fullName,
             "size" => $this->fileSize,
-            "type" => $this->fileType,
+            //"type" => $this->fileType,
             "state" => $this->stateInfo,
             "info" => $this->imageInfo,
         ];
