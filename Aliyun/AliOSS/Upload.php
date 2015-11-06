@@ -126,7 +126,7 @@ class Upload
             $path = $this->ossPath . DIRECTORY_SEPARATOR . $this->newName;
             $obj = $base64 ? $path . $this->fileType : $path . $this->_getFileExt();
             $file = $OSS->getALIOSSSDK()->uploadFileByFile($OSS->getBucketName(), $obj, $this->fullName);
-            $this->imageInfo = getimagesize($this->fullName);//获得图片大小信息
+            $this->getImageInfo($this->fullName);
             $this->_rm();//删除本地文件
             if ($file->isOK()) {
                 $this->ossPath = $this->config['host'] . $obj;
@@ -157,6 +157,38 @@ class Upload
         $this->uploadOSS(true);
         $this->oriName = "";
         $this->fileSize = strlen($img);
+    }
+
+    /**
+     * 获得图片信息
+     *
+     * @param $fileName     //文件绝对路径
+     */
+    public function getImageInfo($fileName) {
+        if(file_exists($fileName)) {
+            $imageType = exif_imagetype($fileName);//判断是否为图片
+            $type = array(
+                IMAGETYPE_GIF => "gif",
+                IMAGETYPE_JPEG => "jpg",
+                IMAGETYPE_PNG => "png",
+                IMAGETYPE_SWF => "swf",
+                IMAGETYPE_PSD => "psd",
+                IMAGETYPE_BMP => "bmp",
+                IMAGETYPE_TIFF_II => "tiff",
+                IMAGETYPE_TIFF_MM => "tiff",
+                IMAGETYPE_JPC => "jpc",
+                IMAGETYPE_JP2 => "jp2",
+                IMAGETYPE_JPX => "jpx",
+                IMAGETYPE_JB2 => "jb2",
+                IMAGETYPE_SWC => "swc",
+                IMAGETYPE_IFF => "iff",
+                IMAGETYPE_WBMP => "wbmp",
+                IMAGETYPE_XBM => "xbm",
+                IMAGETYPE_ICO => "ico"
+            );
+            isset($type[$imageType]) ? $this->imageInfo = getimagesize($fileName) : $this->imageInfo = 'not image';//获得图片大小信息
+        }
+
     }
 
     /**
