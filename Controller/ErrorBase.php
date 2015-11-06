@@ -110,16 +110,4 @@ abstract class ErrorBase extends Base
     private function _DealWithException(Exception $e){
         throw $e;
     }
-
-    public function showResult(Api $response){
-        $this->_setResponse($response->send());
-    }
-
-    public function showError(Api $response){
-        $code = $response->getCode();
-        if(empty($code)){
-            $response->setCode(10000);
-        }
-        $this->showResult($response);
-    }
 }

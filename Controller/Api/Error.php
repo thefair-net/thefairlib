@@ -15,10 +15,17 @@ use TheFairLib\Http\Response\Api;
 
 class Error extends ErrorBase
 {
+    protected static $_responseObj = false;
+    protected function init(){
+        if(self::$_responseObj === false){
+            self::$_responseObj = new Api(new \stdClass());
+        }
+    }
+
     protected function _errorDefault(Exception $e){
         if($e instanceof ApiException){
             $this->showError(
-                new Api($e->getExtData(), $e->getMessage(), $e->getExtData(), $e->getHttpStatus())
+                $e->getMessage(), $e->getExtData(),  $e->getExtCode(), $e->getHttpStatus()
             );
         }else{
             $this->_DealIllegalRequest($e->getMessage());
@@ -52,5 +59,20 @@ class Error extends ErrorBase
         $this->showError(
             new Api(array(), 'Illegal Request', 40000, 404)
         );
+    }
+
+    public function showResult($result, $msg = '', $code = '0'){
+        self::$_responseObj->setCode($code);
+        self::$_responseObj->setMsg($msg);
+        if(!empty($result)){
+            self::$_responseObj->setResult($result);
+
+        }
+        $this->_setResponse(self::$_responseObj->send());
+    }
+
+    public function showError($error, $result = array() , $code = '10000', $httpCode = 400){
+        self::$_responseObj->setHttpCode($httpCode);
+        $this->showResult($result, $error, $code);
     }
 }
