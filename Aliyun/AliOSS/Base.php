@@ -12,7 +12,7 @@ if (!defined('OSS_API_PATH'))
     define('OSS_API_PATH', dirname(__FILE__));
 
 //加载conf.inc.php文件,里面保存着OSS的地址以及用户访问的ID和KEY
-$config = (array)Config::load('AliYun');
+$config = Config::get_aliyun();
 define('OSS_ACCESS_ID', $config['OSS']['OSS_ACCESS_ID']);
 define('OSS_ACCESS_KEY', $config['OSS']['OSS_ACCESS_KEY']);
 define('OSS_ENDPOINT', $config['OSS']['OSS_ENDPOINT']);
