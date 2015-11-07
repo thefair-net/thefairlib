@@ -1,33 +1,13 @@
 <?php
 /**
  * Device.php
- * 关于手机设备的特殊处理
  *
  * @author ZhangHan <zhanghan@thefair.net.cn>
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
-namespace TheFairLib\Mobile;
-
-class Device
-{
-    /**
-     * 聚美商城包名标识
-     */
-    const APP_NAME_JUMEI = 'jumei';
-    /**
-     * 海淘版包名标识
-     */
-    const APP_NAME_GLOBAL = 'global';
-    /**
-     * 母婴版包名标识
-     */
-    const APP_NAME_BABY = 'baby';
-    /**
-     * 青春版包名标识
-     */
-    const APP_NAME_YOUTH = 'youth';
-
+class Device{
+    static public $deviceInfo = array();
     /**
      * @var Device
      */
@@ -59,7 +39,7 @@ class Device
      *
      * @var string
      */
-    private $_appUuid = '';
+    private $_appDeviceId = '';
 
     /**
      * 客户端自定义链接前缀
@@ -129,8 +109,8 @@ class Device
      *
      * @return string
      */
-    public function getAppUuid(){
-        return $this->_appUuid;
+    public function getAppDeviceId(){
+        return $this->_appDeviceId;
     }
 
     /**
@@ -164,36 +144,13 @@ class Device
      * 初始化客户端信息
      */
     private function _initAppInfo(){
+        $this->_parseAppUA();
         $this->_appId       = $this->_getAppIdFromRequest();
-        $this->_appSecret   = $this->_getAppSecretFromRequest();
-        $this->_appPlatform = $this->_getPlatformFromRequest();
-        $this->_appClientV  = $this->_getClientVFromRequest();
-        $this->_appUuid     = $this->_getUuidFromRequest();
-        $appIdConf          = $this->_getAppIdConf($this->_appPlatform);
-        if(!empty($appIdConf)){
-            if(!empty($this->_appId)){
-                if(empty($appIdConf[$this->_appId])){
-                    $this->_appName = '';
-                }else{
-                    $this->_appName = $appIdConf[$this->_appId]['name'];
-                }
-            }else{
-                if(!empty($appIdConf)){
-                    foreach($appIdConf as $appId => $conf){
-                        if($conf['default'] === true){
-                            $this->_appId   = $appId;
-                            $this->_appName = $conf['name'];
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        if(empty($this->_appName)){
-            $this->_appName = self::APP_NAME_JUMEI;
-        }
-
-        $this->_appUrlSchemePrefix = $this->_getAppUrlSchemePrefixConf($this->_appName);
+        $this->_appSecret   = $this->_getAppSecretFromConf($this->_appId);
+        $this->_appPlatform = self::$deviceInfo['platform'];
+        $this->_appClientV  = self::$deviceInfo['client_v'];
+        $this->_appDeviceId = self::$deviceInfo['device_id'];
+        $this->_appUrlSchemePrefix = $this->_getAppUrlSchemePrefixConf();
     }
 
     /**
@@ -237,14 +194,7 @@ class Device
      * @return array|string
      */
     private function _getAppUrlSchemePrefixConf($appName = ''){
-        $conf = array(
-            self::APP_NAME_JUMEI    => 'jumeimall',
-            self::APP_NAME_GLOBAL   => 'jmglobal',
-            self::APP_NAME_YOUTH    => 'jmyouth',
-            self::APP_NAME_BABY     => 'jmbaby',
-        );
-
-        return !empty($appName) ? (!empty($conf[$appName]) ? $conf[$appName] : '') : $conf;
+        return 'thefair://';
     }
 
     /**
@@ -261,39 +211,33 @@ class Device
      *
      * @return string
      */
-    private function _getAppSecretFromRequest(){
-        return strtolower(htmlspecialchars(!empty($_COOKIE['appsecret']) ? $_COOKIE['appsecret'] : (!empty($_REQUEST['appsecret']) ? $_REQUEST['appsecret'] : '')));
+    private function _getAppSecretFromConf($appId){
+        return TheFairLib\Config\Config::get_auth(self::$deviceInfo['platform'].'.'.$appId.'.secret');
     }
 
-    /**
-     * 从请求中获取客户端平台信息
-     *
-     * @return string
-     */
-    private function _getPlatformFromRequest(){
-        return htmlspecialchars(!empty($_COOKIE['platform']) ? $_COOKIE['platform'] : (!empty($_REQUEST['platform']) ? $_REQUEST['platform'] : ''));
-    }
 
-    /**
-     * 从请求中获取客户端版本号信息
-     *
-     * @return string
-     */
-    private function _getClientVFromRequest(){
-        return htmlspecialchars(!empty($_COOKIE['client_v']) ? $_COOKIE['client_v'] : (!empty($_REQUEST['client_v']) ? $_REQUEST['client_v'] : ''));
-    }
-
-    /**
-     * 从请求中获取客户端uuid信息
-     *
-     * @return string
-     */
-    private function _getUuidFromRequest(){
-        if($this->_appPlatform == 'android'){
-            return htmlspecialchars(!empty($_COOKIE['imei']) ? $_COOKIE['imei'] : '');
+    private function _parseAppUA(){
+        if (isset($_SERVER['HTTP_X_TAOO_UA'])){
+            $ua = $_SERVER['HTTP_X_TAOO_UA'];
         }else{
-            return htmlspecialchars(!empty($_COOKIE['idfa']) ? $_COOKIE['idfa'] : '');
+            $ua = 'h5/1.0 (h5;h5;1.0;cn;wap;1.0;cn;h5;unkonwn) h5/1.0';
         }
+        preg_match('/^(?<product>.*?)\/(?<version>.*?) \((?<device_info>.*?)\) (?<render_info>.*?)$/i', $ua, $matches);
 
+        list($deviceLabel, $deviceOs, $deviceOsVersion, $deviceLang, $platform, $clientV, $site, $source, $deviceId) = explode(';', $matches['device_info']);
+        self::$deviceInfo = array(
+            'platform' => $platform,
+            'client_v'  => $clientV,
+            'site'      => $site,
+            'source'    => $source,
+            'device_id' => $deviceId,
+            'lang'      => $deviceLang,
+        );
+        //<device_os>\w+);(?<device_os_version>\w+);(?<os_lang>\w+);(?<platform>\w+);(?<client_v>\w+);(?<site>\w+);(?<source>\w+);(?<device_id>
+
+    }
+
+    public function getDeviceInfo(){
+        return self::$deviceInfo;
     }
 }

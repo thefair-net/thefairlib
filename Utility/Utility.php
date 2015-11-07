@@ -20,7 +20,7 @@ class Utility
      * @param $arguments
      * @return bool|mixed
      */
-    public function __call($func, $arguments)
+    public static function __callStatic($func, $arguments)
     {
 
         $funcAry = explode('_', $func);
