@@ -6,7 +6,7 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
-namespace TheFairLib\I18N;
+namespace TheFairLib\I18n;
 
 use TheFairLib\Config\Config;
 
