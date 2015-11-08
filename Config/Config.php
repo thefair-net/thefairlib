@@ -44,7 +44,7 @@ final class Config
             $return = self::$configList[$md5];
         }else{
             if(strpos($configTag, '.') === false){
-                $fileName = $configTag;
+                $fileName = ucwords($configTag);
             }else{
                 $pathAry            = explode('.', $configTag);
                 $count              = count($pathAry);
