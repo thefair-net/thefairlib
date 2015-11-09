@@ -31,24 +31,29 @@ abstract class ErrorBase extends Base
      *
      * @param Exception $e
      */
-    public function errorAction(Exception $exception){
-        switch ($exception->getCode()) {
-            case \Yaf\ERR\NOTFOUND\MODULE:
-                $this->_errorNotfoundModule($exception);
-                break;
-            case \Yaf\ERR\NOTFOUND\CONTROLLER:
-                $this->_errorNotfoundController($exception);
-                break;
-            case \Yaf\ERR\NOTFOUND\ACTION:
-                $this->_errorNotfoundAction($exception);
-                break;
-            case \Yaf\ERR\NOTFOUND\VIEW:
-                $this->_errorNotfoundView($exception);
-                break;
-            default :
-                $this->_errorDefault($exception);
-                break;
+    public function errorAction(\Exception $exception){
+        if($exception instanceof \Yaf\Exception){
+            switch ($exception->getCode()) {
+                case \Yaf\ERR\NOTFOUND\MODULE:
+                    $this->_errorNotfoundModule($exception);
+                    break;
+                case \Yaf\ERR\NOTFOUND\CONTROLLER:
+                    $this->_errorNotfoundController($exception);
+                    break;
+                case \Yaf\ERR\NOTFOUND\ACTION:
+                    $this->_errorNotfoundAction($exception);
+                    break;
+                case \Yaf\ERR\NOTFOUND\VIEW:
+                    $this->_errorNotfoundView($exception);
+                    break;
+                default :
+                    $this->_errorDefault($exception);
+                    break;
+            }
+        }else{
+            $this->_errorDefault($exception);
         }
+
     }
 
     /**
