@@ -9,6 +9,8 @@
 
 namespace TheFairLib\Utility;
 
+use TheFairLib\Http\Cookie;
+
 class Utility
 {
     private static $registry = array();
@@ -285,10 +287,20 @@ class Utility
      * @param $value
      * @param $ttl
      */
-    public static function setCookie($key, $value, $ttl)
+    public static function setResponseCookie($key, $value, $ttl)
     {
+        $cookie = self::getResponseCookie();
+        if(empty($cookie)){
+            $cookie = [];
+        }
+
+        $cookie[] = new Cookie($key, $value, $ttl);
         //@todo
-//        setcookie($key, $value, $ttl, '/', $domain);
+        self::set_reponse_cookie($cookie);
+    }
+
+    public static function getResponseCookie(){
+        return self::get_reponse_cookie();
     }
 
     /**

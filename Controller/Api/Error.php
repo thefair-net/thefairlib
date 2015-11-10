@@ -22,7 +22,7 @@ class Error extends ErrorBase
         }
     }
 
-    protected function _errorDefault(Exception $e){
+    protected function _errorDefault(\Exception $e){
         if($e instanceof ApiException){
             $this->showError(
                 $e->getMessage(), $e->getExtData(),  $e->getExtCode(), $e->getHttpStatus()
