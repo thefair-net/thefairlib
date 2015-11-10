@@ -77,7 +77,7 @@ class Api extends Response
 
     public function send(){
         $this->setBody($this->_buildApiBody());
-        parent::send();
+        return parent::send();
     }
 
     private function _buildApiBody(){

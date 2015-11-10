@@ -14,6 +14,9 @@ use TheFairLib\Http\Response\Api;
 
 class Controller extends Base
 {
+    /**
+     * @var Api
+     */
     protected static $_responseObj = false;
     protected function init(){
         if(self::$_responseObj === false){
