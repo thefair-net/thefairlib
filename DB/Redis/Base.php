@@ -45,5 +45,13 @@ abstract class Base
         return self::$_redisConfPath = $path;
     }
 
-    abstract public static function getInstance($name = 'default');
+    public static function getInstance($name = 'default'){
+        if (!isset(self::$instance[$name])) {
+            $class = get_called_class();
+            $base = new $class();
+            self::$instance[$name] = $base->getRedisInstance($name);
+        }
+
+        return self::$instance[$name];
+    }
 }

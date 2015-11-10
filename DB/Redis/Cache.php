@@ -23,14 +23,14 @@ class Cache extends Base
         }
     }
 
-    public static function getInstance($name = 'default'){
-        if (!isset(self::$instance[$name])) {
-            $base = new self();
-            self::$instance[$name] = $base->getRedisInstance($name);
-        }
-
-        return self::$instance[$name];
-    }
+//    public static function getInstance($name = 'default'){
+//        if (!isset(self::$instance[$name])) {
+//            $base = new self();
+//            self::$instance[$name] = $base->getRedisInstance($name);
+//        }
+//
+//        return self::$instance[$name];
+//    }
 
     protected function _init(){
 
