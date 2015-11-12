@@ -9,6 +9,7 @@
 namespace TheFairLib\Http\Response;
 
 use TheFairLib\Http\Response;
+use TheFairLib\Utility\Utility;
 
 class Api extends Response
 {
@@ -76,6 +77,12 @@ class Api extends Response
     }
 
     public function send(){
+        $cookies = Utility::getResponseCookie();
+        if(!empty($cookies)){
+            foreach($cookies as $cookie){
+                $this->setCookie($cookie);
+            }
+        }
         $this->setBody($this->_buildApiBody());
         return parent::send();
     }
