@@ -29,7 +29,7 @@ abstract class ErrorBase extends Base
      * $app->getDispatcher()->catchException(true);
      * $app->bootstrap()->run();
      *
-     * @param Exception $e
+     * @param \Exception $exception
      */
     public function errorAction(\Exception $exception){
         if($exception instanceof \Yaf\Exception){
@@ -59,10 +59,10 @@ abstract class ErrorBase extends Base
     /**
      * 处理通用异常信息
      *
-     * @param Exception $e
-     * @throws Exception
+     * @param \Exception $e
+     * @throws \Exception
      */
-    protected function _errorDefault(Exception $e){
+    protected function _errorDefault(\Exception $e){
         $this->_DealWithException($e);
     }
 
@@ -109,10 +109,10 @@ abstract class ErrorBase extends Base
     /**
      * 对默认异常不做任何处理直接抛出
      *
-     * @param Exception $e
-     * @throws Exception
+     * @param \Exception $e
+     * @throws \Exception
      */
-    private function _DealWithException(Exception $e){
+    private function _DealWithException(\Exception $e){
         throw $e;
     }
 }
