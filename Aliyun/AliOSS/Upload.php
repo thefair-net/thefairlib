@@ -190,7 +190,7 @@ class Upload
                 if(!empty($info)) {
                     $this->imageInfo['width'] = $info[0];
                     $this->imageInfo['height'] = $info[1];
-                    $this->imageInfo['type'] = isset($type[$imageType]) ? $type[$imageType] : '';
+                    //$this->imageInfo['type'] = isset($type[$imageType]) ? $type[$imageType] : '';
                 }
                 isset($type[$imageType]) ? $this->imageInfo : $this->imageInfo = 'not image';//获得图片大小信息
             }
