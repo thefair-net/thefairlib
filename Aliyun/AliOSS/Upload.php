@@ -186,7 +186,13 @@ class Upload
                     IMAGETYPE_XBM => "xbm",
                     IMAGETYPE_ICO => "ico"
                 );
-                isset($type[$imageType]) ? $this->imageInfo = getimagesize($fileName) : $this->imageInfo = 'not image';//获得图片大小信息
+                $info = getimagesize($fileName);
+                if(!empty($info)) {
+                    $this->imageInfo['width'] = $info[0];
+                    $this->imageInfo['height'] = $info[1];
+                    $this->imageInfo['type'] = isset($type[$imageType]) ? $type[$imageType] : '';
+                }
+                isset($type[$imageType]) ? $this->imageInfo : $this->imageInfo = 'not image';//获得图片大小信息
             }
         }
 
