@@ -91,6 +91,7 @@ class YunPian implements Sms
      *
      * @param $mobile
      * @param $msg
+     * @throws Exception
      */
     public function sendMessageList($mobile, $msg)
     {

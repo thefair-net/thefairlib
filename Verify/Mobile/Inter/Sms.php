@@ -15,4 +15,7 @@ interface Sms
 
     //群发信息
     public function sendMessageList($mobile, $msg);
+
+    //模板信息
+    public function sendTplMessage($tpl, $mobile, $msg);
 }
