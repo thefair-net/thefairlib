@@ -24,7 +24,7 @@ class YunPian implements Sms
     public function __construct()
     {
         $config = Config::get_verify();
-        if(!isset($config['appKey']) || empty($config['appKey']['YunPian']['key'])) {
+        if (!isset($config['appKey']) || empty($config['appKey']['YunPian']['key'])) {
             throw new Exception('common.appKey error');
         }
         $this->_appKey = $config['appKey']['YunPian']['key'];
@@ -53,7 +53,36 @@ class YunPian implements Sms
             'text' => $msg,
         );
         $curl = new Curl();
-        $curl->post(self::SEND_URL,$data);
+        $curl->post(self::SEND_URL, $data);
+        return $curl->response;
+    }
+
+    /**
+     * 模板ID
+     *
+     * @param $tpl
+     * @param $mobile
+     * @param $msg //#code#=1234&#company#=桃花岛
+     * @return null
+     * @throws Exception
+     */
+    public function sendTplMessage($tpl, $mobile, $msg)
+    {
+        if (!Utility::isMobile($mobile)) {
+            throw new Exception('error mobile :' . $mobile);
+        }
+        if (empty($msg)) {
+            throw new Exception('`msg` is not null');
+        }
+
+        $data = array(
+            'apikey' => $this->_appKey,
+            'mobile' => $mobile,
+            'tpl_id' => $tpl,
+            'tpl_value' => $msg,
+        );
+        $curl = new Curl();
+        $curl->post(self::SEND_URL_TPL, $data);
         return $curl->response;
     }
 
@@ -62,6 +91,7 @@ class YunPian implements Sms
      *
      * @param $mobile
      * @param $msg
+     * @throws Exception
      */
     public function sendMessageList($mobile, $msg)
     {

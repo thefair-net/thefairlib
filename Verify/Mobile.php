@@ -10,7 +10,7 @@ class Mobile
     static public $instance;
 
     /**
-     * @return \TheFairLib\Verify\Mobile\Inter\Mobile
+     * @return \TheFairLib\Verify\Mobile\Inter\Sms
      */
     static public function Instance()
     {
