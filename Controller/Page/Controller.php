@@ -12,5 +12,6 @@ use TheFairLib\Controller\Base;
 
 class Controller extends Base
 {
-
+    protected function init(){
+    }
 }
