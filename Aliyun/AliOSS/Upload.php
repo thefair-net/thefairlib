@@ -148,9 +148,13 @@ class Upload
         $this->fileName = $this->newName;
         $this->fullName = $this->_getFolder() . '/' . $this->fileName . $this->fileType;
         $this->ossPath = $this->_getOssFolder();
-
         if (!file_put_contents($this->fullName, $img)) {
             $this->stateInfo = $this->_getStateInfo("IO");
+            return;
+        }
+        $this->fileSize = filesize($this->fullName);
+        if (!$this->_checkSize()) {
+            $this->stateInfo = $this->_getStateInfo("SIZE");
             return;
         }
         $this->uploadOSS(true);
