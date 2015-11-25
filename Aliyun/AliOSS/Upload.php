@@ -147,7 +147,7 @@ class Upload
             list($type, $img) = explode(',', $base64Data, 2);
             preg_match_all('/^data:image\/(\w+);base64$/', $type,$imgType);
             if(!empty($imgType[1][0])) {
-                if(in_array($imgType[1][0],'jpeg','jpg')) {
+                if(in_array($imgType[1][0],['jpeg','jpg'])) {
                     $this->fileType = '.jpg';
                 } else {
                     $this->fileType = '.'.$imgType[1][0];
@@ -161,6 +161,10 @@ class Upload
         $this->fileName = $this->newName;
         $this->fullName = $this->_getFolder() . '/' . $this->fileName . $this->fileType;
         $this->ossPath = $this->_getOssFolder();
+        if(!in_array($this->fileType, $this->config["allowFiles"])) {
+            $this->stateInfo = $this->_getStateInfo("TYPE");
+            return;
+        }
         if (!file_put_contents($this->fullName, $img)) {
             $this->stateInfo = $this->_getStateInfo("IO");
             return;
