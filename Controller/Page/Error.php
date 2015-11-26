@@ -20,8 +20,8 @@ abstract class Error extends ErrorBase
     public function errorAction(E $exception)
     {
         if (Registry::get('config')->phase != 'pro') {
-            echo '<pre>';
-            print_r($exception);
+//            echo '<pre>';
+//            print_r($exception);
         }
         \Yaf\Dispatcher::getInstance()->autoRender(false);
         switch ($exception->getCode()) {
