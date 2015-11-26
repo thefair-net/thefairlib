@@ -4,6 +4,8 @@ namespace TheFairLib\Aliyun\AliOSS;
 //关于endpoint的介绍见, endpoint就是OSS访问的域名
 use \TheFairLib\Aliyun\AliOSS\util\OSS_Exception;
 use \TheFairLib\Config\Config;
+use TheFairLib\I18n\TranslateHelper;
+
 //设置默认时区
 date_default_timezone_set('Asia/Shanghai');
 
@@ -12,7 +14,13 @@ if (!defined('OSS_API_PATH'))
     define('OSS_API_PATH', dirname(__FILE__));
 
 //加载conf.inc.php文件,里面保存着OSS的地址以及用户访问的ID和KEY
-$config = Config::get_aliyun('OSS');
+$lang = TranslateHelper::getLang();
+$config = Config::get_aliyun();
+if(empty($lang)) {
+    $config = $config[$lang]['OSS'];
+} else {
+    $config = $config['cn']['OSS'];
+}
 define('OSS_ACCESS_ID', $config['OSS_ACCESS_ID']);
 define('OSS_ACCESS_KEY', $config['OSS_ACCESS_KEY']);
 define('OSS_ENDPOINT', $config['OSS_ENDPOINT']);
