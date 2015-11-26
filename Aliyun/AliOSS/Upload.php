@@ -145,12 +145,12 @@ class Upload
     {
         if (strpos($base64Data, ',') !== false) {
             list($type, $img) = explode(',', $base64Data, 2);
-            preg_match_all('/^data:image\/(\w+);base64$/', $type,$imgType);
-            if(!empty($imgType[1][0])) {
-                if(in_array($imgType[1][0],['jpeg','jpg'])) {
+            preg_match_all('/^data:image\/(\w+);base64$/', $type, $imgType);
+            if (!empty($imgType[1][0])) {
+                if (in_array($imgType[1][0], ['jpeg', 'jpg'])) {
                     $this->fileType = '.jpg';
                 } else {
-                    $this->fileType = '.'.$imgType[1][0];
+                    $this->fileType = '.' . $imgType[1][0];
                 }
             }
             $img = base64_decode($img);
@@ -161,7 +161,7 @@ class Upload
         $this->fileName = $this->newName;
         $this->fullName = $this->_getFolder() . '/' . $this->fileName . $this->fileType;
         $this->ossPath = $this->_getOssFolder();
-        if(!in_array($this->fileType, $this->config["allowFiles"])) {
+        if (!in_array($this->fileType, $this->config["allowFiles"])) {
             $this->stateInfo = $this->_getStateInfo("TYPE");
             return;
         }
@@ -182,11 +182,12 @@ class Upload
     /**
      * 获得图片信息
      *
-     * @param $fileName     //文件绝对路径
+     * @param $fileName //文件绝对路径
      */
-    public function getImageInfo($fileName) {
-        if(file_exists($fileName)) {
-            if(function_exists('exif_imagetype')) {
+    public function getImageInfo($fileName)
+    {
+        if (file_exists($fileName)) {
+            if (function_exists('exif_imagetype')) {
                 $imageType = exif_imagetype($fileName);//判断是否为图片
                 $type = array(
                     IMAGETYPE_GIF => "gif",
@@ -208,7 +209,8 @@ class Upload
                     IMAGETYPE_ICO => "ico"
                 );
                 $info = getimagesize($fileName);
-                if(!empty($info)) {
+                if (!empty($info)) {
+                    $this->imageInfo['scale'] = empty($info[0]) ? 0 : round($info[0] / $info[1], 2);
                     $this->imageInfo['width'] = $info[0];
                     $this->imageInfo['height'] = $info[1];
                     //$this->imageInfo['type'] = isset($type[$imageType]) ? $type[$imageType] : '';
