@@ -58,7 +58,7 @@ final class Config
                     case self::NORMAL_CLASS_TAG :
                         //线上配置
                         $prodFilePath = APP_PATH . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'production' . DIRECTORY_SEPARATOR . $fileName . '.php';
-                        $prodConf = file_exists($filePath) ? require $prodFilePath : [];
+                        $prodConf = file_exists($prodFilePath) ? require $prodFilePath : [];
                         $return = require $filePath;
                         $return = array_merge($return, $prodConf);
                         break;
