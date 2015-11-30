@@ -56,8 +56,11 @@ final class Config
             if(file_exists($filePath)){
                 switch($type){
                     case self::NORMAL_CLASS_TAG :
+                        //线上配置
+                        $prodFilePath = APP_PATH . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'production' . DIRECTORY_SEPARATOR . $fileName . '.php';
+                        $prodConf = file_exists($filePath) ? require $prodFilePath : [];
                         $return = require $filePath;
-
+                        $return = array_merge($return, $prodConf);
                         break;
                     case self::YAF_SIMPLE_CLASS_TAG :
                         $className = '\\Yaf\\Config\\'.ucwords($type);
