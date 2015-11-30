@@ -143,14 +143,35 @@ class Upload
      */
     private function _base64ToImage($base64Data)
     {
-        $img = base64_decode($base64Data);
+        if (strpos($base64Data, ',') !== false) {
+            list($type, $img) = explode(',', $base64Data, 2);
+            preg_match_all('/^data:image\/(\w+);base64$/', $type, $imgType);
+            if (!empty($imgType[1][0])) {
+                if (in_array($imgType[1][0], ['jpeg', 'jpg'])) {
+                    $this->fileType = '.jpg';
+                } else {
+                    $this->fileType = '.' . $imgType[1][0];
+                }
+            }
+            $img = base64_decode($img);
+        } else {
+            $img = base64_decode($base64Data);
+        }
         $this->newName = md5(time() . rand(1, 10000));
         $this->fileName = $this->newName;
         $this->fullName = $this->_getFolder() . '/' . $this->fileName . $this->fileType;
         $this->ossPath = $this->_getOssFolder();
-
+        if (!in_array($this->fileType, $this->config["allowFiles"])) {
+            $this->stateInfo = $this->_getStateInfo("TYPE");
+            return;
+        }
         if (!file_put_contents($this->fullName, $img)) {
             $this->stateInfo = $this->_getStateInfo("IO");
+            return;
+        }
+        $this->fileSize = filesize($this->fullName);
+        if (!$this->_checkSize()) {
+            $this->stateInfo = $this->_getStateInfo("SIZE");
             return;
         }
         $this->uploadOSS(true);
@@ -161,11 +182,12 @@ class Upload
     /**
      * 获得图片信息
      *
-     * @param $fileName     //文件绝对路径
+     * @param $fileName //文件绝对路径
      */
-    public function getImageInfo($fileName) {
-        if(file_exists($fileName)) {
-            if(function_exists('exif_imagetype')) {
+    public function getImageInfo($fileName)
+    {
+        if (file_exists($fileName)) {
+            if (function_exists('exif_imagetype')) {
                 $imageType = exif_imagetype($fileName);//判断是否为图片
                 $type = array(
                     IMAGETYPE_GIF => "gif",
@@ -187,7 +209,8 @@ class Upload
                     IMAGETYPE_ICO => "ico"
                 );
                 $info = getimagesize($fileName);
-                if(!empty($info)) {
+                if (!empty($info)) {
+                    $this->imageInfo['scale'] = empty($info[0]) ? 0 : round($info[0] / $info[1], 2);
                     $this->imageInfo['width'] = $info[0];
                     $this->imageInfo['height'] = $info[1];
                     //$this->imageInfo['type'] = isset($type[$imageType]) ? $type[$imageType] : '';
