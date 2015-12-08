@@ -10,7 +10,7 @@ namespace TheFairLib\Mobile\Push\Ext;
 
 interface PushInterface
 {
-    public function sendPushToSingleDevice($deviceToken, $platform, $message);
+    public function sendPushToSingleDevice($deviceToken, $platform, $title, $message, $link, $badge);
 
     public function sendPushToDeviceList($deviceToken, $platform, $message);
 }

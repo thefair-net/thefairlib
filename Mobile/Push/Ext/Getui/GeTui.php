@@ -22,8 +22,8 @@ require_once(dirname(__FILE__) . '/' . 'igetui/utils/AppConditions.php');
 class GeTui implements PushInterface
 {
     //http的域名
-    private $_httpHost = 'http://sdk.open.api.igexin.com/apiex.htm';
-    private $_httpsHost = 'https://api.getui.com/apiex.htm';
+//    private $_httpHost = 'http://sdk.open.api.igexin.com/apiex.htm';
+    private $_httpHost = 'https://api.getui.com/apiex.htm';
 
     private $_appID = null;
     private $_appSecret = null;
@@ -32,10 +32,11 @@ class GeTui implements PushInterface
 
     private $_iGeTui = null;
 
-    public function __construct(){
+    public function __construct()
+    {
         //获取个推配置
         $config = Config::get_notification_push_getui('system_conf');
-        if(empty($config) || empty($config['app_id']) || empty($config['app_secret']) || empty($config['app_key']) || empty($config['master_secret'])){
+        if (empty($config) || empty($config['app_id']) || empty($config['app_secret']) || empty($config['app_key']) || empty($config['master_secret'])) {
             throw new Exception('getui conf error');
         }
         $this->_appID = $config['app_id'];
@@ -47,9 +48,31 @@ class GeTui implements PushInterface
         return $this;
     }
 
-    public function sendPushToSingleDevice($deviceToken, $platform, $message){
-        $template = new \IGtAPNTemplate();
-        $template->set_pushInfo("actionLocKey", 6, $message, "", "payload", "locKey", "locArgs", "launchImage",1);
+    public function sendPushToSingleDevice($deviceToken, $platform, $title, $message, $link, $badge)
+    {
+//        $template = new \IGtAPNTemplate();
+//        $template->set_pushInfo("actionLocKey", 6, $message, "", "payload", "locKey", "locArgs", "launchImage",1);
+        $template = new \IGtTransmissionTemplate();
+        $template->set_appId($this->_appID);//应用appid
+        $template->set_appkey($this->_appKey);//应用appkey
+        $template->set_transmissionType(1);//透传消息类型
+        $template->set_transmissionContent($message);//透传内容
+
+        //APN高级推送
+        $apn = new \IGtAPNPayload();
+        $alertmsg = new \DictionaryAlertMsg();
+        $alertmsg->body = $message;
+        $alertmsg->title = $title;
+
+        $apn->alertMsg = $alertmsg;
+        $apn->badge = $badge;
+        $apn->sound = "";
+        $apn->add_customMsg("payload", "payload");
+        $apn->contentAvailable = 1;
+        $apn->category = "ACTIONABLE";
+        $apn->p = $link;
+        $template->set_apnInfo($apn);
+
         $messageObj = new \IGtSingleMessage();
         $messageObj->set_data($template);
         $ret = $this->_iGeTui->pushAPNMessageToSingle($this->_appID, $deviceToken, $messageObj);
@@ -57,7 +80,8 @@ class GeTui implements PushInterface
         return $ret;
     }
 
-    public function sendPushToDeviceList($deviceToken, $platform, $message){
+    public function sendPushToDeviceList($deviceToken, $platform, $message)
+    {
 
     }
 }
