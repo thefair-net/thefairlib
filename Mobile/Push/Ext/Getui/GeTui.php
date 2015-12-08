@@ -50,8 +50,6 @@ class GeTui implements PushInterface
 
     public function sendPushToSingleDevice($deviceToken, $platform, $title, $message, $link, $badge)
     {
-//        $template = new \IGtAPNTemplate();
-//        $template->set_pushInfo("actionLocKey", 6, $message, "", "payload", "locKey", "locArgs", "launchImage",1);
         $template = new \IGtTransmissionTemplate();
         $template->set_appId($this->_appID);//应用appid
         $template->set_appkey($this->_appKey);//应用appkey
@@ -77,8 +75,33 @@ class GeTui implements PushInterface
         return $ret;
     }
 
-    public function sendPushToDeviceList($deviceToken, $platform, $message)
+    public function sendPushToDeviceList($deviceTokenList, $platform, $title, $message, $link, $badge)
     {
+        $template = new \IGtTransmissionTemplate();
+        $template->set_appId($this->_appID);//应用appid
+        $template->set_appkey($this->_appKey);//应用appkey
+        $template->set_transmissionType(1);//透传消息类型
+        $template->set_transmissionContent($message);//透传内容
 
+        //APN高级推送
+        $apn = new \IGtAPNPayload();
+        $alertmsg = new \DictionaryAlertMsg();
+        $alertmsg->body = $message;
+        $alertmsg->title = $title;
+
+        $apn->alertMsg = $alertmsg;
+        $apn->badge = $badge;
+        $apn->sound = "";
+        $apn->customMsg = ['p' => $link];
+        $template->set_apnInfo($apn);
+
+        putenv("needDetails=true");
+        $messageObj = new \IGtListMessage();
+        $messageObj->set_data($template);
+        $contentId = $this->_iGeTui->getAPNContentId($this->_appID, $messageObj);
+
+        $ret = $this->_iGeTui->pushAPNMessageToList($this->_appID, $contentId, $deviceTokenList);
+
+        return $ret;
     }
 }
