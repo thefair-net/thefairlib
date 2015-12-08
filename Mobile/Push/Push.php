@@ -8,14 +8,13 @@
  */
 namespace TheFairLib\Mobile\Push;
 
-use TheFairLib\Mobile\Push\Ext\GeTui\GeTui;
+use TheFairLib\Mobile\Push\Ext\Getui\GeTui;
 
 class Push
 {
-    private $_pushService = '';
     static public $instance;
 
-    public function __construct($pushService = 'getui'){
+    public function getPushWork($pushService = 'getui'){
         switch($pushService){
             case 'getui':
                 $class = new GeTui();
@@ -26,12 +25,12 @@ class Push
         return $class;
     }
 
-    static public function Instance($pushService = 'getui')
+    static public function Instance()
     {
-        if (empty(self::$instance[$pushService])) {
-            self::$instance[$pushService] = new static($pushService);
+        if (empty(self::$instance)) {
+            self::$instance = new self();
         }
-        return self::$instance[$pushService];
+        return self::$instance;
     }
 
 //    public function sendPushToSingle

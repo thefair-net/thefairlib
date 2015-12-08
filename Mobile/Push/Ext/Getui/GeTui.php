@@ -6,7 +6,7 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
-namespace TheFairLib\Mobile\Push\Ext\GeTui;
+namespace TheFairLib\Mobile\Push\Ext\Getui;
 
 use TheFairLib\Config\Config;
 use TheFairLib\Mobile\Push\Ext\PushInterface;
