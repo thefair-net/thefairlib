@@ -67,10 +67,7 @@ class GeTui implements PushInterface
         $apn->alertMsg = $alertmsg;
         $apn->badge = $badge;
         $apn->sound = "";
-        $apn->add_customMsg("payload", "payload");
-        $apn->contentAvailable = 1;
-        $apn->category = "ACTIONABLE";
-        $apn->p = $link;
+        $apn->customMsg = ['p' => $link];
         $template->set_apnInfo($apn);
 
         $messageObj = new \IGtSingleMessage();
