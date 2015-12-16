@@ -18,7 +18,7 @@ class CompressHelper
         switch($service){
             case 'aliyun':
                 $urlAry = parse_url($url);
-                if($urlAry['host'] != 'image.bj.taooo.cc'){
+                if($urlAry['host'] == 'static.bj.taooo.cc'){
                     $urlAry['host'] = 'image.bj.taooo.cc';
                     $urlAry['path'] = $urlAry['path'].'@1pr_'.$width.'w.jpg';
                 }
