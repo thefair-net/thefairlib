@@ -14,7 +14,7 @@ use TheFairLib\StaticResource\Exception;
 class CompressHelper
 {
     public static function getCompressImgUrl($url, $width){
-        $service = Config::get_image('autoCompressService');
+        $service = Config::get_image('auto_compress_service');
         switch($service){
             case 'aliyun':
                 $urlAry = parse_url($url);
@@ -55,7 +55,7 @@ class CompressHelper
         if(empty($resolutionWidth)){
             throw new Exception('resolution error');
         }
-        $resolutionSetting 	= Config::get_image('resolutionSetting');
+        $resolutionSetting 	= Config::get_image('resolution_setting');
         if(!empty($resolutionSetting[$platform])){
             $platformSetting = $resolutionSetting[$platform];
         }else{
@@ -63,7 +63,7 @@ class CompressHelper
         }
         $resolutionWidth = self::getDeviceWithByResolution($platformSetting, $resolutionWidth);
 
-        $allCompressSetting 	= Config::get_image('compressSetting.'.$imgTag);
+        $allCompressSetting 	= Config::get_image('compress_setting.'.$imgTag);
         if(!empty($allCompressSetting[$platform])){
             $compressSetting = $allCompressSetting[$platform];
         }elseif(!empty($allCompressSetting['default'])){
