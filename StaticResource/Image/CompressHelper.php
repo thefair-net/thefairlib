@@ -18,8 +18,10 @@ class CompressHelper
         switch($service){
             case 'aliyun':
                 $urlAry = parse_url($url);
-                $urlAry['host'] = 'image.bj.taooo.cc';
-                $urlAry['path'] = $urlAry['path'].'@1pr_'.$width.'w.jpg';
+                if($urlAry['host'] != 'image.bj.taooo.cc'){
+                    $urlAry['host'] = 'image.bj.taooo.cc';
+                    $urlAry['path'] = $urlAry['path'].'@1pr_'.$width.'w.jpg';
+                }
                 break;
             default :
                 throw new Exception('undefined service type');
