@@ -25,7 +25,7 @@ class CompressHelper
                 throw new Exception('undefined service type');
         }
 
-        return http_build_url($urlAry);
+        return $urlAry['scheme'].'://'.$urlAry['host'].$urlAry['path'].(!empty($urlAry['query']) ? '?'.$urlAry['query'] : '');
     }
 
     /**
@@ -98,7 +98,7 @@ class CompressHelper
                 }elseif(!empty($options['url'])){
                     $imgUrl = $options['url'];
                 }
-                if(!empty($tmpUrl)){
+                if(!empty($imgUrl)){
                     $imgUrl = self::getCompressImgUrl($imgUrl, $resolutionWidth * (float) $tmpSetting);
                 }
             }else{
