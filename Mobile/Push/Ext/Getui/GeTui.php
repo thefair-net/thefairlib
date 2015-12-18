@@ -36,15 +36,17 @@ class GeTui implements PushInterface
     {
         //获取个推配置
         $config = Config::get_notification_push_getui('system_conf');
-        if (empty($config) || empty($config['app_id']) || empty($config['app_secret']) || empty($config['app_key']) || empty($config['master_secret']) || empty($config['api_url'])) {
+        if (empty($config) || empty($config['app_id']) || empty($config['app_secret']) || empty($config['app_key']) || empty($config['master_secret'])) {
             throw new Exception('getui conf error');
         }
         $this->_appID = $config['app_id'];
         $this->_appSecret = $config['app_secret'];
         $this->_appKey = $config['app_key'];
         $this->_masterSecret = $config['master_secret'];
-        $this->_httpHost = $config['api_url'];
-
+        if(!empty($config['api_url'])){
+            $this->_httpHost = $config['api_url'];
+        }
+        
         $this->_iGeTui = new \IGeTui($this->_httpHost, $this->_appKey, $this->_masterSecret, false);
         return $this;
     }
