@@ -23,7 +23,7 @@ class ApiUrlRespectUtils
         }
         else
         {
-            $fastest = ApiUrlRespectUtils::getFastestRealTime($hosts);
+            $fastest = current($hosts);//ApiUrlRespectUtils::getFastestRealTime($hosts);
             ApiUrlRespectUtils::$appKeyAndHost[$appkey] = $hosts;
             ApiUrlRespectUtils::$appkeyAndFasterHost[$appkey] = $fastest;
             return $fastest;

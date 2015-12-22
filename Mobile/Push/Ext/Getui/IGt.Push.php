@@ -54,7 +54,7 @@ Class IGeTui
         {
             $this->domainUrlList = array($domainUrl);
         }
-        $this->initOSDomain(null);
+        $this->initOSDomain($this->domainUrlList);
     }
 
     private function initOSDomain($hosts)

@@ -46,7 +46,7 @@ class GeTui implements PushInterface
         if(!empty($config['api_url'])){
             $this->_httpHost = $config['api_url'];
         }
-        
+
         $this->_iGeTui = new \IGeTui($this->_httpHost, $this->_appKey, $this->_masterSecret, false);
         return $this;
     }
