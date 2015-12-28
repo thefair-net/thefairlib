@@ -9,6 +9,7 @@
 
 namespace TheFairLib\Utility;
 
+use TheFairLib\Config\Config;
 use TheFairLib\Http\Cookie;
 
 class Utility
@@ -293,8 +294,11 @@ class Utility
         if(empty($cookie)){
             $cookie = [];
         }
+        $domainConf = Config::get_app('cookie.default_domain');
+        $path = '/';
+        $domain = !empty($domainConf) ? $domainConf : '';
 
-        $cookie[] = new Cookie($key, $value, $ttl);
+        $cookie[] = new Cookie($key, $value, $ttl, $path, $domainConf);
         //@todo
         self::set_reponse_cookie($cookie);
     }
