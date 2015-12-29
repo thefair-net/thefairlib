@@ -287,18 +287,22 @@ class Utility
      * @param $key
      * @param $value
      * @param $ttl
+     * @param $domain
      */
-    public static function setResponseCookie($key, $value, $ttl)
+    public static function setResponseCookie($key, $value, $ttl, $domain = '')
     {
         $cookie = self::getResponseCookie();
         if(empty($cookie)){
             $cookie = [];
         }
-        $domainConf = Config::get_app('cookie.default_domain');
-        $path = '/';
-        $domain = !empty($domainConf) ? $domainConf : '';
 
-        $cookie[] = new Cookie($key, $value, $ttl, $path, $domainConf);
+        $path = '/';
+        if(empty($domain)){
+            $domainConf = Config::get_app('cookie.default_domain');
+            $domain = !empty($domainConf) ? $domainConf : '';
+        }
+
+        $cookie[] = new Cookie($key, $value, $ttl, $path, $domain);
         //@todo
         self::set_reponse_cookie($cookie);
     }
