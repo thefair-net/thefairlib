@@ -45,6 +45,11 @@ class Image
 
     public $cacheHost = 'default';
 
+    //验证码有效期,单位:秒
+    private $expired = 300;
+
+    private $sessionKeyPrefix = '';
+
     static private $cache = null;
 
     //构造方法初始化
@@ -170,7 +175,7 @@ class Image
         //没有的话重新生成个
         if (empty($old) || $regenerate) {
             $this->code = $this->createCode();
-            self::$cache->setex($name, 300, $this->code);//保存验证码5分钟
+            self::$cache->setex($name, $this->expired, $this->code);//保存验证码5分钟
         } else {
             $this->code = $old;
         }
@@ -197,7 +202,9 @@ class Image
         $valid = $caseSensitive ? ($input === $code) : strcasecmp($input, $code) === 0;
 
         if ($valid) {
-            $this->getVerifyCode(true);
+            //验证成功后删除缓存中的数据
+            $name = $this->getSessionKey();
+            self::$cache->delete($name);
         }
         return $valid;
     }
@@ -205,7 +212,7 @@ class Image
     //返回用于存储验证码的会话变量名。
     protected function getSessionKey()
     {
-        return md5(self::CACHE_NAME . $this->type . $_COOKIE['PHPSESSID']);
+        return $this->sessionKeyPrefix.md5(self::CACHE_NAME . $this->type . $_COOKIE['PHPSESSID']);
     }
 
     /**
