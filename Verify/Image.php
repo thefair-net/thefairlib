@@ -160,6 +160,7 @@ class Image
         $this->createFont();
         imagepng($this->img);
         imagedestroy($this->img);
+        exit;
     }
 
     /**
