@@ -232,6 +232,4 @@ class Image
         $fileName = $dirPath . DIRECTORY_SEPARATOR . "{$fileName}.ttf";
         return $fileName;
     }
-
-
 }
