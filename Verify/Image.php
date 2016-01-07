@@ -205,7 +205,7 @@ class Image
         if ($valid) {
             //验证成功后删除缓存中的数据
             $name = $this->getSessionKey();
-            self::$cache->delete($name);
+            self::$cache->del($name);
         }
         return $valid;
     }
