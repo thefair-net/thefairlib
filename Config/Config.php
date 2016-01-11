@@ -59,7 +59,7 @@ final class Config
                         //线上配置
                         $prodFilePath = APP_PATH . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'production' . DIRECTORY_SEPARATOR . $fileName . '.php';
                         if(file_exists($prodFilePath)){
-                            $return = require $prodFilePath;
+                            $return = array_merge(require $filePath, require $prodFilePath);
                         }else{
                             $return = require $filePath;
                         }
