@@ -292,12 +292,12 @@ class Utility
     public static function setResponseCookie($key, $value, $ttl, $domain = '')
     {
         $cookie = self::getResponseCookie();
-        if(empty($cookie)){
+        if (empty($cookie)) {
             $cookie = [];
         }
 
         $path = '/';
-        if(empty($domain)){
+        if (empty($domain)) {
             $domainConf = Config::get_app('cookie.default_domain');
             $domain = !empty($domainConf) ? $domainConf : '';
         }
@@ -307,7 +307,8 @@ class Utility
         self::set_reponse_cookie($cookie);
     }
 
-    public static function getResponseCookie(){
+    public static function getResponseCookie()
+    {
         return self::get_reponse_cookie();
     }
 
@@ -366,8 +367,8 @@ class Utility
      * 字符串截取，支持中文和其他编码
      * @static
      * @access public
-     * @param string $str  需要转换的字符串
-     * @param int $start  开始位置
+     * @param string $str 需要转换的字符串
+     * @param int $start 开始位置
      * @param string $length 截取长度
      * @param string $charset 编码格式
      * @param bool $suffix 截断显示字符
@@ -399,5 +400,18 @@ class Utility
     public static function isMobile($mobile)
     {
         return preg_match('/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/', $mobile);
+    }
+
+    /**
+     * 过滤空格
+     *
+     * @param $str
+     * @return mixed
+     */
+    public static function trim($str)
+    {
+        $search = array(" ", "　", "\n", "\r", "\t");
+        $replace = array("", "", "", "", "");
+        return str_replace($search, $replace, $str);
     }
 }
