@@ -28,6 +28,20 @@ class Error extends ErrorBase
                 $e->getMessage(), $e->getExtData(),  $e->getExtCode(), $e->getHttpStatus()
             );
         }else{
+            if(defined('APP_NAME')){
+                $path = '/home/thefair/logs/www/'.APP_NAME.'/';
+                if( !is_dir($path) ) {
+                    mkdir($path, 0777, true);
+                }
+                $log = $path.date('Y-m-d').'.log';
+                $s = date("Y-m-d H:i:s +u")." ";
+                file_put_contents($log, $s."来源IP:{$_SERVER['REMOTE_ADDR']}\n", FILE_APPEND|LOCK_EX);
+                file_put_contents($log, $s."请求接口:{$_SERVER['REQUEST_URI']}\n", FILE_APPEND|LOCK_EX);
+                file_put_contents($log, $s."请求Cookie:".json_encode($_COOKIE)."\n", FILE_APPEND|LOCK_EX);
+                file_put_contents($log, $s."请求参数:".json_encode($_REQUEST)."\n", FILE_APPEND|LOCK_EX);
+                file_put_contents($log, $s."错误信息:".$e->getMessage()."\n", FILE_APPEND|LOCK_EX);
+                file_put_contents($log, $s."Trace:".$e->getTraceAsString()."\n\n", FILE_APPEND|LOCK_EX);
+            }
             $this->_DealIllegalRequest($e->getMessage());
         }
 
@@ -50,15 +64,11 @@ class Error extends ErrorBase
     }
 
     protected function _DealIllegalRequest($msg = ''){
-        $this->showError(
-            new Api(array(), 'Illegal Request: '.$msg, 40000, 404)
-        );
+        $this->showError('Illegal Request: '.$msg, [], 40000, 500);
     }
 
     protected function _DealNotfoundRequest(){
-        $this->showError(
-            new Api(array(), 'Illegal Request', 40000, 404)
-        );
+        $this->showError('Not Found', [], 40000, 404);
     }
 
     public function showResult($result, $msg = '', $code = '0'){

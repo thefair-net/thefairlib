@@ -33,20 +33,6 @@ abstract class ErrorBase extends Base
      * @param \Exception $exception
      */
     public function errorAction(\Exception $exception){
-        if(!$exception instanceof ApiException && defined(APP_NAME)){
-            $path = '/home/thefair/logs/www/'.APP_NAME.'/';
-            if( !is_dir($path) ) {
-                mkdir($path);
-            }
-            $log = $path.date('Y-m-d').'.log';
-            $s = date("Y-m-d H:i:s +u")." ";
-            file_put_contents($log, $s."来源IP:{$_SERVER['REMOTE_ADDR']}", FILE_APPEND|LOCK_EX);
-            file_put_contents($log, $s."请求接口:{$_SERVER['REQUEST_URI']}", FILE_APPEND|LOCK_EX);
-            file_put_contents($log, $s."请求Cookie:".json_encode($_COOKIE), FILE_APPEND|LOCK_EX);
-            file_put_contents($log, $s."请求参数:".json_encode($_REQUEST), FILE_APPEND|LOCK_EX);
-            file_put_contents($log, $s."错误信息:".$exception->getMessage(), FILE_APPEND|LOCK_EX);
-            file_put_contents($log, $s."Trace:".$exception->getTraceAsString(), FILE_APPEND|LOCK_EX);
-        }
         if($exception instanceof \Yaf\Exception){
             switch ($exception->getCode()) {
                 case \Yaf\ERR\NOTFOUND\MODULE:
