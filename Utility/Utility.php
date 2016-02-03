@@ -298,8 +298,24 @@ class Utility
 
         $path = '/';
         if (empty($domain)) {
-            $domainConf = Config::get_app('cookie.default_domain');
-            $domain = !empty($domainConf) ? $domainConf : '';
+            $host = $_SERVER['HTTP_HOST'];
+
+            if (strpos($host, '.rd.taooo.cc') !== false) {
+                $domain = '.rd.taooo.cc';
+            } elseif (strpos($host, '.taooo.cc') !== false) {
+                $domain = '.taooo.cc';
+            } elseif (strpos($host, '.rd.molandapp.com') !== false) {
+                $domain = '.rd.molandapp.com';
+            } elseif (strpos($host, '.molandapp.com') !== false) {
+                $domain = '.molandapp.com';
+            } elseif (strpos($host, 'intra.api.localdomain') !== false) {
+                $domain = '.taooo.cc';
+            } elseif (strpos($host, 'intra.api.molandapp.com.localdomain') !== false) {
+                $domain = '.molandapp.com';
+            } else {
+                $domainConf = Config::get_app('cookie.default_domain');
+                $domain = !empty($domainConf) ? $domainConf : '';
+            }
         }
 
         $cookie[] = new Cookie($key, $value, $ttl, $path, $domain);
