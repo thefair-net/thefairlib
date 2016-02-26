@@ -80,17 +80,26 @@ class Sphinx
      *
      * @param $keyword
      * @param $indexName
-     * @param string $select
-     * @return bool
+     * @return $this
      * @throws Exception
      */
-    public function query($keyword, $indexName, $select = '*')
+    public function query($keyword, $indexName)
     {
         if (empty($keyword) || empty($indexName)) {
             throw new Exception('query error: keyword or indexName is null');
         }
-        $this->conn->SetSelect($select);
         $this->_data = $this->conn->query($keyword, $indexName);
+        return $this;
+    }
+
+    /**
+     * 字段
+     *
+     * @param string $field
+     * @return $this
+     */
+    public function field($field = '*') {
+        $this->conn->SetSelect($field);
         return $this;
     }
 
@@ -121,7 +130,7 @@ class Sphinx
      *
      * @param $field
      * @param string $orderBy
-     * @return mixed
+     * @return $this
      * @throws Exception
      */
     public function order($field, $orderBy = 'asc')
@@ -133,6 +142,12 @@ class Sphinx
         return $this;
     }
 
+    /**
+     * 获得数据
+     *
+     * @param bool $filter
+     * @return array
+     */
     public function get($filter = false)
     {
         return $this->_data;
