@@ -40,6 +40,14 @@ class Sphinx
 
     protected $_data = [];
 
+    private $_page = [
+        'page' => 1,
+        'page_count' => 1,
+        'item_count' => 0,
+        'item_per_page' => 20,
+        'item_list' => [],
+    ];
+
     /**
      * @var \SphinxClient
      */
@@ -98,7 +106,8 @@ class Sphinx
      * @param string $field
      * @return $this
      */
-    public function field($field = '*') {
+    public function field($field = '*')
+    {
         $this->conn->SetSelect($field);
         return $this;
     }
@@ -121,6 +130,8 @@ class Sphinx
      */
     public function limit($page, $itemPerPage = 20, $maxMatches = 1000, $cutoff = 0)
     {
+        $this->_page['page'] = $page;
+        $this->_page['item_per_page'] = $itemPerPage;
         $this->conn->SetLimits($page, $itemPerPage, $maxMatches, $cutoff);
         return $this;
     }
@@ -148,8 +159,30 @@ class Sphinx
      * @param bool $filter
      * @return array
      */
-    public function get($filter = false)
+    public function get($filter = true)
     {
-        return $this->_data;
+        return $filter ? $this->_filterData() : $this->_data;
+    }
+
+    /**
+     * 过滤结果数据
+     *
+     * @return array
+     */
+    private function _filterData()
+    {
+        $itemList = [];
+        if (!empty($this->_data['total'])) {
+            $data = array_values($this->_data['matches']);
+            foreach ($data as $value) {
+                $itemList[] = $value['attrs'];
+            }
+            $itemPerPage = min(50, $this->_page['item_per_page']);
+            $pageCount = ceil($this->_data['total'] / $itemPerPage);
+            $this->_page['page_count'] = $pageCount;
+            $this->_page['item_count'] = $this->_data['total'];
+            $this->_page['item_list'] = $itemList;
+        }
+        return $this->_data = $this->_page;
     }
 }
