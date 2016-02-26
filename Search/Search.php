@@ -38,7 +38,7 @@ class Search
     {
         switch ($this->_server) {
             case 'sphinx' :
-                return Sphinx::Instance();
+                return Sphinx::Instance()->init();
                 break;
         }
         throw new Exception('error ', $this->_server);

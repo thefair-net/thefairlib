@@ -38,6 +38,8 @@ class Sphinx
     //超时15秒
     protected $timeout = 15;
 
+    protected $_data = [];
+
     /**
      * @var \SphinxClient
      */
@@ -63,7 +65,7 @@ class Sphinx
      *
      * @return Sphinx
      */
-    public function conn()
+    public function init()
     {
         $this->conn = new \SphinxClient();
         $this->conn->setServer(self::$host, self::$port);
@@ -84,12 +86,12 @@ class Sphinx
      */
     public function query($keyword, $indexName, $select = '*')
     {
-        if (empty($keyword) || $indexName) {
+        if (empty($keyword) || empty($indexName)) {
             throw new Exception('query error: keyword or indexName is null');
         }
         $this->conn->SetSelect($select);
-        $result = $this->conn->query($keyword, $indexName);
-        return $result;
+        $this->_data = $this->conn->query($keyword, $indexName);
+        return $this;
     }
 
     public function getError()
@@ -129,5 +131,10 @@ class Sphinx
         }
         $this->conn->SetSortMode(SPH_SORT_EXTENDED, "{$field} $orderBy");
         return $this;
+    }
+
+    public function get($filter = false)
+    {
+        return $this->_data;
     }
 }
