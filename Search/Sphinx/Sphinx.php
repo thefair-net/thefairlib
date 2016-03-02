@@ -40,6 +40,10 @@ class Sphinx
 
     protected $_data = [];
 
+    protected $_keywords = '';
+
+    protected $_indexName = '';
+
     private $_page = [
         'page' => 1,
         'page_count' => 1,
@@ -96,7 +100,8 @@ class Sphinx
         if (empty($keyword) || empty($indexName)) {
             throw new Exception('query error: keyword or indexName is null');
         }
-        $this->_data = $this->conn->query($keyword, $indexName);
+        $this->_keywords = $keyword;
+        $this->_indexName = $indexName;
         return $this;
     }
 
@@ -161,6 +166,7 @@ class Sphinx
      */
     public function get($filter = true)
     {
+        $this->_data = $this->conn->query($this->_keywords,$this->_indexName);
         return $filter ? $this->_filterData() : $this->_data;
     }
 
