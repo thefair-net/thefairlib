@@ -182,6 +182,7 @@ class Sphinx
             $this->_page['page_count'] = $pageCount;
             $this->_page['item_count'] = $this->_data['total'];
             $this->_page['item_list'] = $itemList;
+            $this->_page['words'] = $this->_data['words'];
         }
         return $this->_data = $this->_page;
     }
