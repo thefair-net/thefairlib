@@ -9,9 +9,33 @@
 namespace TheFairLib\Controller\Page;
 
 use TheFairLib\Controller\Base;
+use TheFairLib\Http\Response;
+use TheFairLib\Http\Response\Page;
 
 class Controller extends Base
 {
+    /**
+     * @var Page
+     */
+    protected static $_responseObj = false;
     protected function init(){
+        if(self::$_responseObj === false){
+            self::$_responseObj = new Page(new \stdClass());
+        }
     }
+
+    public function showResult($result, $msg = '', $code = '0'){
+        self::$_responseObj->setCode($code);
+        self::$_responseObj->setMsg($msg);
+        if(!empty($result)){
+            self::$_responseObj->setResult($result);
+
+        }
+        $this->_setResponse(self::$_responseObj->send());
+    }
+
+    public function showError($error, $result = array() , $code = '10000'){
+        $this->showResult($result, $error, $code);
+    }
+
 }
