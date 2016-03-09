@@ -10,6 +10,7 @@ namespace TheFairLib\Controller\Api;
 
 use TheFairLib\Controller\ErrorBase;
 use TheFairLib\Exception\Api\ApiException;
+use TheFairLib\Logger\Logger;
 use \Yaf\Exception as Exception;
 use TheFairLib\Http\Response\Api;
 
@@ -29,18 +30,13 @@ class Error extends ErrorBase
             );
         }else{
             if(defined('APP_NAME')){
-                $path = '/home/thefair/logs/www/'.APP_NAME.'/';
-                if( !is_dir($path) ) {
-                    mkdir($path, 0777, true);
-                }
-                $log = $path.date('Y-m-d').'.log';
-                $s = date("Y-m-d H:i:s +u")." ";
-                file_put_contents($log, $s."来源IP:{$_SERVER['REMOTE_ADDR']}\n", FILE_APPEND|LOCK_EX);
-                file_put_contents($log, $s."请求接口:{$_SERVER['REQUEST_URI']}\n", FILE_APPEND|LOCK_EX);
-                file_put_contents($log, $s."请求Cookie:".json_encode($_COOKIE)."\n", FILE_APPEND|LOCK_EX);
-                file_put_contents($log, $s."请求参数:".json_encode($_REQUEST)."\n", FILE_APPEND|LOCK_EX);
-                file_put_contents($log, $s."错误信息:".$e->getMessage()."\n", FILE_APPEND|LOCK_EX);
-                file_put_contents($log, $s."Trace:".$e->getTraceAsString()."\n\n", FILE_APPEND|LOCK_EX);
+                Logger::Instance()->error(  date("Y-m-d H:i:s +u")."\n"
+                                            ."来源IP:{$_SERVER['REMOTE_ADDR']}\n"
+                                            ."请求接口:{$_SERVER['REQUEST_URI']}\n"
+                                            ."请求Cookie:".json_encode($_COOKIE)."\n"
+                                            ."请求参数:".json_encode($_REQUEST)."\n"
+                                            ."错误信息:".$e->getMessage()."\n"
+                                            ."Trace:".$e->getTraceAsString()."\n\n");
             }
             $this->_DealIllegalRequest($e->getMessage());
         }
