@@ -1,6 +1,8 @@
 <?php
 namespace TheFairLib\Service\Swoole;
 
+use TheFairLib\Logger\Logger;
+
 abstract class Server implements Server\Driver
 {
     protected $sw;
@@ -436,9 +438,10 @@ abstract class Server implements Server\Driver
 
     public function log($msg)
     {
-        if ($this->sw->setting['log_file'] && file_exists($this->sw->setting['log_file'])) {
-            error_log($msg . PHP_EOL, 3, $this->sw->setting['log_file']);
-        }
+//        if ($this->sw->setting['log_file'] && file_exists($this->sw->setting['log_file'])) {
+//            error_log($msg . PHP_EOL, 3, $this->sw->setting['log_file']);
+//        }
+        Logger::Instance()->info($msg);
         echo $msg . PHP_EOL;
     }
 

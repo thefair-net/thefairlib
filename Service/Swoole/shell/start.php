@@ -19,7 +19,7 @@ if (!$cmd || !$name) {
     exit;
 }
 //读取配置文件 然后启动对应的server
-$path = defined('APP_PATH') ? APP_PATH : dirname(dirname(SWOOLEBASEPATH));
+$path = dirname(dirname(SWOOLEBASEPATH)).'/../../..';
 $configPath = $path . '/config/service/' . $name . '.ini';//获取配置地址
 // $config is file path? 提前读取 只读一次
 if (!file_exists($configPath)) {

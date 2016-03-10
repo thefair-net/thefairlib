@@ -21,7 +21,7 @@ class Logger
     }
 
     static public function Instance($appName = ''){
-        if(empty($appName) && defined(APP_NAME)){
+        if(empty($appName) && defined('APP_NAME')){
             $appName = APP_NAME;
         }
         if (empty(self::$instance)) {
@@ -43,12 +43,12 @@ class Logger
     private function output($s){
         $s = date("Y-m-d H:i:s +u").": $s\n";
 
-        $dir = '/home/thefair/logs/www/'.date("Y-m-d").'/'.str_replace('.','/',strtolower($this->_name));
+        $dir = '/home/thefair/logs/www/'.str_replace('.','/',strtolower($this->_name));
         if( !is_dir($dir) ) {
             mkdir($dir, 0777, true);
         }
 
-        file_put_contents($dir.'/'.$this->_type.'.log',$s,FILE_APPEND|LOCK_EX);
+        file_put_contents($dir.'/'.date("Y-m-d").'_'.$this->_type.'.log',$s,FILE_APPEND|LOCK_EX);
     }
 
 }
