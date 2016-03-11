@@ -181,7 +181,7 @@ class Sphinx
         if (!empty($this->_data['total'])) {
             $data = array_values($this->_data['matches']);
             foreach ($data as $value) {
-                $itemList[] = $value['attrs'];
+                $itemList[] = array_merge(['id' => $value['id']],$value['attrs']);
             }
             $itemPerPage = min(50, $this->_page['item_per_page']);
             $pageCount = ceil($this->_data['total'] / $itemPerPage);
