@@ -1,7 +1,9 @@
 <?php
-namespace Swoole\Network\Protocol;
+namespace TheFairLib\Service\Swoole\Network\Protocol;
 
 use Swoole;
+use TheFairLib\Service\Swoole\Http\Parser;
+use TheFairLib\Service\Swoole\Http\Request;
 use TheFairLib\Service\Swoole\Network\Protocol;
 
 class HttpServer extends Protocol implements \TheFairLib\Service\Swoole\Server\Protocol
@@ -24,7 +26,7 @@ class HttpServer extends Protocol implements \TheFairLib\Service\Swoole\Server\P
 
     function __construct()
     {
-        $this->parser = new Swoole\Http\Parser;
+        $this->parser = new Parser();
     }
 
     function checkHeader($client_id, $http_data)
@@ -41,7 +43,7 @@ class HttpServer extends Protocol implements \TheFairLib\Service\Swoole\Server\P
                 return false;
             } else {
                 $this->buffer_header[$client_id] = '';
-                $request = new Swoole\Http\Request;
+                $request = new Request();
                 //GET没有body
                 list($header, $request->body) = explode(self::HTTP_EOF, $http_data, 2);
                 $request->head = $this->parser->parseHeader($header);

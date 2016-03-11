@@ -1,5 +1,5 @@
 <?php
-namespace Swoole\Network\Protocol;
+namespace TheFairLib\Service\Swoole\Network\Protocol;
 
 use Swoole;
 use TheFairLib\Service\Swoole\Network\Protocol;

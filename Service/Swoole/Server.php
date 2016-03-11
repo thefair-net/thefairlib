@@ -2,6 +2,7 @@
 namespace TheFairLib\Service\Swoole;
 
 use TheFairLib\Logger\Logger;
+use TheFairLib\Service\Swoole\Server\Protocol;
 
 abstract class Server implements Server\Driver
 {
@@ -199,7 +200,7 @@ abstract class Server implements Server\Driver
         if ($this->user) {
             Console::changeUser($this->user);
         }
-        $protocol = (require_once $this->requireFile);//执行
+        $protocol = (require_once $this->requireFile);//执行33
 
         $this->setProtocol($protocol);
         // check protocol class
@@ -271,7 +272,7 @@ abstract class Server implements Server\Driver
 
     public function setProtocol($protocol)
     {
-        if (!($protocol instanceof \Swoole\Server\Protocol)) {
+        if (!($protocol instanceof Protocol)) {
             throw new \Exception("[error] The protocol is not instanceof \\Swoole\\Server\\Protocol");
         }
 //        self::$protocol=$protocol;
