@@ -49,12 +49,6 @@ class BaseServer extends Protocol implements \TheFairLib\Service\Swoole\Server\P
 
     }
 
-    /**
-     * [onHttpWorkInit http svr worker init]
-     * @param  [type] $request  [description]
-     * @param  [type] $response [description]
-     * @return [type]           [description]
-     */
     public function onHttpWorkInit($request, $response)
     {
 
