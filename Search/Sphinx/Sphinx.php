@@ -137,7 +137,7 @@ class Sphinx
     {
         $this->_page['page'] = ($page - 1) * $itemPerPage;
         $this->_page['item_per_page'] = $itemPerPage;
-        $this->conn->SetLimits($page, $itemPerPage, $maxMatches, $cutoff);
+        $this->conn->SetLimits($this->_page['page'], $this->_page['item_per_page'], $maxMatches, $cutoff);
         return $this;
     }
 
