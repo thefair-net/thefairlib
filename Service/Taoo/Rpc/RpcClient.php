@@ -23,7 +23,10 @@ class RpcClient extends TCP
             ],
         ];
         $result = $this->send($this->_encode($requestData), $callback);
-        return $this->_decode($result);
+        $result = $this->_decode($result);
+        //@todo 异常处理
+
+        return $result['result'];
     }
 
     protected function _getClientType(){
