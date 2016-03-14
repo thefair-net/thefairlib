@@ -135,9 +135,9 @@ class Sphinx
      */
     public function limit($page, $itemPerPage = 20, $maxMatches = 1000, $cutoff = 0)
     {
-        $this->_page['page'] = $page;
+        $this->_page['page'] = ($page - 1) * $itemPerPage;
         $this->_page['item_per_page'] = $itemPerPage;
-        $this->conn->SetLimits($page, $itemPerPage, $maxMatches, $cutoff);
+        $this->conn->SetLimits($this->_page['page'], $this->_page['item_per_page'], $maxMatches, $cutoff);
         return $this;
     }
 
@@ -166,7 +166,7 @@ class Sphinx
      */
     public function get($filter = true)
     {
-        $this->_data = $this->conn->query($this->_keywords,$this->_indexName);
+        $this->_data = $this->conn->query($this->_keywords, $this->_indexName);
         return $filter ? $this->_filterData() : $this->_data;
     }
 
@@ -181,7 +181,7 @@ class Sphinx
         if (!empty($this->_data['total'])) {
             $data = array_values($this->_data['matches']);
             foreach ($data as $value) {
-                $itemList[] = $value['attrs'];
+                $itemList[] = array_merge(['id' => $value['id']],$value['attrs']);
             }
             $itemPerPage = min(50, $this->_page['item_per_page']);
             $pageCount = ceil($this->_data['total'] / $itemPerPage);
