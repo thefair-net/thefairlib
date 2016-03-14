@@ -95,23 +95,26 @@ abstract class Response
         $this->_headers = $headers;
     }
 
-    public function send()
+    public function send($dealHeader = true)
     {
         header_remove();
         $body    = $this->_getBodyToSend();
-        $headers = $this->_getHeadersToSend($body);
-        foreach ($headers as $header) {
-            header($header);
-        }
-        $cookies = $this->getCookies();
-        if (!empty($cookies)) {
-            foreach ($cookies as $cookie) {
-                setcookie($cookie->getName(), $cookie->getValue(),
-                    $cookie->getExpire(), $cookie->getPath(),
-                    $cookie->getDomain(), $cookie->getSecure(),
-                    $cookie->getHttpOnly());
+        if($dealHeader === true){
+            $headers = $this->_getHeadersToSend($body);
+            foreach ($headers as $header) {
+                header($header);
+            }
+            $cookies = $this->getCookies();
+            if (!empty($cookies)) {
+                foreach ($cookies as $cookie) {
+                    setcookie($cookie->getName(), $cookie->getValue(),
+                        $cookie->getExpire(), $cookie->getPath(),
+                        $cookie->getDomain(), $cookie->getSecure(),
+                        $cookie->getHttpOnly());
+                }
             }
         }
+
         if ($this->_sendBody) {
             print $this->_sendBody;
             exit;
