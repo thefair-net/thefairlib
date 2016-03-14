@@ -7,6 +7,7 @@
  * @copyright 2015-2025 TheFair
  */
 namespace TheFairLib\Service\Taoo\Rpc;
+use TheFairLib\Exception\Service\ServiceException;
 use TheFairLib\Logger\Logger;
 use TheFairLib\Service\Swoole\Network\Protocol\BaseServer;
 use Yaf\Application;
@@ -24,10 +25,12 @@ class RpcServer extends BaseServer{
      * @param $data
      * @return mixed
      */
-    public function onReceive($server, $clientId, $fromId, $data)
+    public function onReceive($server, $clientId, $fromId, $requestData)
     {
         ob_start();
-        $data = $this->_decode($data);
+        $requestData = $this->_decode($requestData);
+        $this->_checkAuthorize($requestData['auth']);
+        $data = $requestData['request_data'];
         $url = !empty($data['url']) ? $data['url'] : '';
         $_SERVER['REQUEST_URI'] = $url;
         $request = new Http($url);
@@ -149,5 +152,16 @@ class RpcServer extends BaseServer{
 
     protected function _decode($data){
         return json_decode($data, true);
+    }
+
+    protected function _checkAuthorize($authData){
+        if(empty($authData['app_key']) || empty($authData['app_secret'])){
+            throw new ServiceException('auth config is error');
+        }
+
+        if($authData['app_secret'] != md5(md5($authData['app_key']))){
+            throw new ServiceException('authorize field');
+        }
+        return true;
     }
 }

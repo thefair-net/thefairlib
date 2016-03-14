@@ -10,6 +10,8 @@ abstract class Base
     protected $_data;
     protected $_timeout = 3;
     protected $_type;
+    protected $_config;
+    protected $_serverTag;
 
     protected static $instance;
 
@@ -20,11 +22,13 @@ abstract class Base
         if(empty($config['ip']) || empty($config['ip']) || empty($config['ip'])){
             throw new \Exception('Service '. $serverTag. ' Config Error!');
         }
+        $this->_serverTag = $serverTag;
         $this->_ip = $config['ip'];
         $this->_port = $config['port'];
         $this->_syncType = $syncType;
         $this->_timeout = $config['timeout'];
         $this->_type = $this->_getClientType();
+        $this->_config = $this->_getServiceConfig($serverTag);
         return $this;
     }
 
@@ -42,7 +46,7 @@ abstract class Base
     }
 
     protected function getSingleServerConfig($serverTag){
-        $configList = $this->_getServerConfig($serverTag);
+        $configList = $this->_getServerList($serverTag);
         return count($configList) > 1 ? $configList[array_rand($configList)] : $configList[0];
     }
 
@@ -50,5 +54,7 @@ abstract class Base
 
     abstract protected function _getClientType();
 
-    abstract protected function _getServerConfig($serverTag);
+    abstract protected function _getServiceConfig($serverTag);
+
+    abstract protected function _getServerList($serverTag);
 }

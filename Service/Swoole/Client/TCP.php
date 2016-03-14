@@ -21,12 +21,17 @@ class TCP extends Base
         return 'tcp';
     }
 
-    protected function _getServerConfig($serverTag){
+    protected function _getServiceConfig($serverTag){
         $funName = 'get_service_'.$this->_getClientType();
         return Config::$funName($serverTag);
     }
 
     protected function _getSyncType($syncType){
         return $syncType == 'sync' ? SWOOLE_SOCK_SYNC : SWOOLE_SOCK_ASYNC;
+    }
+
+    protected function _getServerList($serverTag)
+    {
+        return !empty($this->_config['server_list']) ? $this->_config['server_list'] : [];
     }
 }
