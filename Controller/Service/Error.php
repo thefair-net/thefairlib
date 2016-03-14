@@ -9,7 +9,7 @@
 namespace TheFairLib\Controller\Service;
 
 use TheFairLib\Controller\ErrorBase;
-use TheFairLib\Exception\Api\ApiException;
+use TheFairLib\Exception\Service\ServiceException;
 use TheFairLib\Http\Response\Service;
 use TheFairLib\Logger\Logger;
 use \Yaf\Exception as Exception;
@@ -27,9 +27,9 @@ class Error extends ErrorBase
     }
 
     protected function _errorDefault(\Exception $e){
-        if($e instanceof ApiException){
+        if($e instanceof ServiceException){
             $this->showError(
-                $e->getMessage(), $e->getExtData(),  $e->getExtCode(), $e->getHttpStatus()
+                $e->getMessage(), $e->getExtData(),  $e->getExtCode()
             );
         }else{
             if(defined('APP_NAME')){

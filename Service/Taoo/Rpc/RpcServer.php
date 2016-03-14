@@ -13,6 +13,9 @@ use Yaf\Application;
 use Yaf\Request\Http;
 
 class RpcServer extends BaseServer{
+    /**
+     * @var \Yaf\Application
+     */
     protected $_application = false;
     /**
      * @param \swoole_server $server
@@ -34,8 +37,7 @@ class RpcServer extends BaseServer{
                 $_REQUEST[$key] = $_POST[$key] = $_GET[$key] = $param;
             }
         }
-
-        $this->_application->getDispatcher()->dispatch($request);
+        $this->_application->getDispatcher()->catchException(true)->dispatch($request);
         $result = ob_get_contents();
         ob_end_clean();
         Logger::Instance()->info('onReceive');

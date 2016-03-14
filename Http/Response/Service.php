@@ -71,6 +71,10 @@ class Service extends Response
         return 'application/json;charset=utf-8';
     }
 
+    protected function _getBodyToSend(){
+        return $this->_serialize($this->getBody());
+    }
+
     public function send(){
         $this->setBody($this->_buildApiBody());
         return parent::send(false);

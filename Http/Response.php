@@ -97,9 +97,9 @@ abstract class Response
 
     public function send($dealHeader = true)
     {
-        header_remove();
         $body    = $this->_getBodyToSend();
         if($dealHeader === true){
+            header_remove();
             $headers = $this->_getHeadersToSend($body);
             foreach ($headers as $header) {
                 header($header);
@@ -137,7 +137,7 @@ abstract class Response
         }
         return $headers;
     }
-    private function _getBodyToSend(){
+    protected function _getBodyToSend(){
         $this->setHeader('Content-Type', $this->_getContentType());
         return $this->_sendBody = $this->_serialize($this->_body);
     }
