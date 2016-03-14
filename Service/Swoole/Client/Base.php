@@ -18,6 +18,7 @@ abstract class Base
     public function __construct($serverTag, $syncType)
     {
         //获取服务器配置
+        $this->_config = $this->_getServiceConfig($serverTag);
         $config = $this->getSingleServerConfig($serverTag);
         if(empty($config['ip']) || empty($config['ip']) || empty($config['ip'])){
             throw new \Exception('Service '. $serverTag. ' Config Error!');
@@ -28,7 +29,7 @@ abstract class Base
         $this->_syncType = $syncType;
         $this->_timeout = $config['timeout'];
         $this->_type = $this->_getClientType();
-        $this->_config = $this->_getServiceConfig($serverTag);
+
         return $this;
     }
 
