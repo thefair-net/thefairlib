@@ -5,7 +5,7 @@ use TheFairLib\Config\Config;
 
 class TCP extends Base
 {
-    public function send(array $data, callable $callback){
+    public function send($data, callable $callback = NULL){
         $client = new \swoole_client(SWOOLE_SOCK_TCP, $this->_getSyncType($this->_syncType));
         if (!$client->connect($this->_ip, $this->_port, $this->_timeout)){
             exit("connect failed. Error: {$client->errCode}\n");

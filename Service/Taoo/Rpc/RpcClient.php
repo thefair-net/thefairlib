@@ -11,7 +11,20 @@ use TheFairLib\Service\Swoole\Client\TCP;
 
 class RpcClient extends TCP
 {
-    public function call($url, $params, callable $callback = null){
-        return $this->send(['url' => $url, 'params' => $params], $callback);
+    public function call($url, $params, callable $callback = NULL){
+        $result = $this->send($this->_encode(['url' => $url, 'params' => $params]), $callback);
+        return $this->_decode($result);
+    }
+
+    protected function _getClientType(){
+        return 'rpc';
+    }
+
+    protected function _encode($data){
+        return json_encode($data);
+    }
+
+    protected function _decode($data){
+        return json_decode($data, true);
     }
 }

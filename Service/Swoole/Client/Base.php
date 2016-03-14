@@ -1,8 +1,6 @@
 <?php
 namespace TheFairLib\Service\Swoole\Client;
 
-use TheFairLib\Config\Config;
-
 abstract class Base
 {
 
@@ -27,8 +25,14 @@ abstract class Base
         $this->_syncType = $syncType;
         $this->_timeout = $config['timeout'];
         $this->_type = $this->_getClientType();
+        return $this;
     }
 
+    /**
+     * @param $serverTag
+     * @param string $syncType
+     * @return $this
+     */
     static public function Instance($serverTag, $syncType = 'sync')
     {
         if (empty(self::$instance[$syncType][$serverTag])) {
@@ -42,7 +46,7 @@ abstract class Base
         return count($configList) > 1 ? $configList[array_rand($configList)] : $configList[0];
     }
 
-    abstract public function send(array $data, callable $callback);
+    abstract public function send($data, callable $callback);
 
     abstract protected function _getClientType();
 

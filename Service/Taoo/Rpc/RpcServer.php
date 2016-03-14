@@ -24,6 +24,7 @@ class RpcServer extends BaseServer{
     public function onReceive($server, $clientId, $fromId, $data)
     {
         ob_start();
+        $data = $this->_decode($data);
         $url = !empty($data['url']) ? $data['url'] : '';
         $_SERVER['REQUEST_URI'] = $url;
         $request = new Http($url);
@@ -138,5 +139,13 @@ class RpcServer extends BaseServer{
     public function onHttpWorkInit($request, $response)
     {
         Logger::Instance()->info('onHttpWorkInit');
+    }
+
+    protected function _encode($data){
+        return json_encode($data);
+    }
+
+    protected function _decode($data){
+        return json_decode($data, true);
     }
 }
