@@ -11,7 +11,7 @@ use TheFairLib\Service\Swoole\Client\TCP;
 
 class RpcClient extends TCP
 {
-    public function call($url, $params, callable $callback = NULL){
+    public function call($url, $params = [], callable $callback = NULL){
         $requestData = [
             'auth' => [
                 'app_key' => $this->_config['app_key'],
