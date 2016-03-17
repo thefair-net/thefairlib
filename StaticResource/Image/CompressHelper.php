@@ -13,7 +13,7 @@ use TheFairLib\StaticResource\Exception;
 
 class CompressHelper
 {
-    public static function getCompressImgUrl($url, $width, $type = 'png'){
+    public static function getCompressImgUrl($url, $width, $type = 'jpg'){
         $service = Config::get_image('auto_compress_service');
         switch($service){
             case 'aliyun':

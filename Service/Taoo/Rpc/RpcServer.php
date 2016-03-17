@@ -7,6 +7,7 @@
  * @copyright 2015-2025 TheFair
  */
 namespace TheFairLib\Service\Taoo\Rpc;
+use TheFairLib\Controller\Service\Error;
 use TheFairLib\Exception\Service\ServiceException;
 use TheFairLib\Logger\Logger;
 use TheFairLib\Service\Swoole\Network\Protocol\BaseServer;
@@ -27,22 +28,48 @@ class RpcServer extends BaseServer{
      */
     public function onReceive($server, $clientId, $fromId, $requestData)
     {
-        ob_start();
-        $requestData = $this->_decode($requestData);
-        $this->_checkAuthorize($requestData['auth']);
-        $data = $requestData['request_data'];
-        $url = !empty($data['url']) ? $data['url'] : '';
-        $_SERVER['REQUEST_URI'] = $url;
-        $request = new Http($url);
-        if(!empty($data['params'])){
-            foreach($data['params'] as $key => $param){
-                $request->setParam($key, $param);
-                $_REQUEST[$key] = $_POST[$key] = $_GET[$key] = $param;
+        try{
+            ob_start();
+            $requestData = $this->_decode($requestData);
+            $this->_checkAuthorize($requestData['auth']);
+            $data = $requestData['request_data'];
+            $url = !empty($data['url']) ? $data['url'] : '';
+            $_SERVER['REQUEST_URI'] = $url;
+            $request = new Http($url);
+            if(!empty($data['params'])){
+                foreach($data['params'] as $key => $param){
+                    $request->setParam($key, $param);
+                    $_REQUEST[$key] = $_POST[$key] = $_GET[$key] = $param;
+                }
             }
+            $this->_application->getDispatcher()->catchException(true)->dispatch($request);
+            $result = ob_get_contents();
+            ob_end_clean();
+        }catch(\Exception $e){
+            if($e instanceof ServiceException){
+                $ret = [
+                    'code' => $e->getExtCode(),
+                    'message' => $e->getMessage(),
+                    'result' => (object) $e->getExtData(),
+                ];
+            }else{
+                if(defined('APP_NAME')){
+                    Logger::Instance()->error(  date("Y-m-d H:i:s +u")."\n"
+                        ."请求接口:{$_SERVER['REQUEST_URI']}\n"
+                        ."请求参数:".json_encode($_REQUEST)."\n"
+                        ."错误信息:".$e->getMessage()."\n"
+                        ."Trace:".$e->getTraceAsString()."\n\n");
+                }
+                $ret = [
+                    'code' => 10000,
+                    'message' => $e->getMessage(),
+                    'result' => (object) [],
+                ];
+            }
+
+            $result = json_encode($ret);
         }
-        $this->_application->getDispatcher()->catchException(true)->dispatch($request);
-        $result = ob_get_contents();
-        ob_end_clean();
+
         Logger::Instance()->info('onReceive');
         return $server->send($clientId, $result);
     }

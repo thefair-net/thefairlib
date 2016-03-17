@@ -83,7 +83,7 @@ class Service extends Response
     private function _buildApiBody(){
         return array(
             'code' => $this->getCode(),
-            'message' => array('text' => $this->getMsg(), 'action' => 'toast'),
+            'message' => $this->getMsg(),
             'result' => (object) $this->getResult(),
             'callback' => (object) $this->getCallback(),
         );
