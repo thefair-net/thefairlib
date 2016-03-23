@@ -71,7 +71,7 @@ class RpcServer extends BaseServer{
         }
 
         Logger::Instance()->info('onReceive');
-        return $server->send($clientId, $result);
+        return $server->send($clientId, $this->_encode($result));
     }
 
     /**
@@ -174,7 +174,7 @@ class RpcServer extends BaseServer{
     }
 
     protected function _encode($data){
-        return base64_encode(gzcompress(json_encode($data, JSON_UNESCAPED_UNICODE)));
+        return base64_encode(gzcompress($data));
     }
 
     protected function _decode($data){
