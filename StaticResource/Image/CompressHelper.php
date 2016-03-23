@@ -13,14 +13,14 @@ use TheFairLib\StaticResource\Exception;
 
 class CompressHelper
 {
-    public static function getCompressImgUrl($url, $width, $type = 'jpg'){
+    public static function getCompressImgUrl($url, $width, $type = 'jpg', $quality = '100'){
         $service = Config::get_image('auto_compress_service');
         switch($service){
             case 'aliyun':
                 $urlAry = parse_url($url);
                 if($urlAry['host'] == 'static.bj.taooo.cc'){
                     $urlAry['host'] = 'image.bj.taooo.cc';
-                    $urlAry['path'] = $urlAry['path'].'@1pr_'.$width.'w.'.$type;
+                    $urlAry['path'] = $urlAry['path'].'@1pr_'.(int)$width.'w'.($quality != '100' ? '_'.$quality.'q' : '').'.'.$type;
                 }
                 break;
             default :
@@ -75,6 +75,20 @@ class CompressHelper
             $compressSetting = call_user_func_array("array_merge", $allCompressSetting);
         }
 
+        $allQualitySetting 	= Config::get_image('quality_setting.'.$imgTag);
+        if(!empty($allQualitySetting)){
+            if(!empty($allQualitySetting[$platform])){
+                $qualitySetting = $allQualitySetting[$platform];
+            }elseif(!empty($allCompressSetting['default'])){
+                $qualitySetting = $allQualitySetting['default'];
+            }else{
+                $qualitySetting = call_user_func_array("array_merge", $allQualitySetting);
+            }
+
+        }else{
+            $qualitySetting = '100';
+        }
+
         //合并临时配置
         if(!empty($options['custom_compress_rate'])){
             $compressRate = $options['custom_compress_rate'];
@@ -91,7 +105,7 @@ class CompressHelper
                     $replace[]	= $v;
                 }
             }
-
+            $tmpQuality = !empty($qualitySetting[$resolutionWidth]) ? $qualitySetting[$resolutionWidth] : (!empty($qualitySetting['default']) ? $qualitySetting['default'] : '100');
             $tmpSetting = !empty($compressSetting[$resolutionWidth]) ? $compressSetting[$resolutionWidth] : (!empty($compressSetting['default']) ? $compressSetting['default'] : 1);
             $tmpSetting = $tmpSetting * $compressRate;
             if(!empty($tmpSetting)){
@@ -102,7 +116,7 @@ class CompressHelper
                     $imgUrl = $options['url'];
                 }
                 if(!empty($imgUrl)){
-                    $imgUrl = self::getCompressImgUrl($imgUrl, $resolutionWidth * (float) $tmpSetting, $type);
+                    $imgUrl = self::getCompressImgUrl($imgUrl, $resolutionWidth * (float) $tmpSetting, $type, $tmpQuality);
                 }
             }else{
                 throw new Exception('resolution error 1');
