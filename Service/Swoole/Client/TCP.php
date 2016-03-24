@@ -11,7 +11,7 @@ class TCP extends Base
             exit("connect failed. Error: {$client->errCode}\n");
         }
         $client->send($data);
-        $result = $client->recv(105535, MSG_WAITALL);
+        $result = $client->recv();
         $client->close();
 
         return $result;
