@@ -62,7 +62,7 @@ class Service extends Response
     }
 
     protected function _serialize($content){
-        $content = json_encode($content);
+        $content = json_encode($content, JSON_UNESCAPED_UNICODE);
 
         return $content;
     }

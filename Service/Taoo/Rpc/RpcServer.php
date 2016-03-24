@@ -67,7 +67,7 @@ class RpcServer extends BaseServer{
                 ];
             }
 
-            $result = json_encode($ret);
+            $result = json_encode($ret, JSON_UNESCAPED_UNICODE);
         }
 
         Logger::Instance()->info('onReceive');
