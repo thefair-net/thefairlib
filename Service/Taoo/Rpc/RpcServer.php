@@ -7,6 +7,7 @@
  * @copyright 2015-2025 TheFair
  */
 namespace TheFairLib\Service\Taoo\Rpc;
+
 use TheFairLib\Controller\Service\Error;
 use TheFairLib\Exception\Service\ServiceException;
 use TheFairLib\Logger\Logger;
@@ -14,11 +15,13 @@ use TheFairLib\Service\Swoole\Network\Protocol\BaseServer;
 use Yaf\Application;
 use Yaf\Request\Http;
 
-class RpcServer extends BaseServer{
+class RpcServer extends BaseServer
+{
     /**
      * @var \Yaf\Application
      */
     protected $_application = false;
+
     /**
      * @param \swoole_server $server
      * @param $clientId
@@ -28,7 +31,7 @@ class RpcServer extends BaseServer{
      */
     public function onReceive($server, $clientId, $fromId, $requestData)
     {
-        try{
+        try {
             ob_start();
             $requestData = $this->_decode($requestData);
             $this->_checkAuthorize($requestData['auth']);
@@ -36,8 +39,8 @@ class RpcServer extends BaseServer{
             $url = !empty($data['url']) ? $data['url'] : '';
             $_SERVER['REQUEST_URI'] = $url;
             $request = new Http($url);
-            if(!empty($data['params'])){
-                foreach($data['params'] as $key => $param){
+            if (!empty($data['params'])) {
+                foreach ($data['params'] as $key => $param) {
                     $request->setParam($key, $param);
                     $_REQUEST[$key] = $_POST[$key] = $_GET[$key] = $param;
                 }
@@ -45,25 +48,25 @@ class RpcServer extends BaseServer{
             $this->_application->getDispatcher()->catchException(true)->dispatch($request);
             $result = ob_get_contents();
             ob_end_clean();
-        }catch(\Exception $e){
-            if($e instanceof ServiceException){
+        } catch (\Exception $e) {
+            if ($e instanceof ServiceException) {
                 $ret = [
                     'code' => $e->getExtCode(),
                     'message' => $e->getMessage(),
-                    'result' => (object) $e->getExtData(),
+                    'result' => (object)$e->getExtData(),
                 ];
-            }else{
-                if(defined('APP_NAME')){
-                    Logger::Instance()->error(  date("Y-m-d H:i:s +u")."\n"
-                        ."请求接口:{$_SERVER['REQUEST_URI']}\n"
-                        ."请求参数:".json_encode($_REQUEST)."\n"
-                        ."错误信息:".$e->getMessage()."\n"
-                        ."Trace:".$e->getTraceAsString()."\n\n");
+            } else {
+                if (defined('APP_NAME')) {
+                    Logger::Instance()->error(date("Y-m-d H:i:s +u") . "\n"
+                        . "请求接口:{$_SERVER['REQUEST_URI']}\n"
+                        . "请求参数:" . json_encode($_REQUEST) . "\n"
+                        . "错误信息:" . $e->getMessage() . "\n"
+                        . "Trace:" . $e->getTraceAsString() . "\n\n");
                 }
                 $ret = [
                     'code' => 10000,
                     'message' => $e->getMessage(),
-                    'result' => (object) [],
+                    'result' => (object)[],
                 ];
             }
 
@@ -81,11 +84,10 @@ class RpcServer extends BaseServer{
     public function onStart($server, $workerId)
     {
         //检查需要的常量是否存在
-        if(!defined('APP_NAME') || !defined('APP_PATH')){
+        if (!defined('APP_NAME') || !defined('APP_PATH')) {
             Logger::Instance()->error('APP_NAME or APP_PATH is not defined');
             $server->shutdown();
-        }
-        else{
+        } else {
             define('APPLICATION_PATH', dirname(__DIR__));
             $this->_application = new Application(APP_PATH . "/config/application.ini");
             ob_start();
@@ -173,24 +175,27 @@ class RpcServer extends BaseServer{
         Logger::Instance()->info('onHttpWorkInit');
     }
 
-    protected function _encode($data){
+    protected function _encode($data)
+    {
         $data = base64_encode(gzcompress($data));
-
-        return pack("N", strlen($data)) .$data;
+        //因为swoole扩展启用了open_length_check,需要在数据头部增加header @todo 增加长度校验及扩展头
+        return pack("N", strlen($data)) . $data;
     }
 
-    protected function _decode($data){
+    protected function _decode($data)
+    {
         $data = substr($data, 4);
 
         return json_decode(gzuncompress(base64_decode($data)), true);
     }
 
-    protected function _checkAuthorize($authData){
-        if(empty($authData['app_key']) || empty($authData['app_secret'])){
+    protected function _checkAuthorize($authData)
+    {
+        if (empty($authData['app_key']) || empty($authData['app_secret'])) {
             throw new ServiceException('auth config is error');
         }
 
-        if($authData['app_secret'] != md5(md5($authData['app_key']))){
+        if ($authData['app_secret'] != md5(md5($authData['app_key']))) {
             throw new ServiceException('authorize field');
         }
         return true;

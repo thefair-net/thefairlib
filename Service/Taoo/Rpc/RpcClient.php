@@ -24,9 +24,8 @@ class RpcClient extends TCP
         ];
         $result = $this->send($this->_encode($requestData), $callback);
         $result = $this->_decode($result);
-        //@todo 异常处理
 
-        return $result['result'];
+        return $result;
     }
 
     protected function _getClientType(){
@@ -35,6 +34,7 @@ class RpcClient extends TCP
 
     protected function _encode($data){
         $data = base64_encode(gzcompress(json_encode($data, JSON_UNESCAPED_UNICODE)));
+        //因为swoole扩展启用了open_length_check,需要在数据头部增加header @todo 增加长度校验及扩展头
         return pack("N", strlen($data)) .$data;
     }
 
