@@ -78,7 +78,7 @@ class Error extends ErrorBase
         $this->_setResponse(self::$_responseObj->send());
     }
 
-    public function showError($error, $result = array() , $code = '10000'){
+    public function showError($error, $result = array() , $code = '40000'){
         $this->showResult($result, $error, $code);
     }
 }

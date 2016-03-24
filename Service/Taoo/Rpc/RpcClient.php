@@ -7,6 +7,7 @@
  * @copyright 2015-2025 TheFair
  */
 namespace TheFairLib\Service\Taoo\Rpc;
+use TheFairLib\Logger\Logger;
 use TheFairLib\Service\Swoole\Client\TCP;
 
 class RpcClient extends TCP
@@ -25,6 +26,9 @@ class RpcClient extends TCP
         $result = $this->send($this->_encode($requestData), $callback);
         $result = $this->_decode($result);
 
+        if(!empty($result['code']) && $result['code'] >= 40000){
+            Logger::Instance()->error($result['code'] .':'. $result['message']);
+        }
         return $result;
     }
 
