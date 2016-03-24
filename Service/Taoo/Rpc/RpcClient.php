@@ -34,10 +34,12 @@ class RpcClient extends TCP
     }
 
     protected function _encode($data){
-        return base64_encode(gzcompress(json_encode($data, JSON_UNESCAPED_UNICODE)));
+        $data = base64_encode(gzcompress(json_encode($data, JSON_UNESCAPED_UNICODE)));
+        return pack("N", strlen($data)) .$data;
     }
 
     protected function _decode($data){
+        $data = substr($data, 4);
         return json_decode(gzuncompress(base64_decode($data)), true);
     }
 }

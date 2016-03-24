@@ -174,10 +174,14 @@ class RpcServer extends BaseServer{
     }
 
     protected function _encode($data){
-        return base64_encode(gzcompress($data));
+        $data = base64_encode(gzcompress($data));
+
+        return pack("N", strlen($data)) .$data;
     }
 
     protected function _decode($data){
+        $data = substr($data, 4);
+
         return json_decode(gzuncompress(base64_decode($data)), true);
     }
 
