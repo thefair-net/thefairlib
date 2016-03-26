@@ -158,6 +158,50 @@ class Sphinx
         return $this;
     }
 
+    public function match($desc = SPH_MATCH_ALL)
+    {
+        switch ($desc) {
+            case SPH_MATCH_ALL :
+                $this->conn->SetMatchMode(SPH_MATCH_ALL);
+                break;
+            case SPH_MATCH_ANY:
+                $this->conn->SetMatchMode(SPH_MATCH_ANY);
+                break;
+            case SPH_MATCH_PHRASE :
+                $this->conn->SetMatchMode(SPH_MATCH_PHRASE);
+                break;
+            case SPH_MATCH_BOOLEAN :
+                $this->conn->SetMatchMode(SPH_MATCH_BOOLEAN);
+                break;
+            case SPH_MATCH_EXTENDED :
+                $this->conn->SetMatchMode(SPH_MATCH_EXTENDED);
+                break;
+            default :
+                $this->conn->SetMatchMode(SPH_MATCH_EXTENDED);
+                break;
+        }
+        return $this;
+    }
+
+    public function ranking($desc = SPH_RANK_PROXIMITY_BM25)
+    {
+        switch ($desc) {
+            case SPH_RANK_PROXIMITY_BM25 :
+                $this->conn->SetRankingMode(SPH_RANK_PROXIMITY_BM25);
+                break;
+            case SPH_RANK_BM25 :
+                $this->conn->SetRankingMode(SPH_RANK_BM25);
+                break;
+            case SPH_RANK_NONE :
+                $this->conn->SetRankingMode(SPH_RANK_NONE);
+                break;
+            default :
+                $this->conn->SetRankingMode(SPH_RANK_PROXIMITY_BM25);
+                break;
+        }
+        return $this;
+    }
+
     /**
      * 获得数据
      *
@@ -181,7 +225,7 @@ class Sphinx
         if (!empty($this->_data['total'])) {
             $data = array_values($this->_data['matches']);
             foreach ($data as $value) {
-                $itemList[] = array_merge(['id' => $value['id']],$value['attrs']);
+                $itemList[] = array_merge(['id' => $value['id']], $value['attrs']);
             }
             $itemPerPage = min(50, $this->_page['item_per_page']);
             $pageCount = ceil($this->_data['total'] / $itemPerPage);
