@@ -107,4 +107,31 @@ class GeTui implements PushInterface
 
         return $ret;
     }
+
+    /**
+     * 设置用户设备标签
+     *
+     * @param $clientId
+     * @param array $tags
+     * @return bool|mixed|null
+     */
+    public function setDeviceTags($clientId, array $tags){
+        $ret = false;
+        if(!empty($tags)){
+            $ret = $this->_iGeTui->setClientTag($this->_appID, $clientId, $tags);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * 获取用户设备标签
+     *
+     * @param $clientId
+     * @return array
+     */
+    public function getDeviceTags($clientId){
+        $ret = $this->_iGeTui->getUserTags($this->_appID, $clientId);
+        return !empty($ret['result']['Tags']) ? $ret['result']['Tags'] : [];
+    }
 }
