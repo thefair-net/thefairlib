@@ -7,8 +7,11 @@
  * @copyright 2015-2025 TheFair
  */
 namespace TheFairLib\Service\Taoo\Rpc;
+use TheFairLib\Config\Config;
+use TheFairLib\DB\Redis\Cache;
 use TheFairLib\Logger\Logger;
 use TheFairLib\Service\Swoole\Client\TCP;
+use Yaf\Exception;
 
 class RpcClient extends TCP
 {
@@ -32,6 +35,29 @@ class RpcClient extends TCP
         return $result;
     }
 
+    /**
+     * 只能获取数据
+     *
+     * @param $url
+     * @param array $params
+     * @param bool $showResultOnly
+     * @return mixed|string
+     */
+    public function smart($url, $params = [], $showResultOnly = true){
+        //获取缓存的key
+        $cacheKey = $this->_getServiceCacheKey($url, $params);
+        $result = $this->_getCache()->get($cacheKey);
+        if(empty($result)){
+            $result = $this->call($url, $params);
+            $cacheTtl = $this->_getServiceCacheTtl($url);
+            $this->_getCache()->setex($cacheKey, $cacheTtl, json_encode($result, JSON_UNESCAPED_UNICODE));
+        }else{
+            $result = json_decode($result, true);
+        }
+
+        return $showResultOnly === true ? $result['result'] : $result;
+    }
+
     protected function _getClientType(){
         return 'rpc';
     }
@@ -45,5 +71,29 @@ class RpcClient extends TCP
     protected function _decode($data){
         $data = substr($data, 4);
         return json_decode(gzuncompress(base64_decode($data)), true);
+    }
+
+    private function _getServiceCacheTtl($url){
+        $key = $this->_getClientType().'.'.$this->getServerTag().'.'.$url;
+        $ttl = Config::get_service_cache($key);
+        if(empty($ttl)){
+            throw new Exception('Can not find service cache config:'.$key);
+        }
+
+        return $ttl;
+    }
+
+    private function _getServiceCacheKey($url, $params){
+        return 'service_cache_'.Config::get_app('phase').'::'.$this->_getServiceConfigKey($url).'_'.md5($this->getServerTag().$url.json_encode($params));
+    }
+
+    private function _getServiceConfigKey($url){
+        return strtolower($this->getServerTag().'::'.str_replace('/', '_', $url));
+    }
+
+    private function _getCache(){
+        $serviceConf = $this->_getServiceConfig($this->getServerTag());
+        $cacheNode = !empty($serviceConf['cache_node']) ? $serviceConf['cache_node'] : 'default';
+        return Cache::getInstance($cacheNode);
     }
 }

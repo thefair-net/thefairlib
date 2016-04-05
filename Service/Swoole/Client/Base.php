@@ -58,4 +58,8 @@ abstract class Base
     abstract protected function _getServiceConfig($serverTag);
 
     abstract protected function _getServerList($serverTag);
+
+    public function getServerTag(){
+        return $this->_serverTag;
+    }
 }

@@ -45,6 +45,10 @@ abstract class Base
         return self::$_redisConfPath = $path;
     }
 
+    /**
+     * @param string $name
+     * @return \Redis
+     */
     public static function getInstance($name = 'default'){
         if (!isset(self::$instance[$name])) {
             $class = get_called_class();
