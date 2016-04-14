@@ -19,7 +19,7 @@ class Base
     private $_server = 'kafka';
 
     /**
-     * @return Inter
+     * @return Base
      */
     static public function Instance()
     {

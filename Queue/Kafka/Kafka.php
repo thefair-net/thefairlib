@@ -30,7 +30,7 @@ class Kafka
         $class = get_called_class();
         if (empty(self::$instance)) {
             self::$instance = new $class();
-            self::$_config = Config::get_search_sphinx(self::$server);
+            self::$_config = Config::get_queue_kafka(self::$server);
         }
         return self::$instance;
     }
@@ -48,6 +48,7 @@ class Kafka
         if (empty($msg) || !is_array($msg)) {
             return $produce;
         }
+        $produce->getAvailablePartitions($topicName);
         $produce->setRequireAck(-1);
         $produce->setMessages($topicName, 0, $msg);
         return $produce->send();
@@ -65,6 +66,7 @@ class Kafka
         $consumer->setGroup($topicName);
         $consumer->setFromOffset(true);
         $consumer->setTopic($topicName, 0);
+        $consumer->setMaxBytes(102400);
         return $consumer;
     }
 
