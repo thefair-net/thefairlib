@@ -133,8 +133,7 @@ class GeTui implements PushInterface
      */
     public function getDeviceTags($clientId)
     {
-        $ret = $this->_iGeTui->getUserTags($this->_appID, $clientId);
-        return !empty($ret['result']['Tags']) ? $ret['result']['Tags'] : [];
+        return $this->_iGeTui->getUserTags($this->_appID, $clientId);
     }
 
     /**
