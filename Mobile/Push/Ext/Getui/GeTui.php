@@ -207,12 +207,13 @@ class GeTui implements PushInterface
      * @param $title
      * @param $message
      * @param $link
+     * @param int $badge
      * @param string $logoUrl
      * @return \Array
      * @throws Exception
      * @throws \Exception
      */
-    public function pushMessageToList($clientList, $tempType, $platform, $title, $message, $link, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
+    public function pushMessageToList($clientList, $tempType, $platform, $title, $message, $link, $badge = 1, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
     {
         if (empty($clientList) || !in_array($tempType, ['Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
             || empty($title) || strlen($title) >= 40 || empty($message) || strlen($message) >= 60
@@ -229,7 +230,7 @@ class GeTui implements PushInterface
 //        IOS8.2 支持
         $alertMsg->title = $title;
         $alertMsg->titleLocKey = $title;
-
+        $apn->badge = $badge;
         $apn->alertMsg = $alertMsg;
         $apn->add_customMsg("payload", "payload");
         $apn->contentAvailable = 1;
