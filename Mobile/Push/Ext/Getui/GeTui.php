@@ -43,7 +43,7 @@ class GeTui implements PushInterface
         $this->_appSecret = $config['app_secret'];
         $this->_appKey = $config['app_key'];
         $this->_masterSecret = $config['master_secret'];
-        if(!empty($config['api_url'])){
+        if (!empty($config['api_url'])) {
             $this->_httpHost = $config['api_url'];
         }
 
@@ -115,9 +115,10 @@ class GeTui implements PushInterface
      * @param array $tags
      * @return bool|mixed|null
      */
-    public function setDeviceTags($clientId, array $tags){
+    public function setDeviceTags($clientId, array $tags)
+    {
         $ret = false;
-        if(!empty($tags)){
+        if (!empty($tags)) {
             $ret = $this->_iGeTui->setClientTag($this->_appID, $clientId, $tags);
         }
 
@@ -130,8 +131,173 @@ class GeTui implements PushInterface
      * @param $clientId
      * @return array
      */
-    public function getDeviceTags($clientId){
+    public function getDeviceTags($clientId)
+    {
         $ret = $this->_iGeTui->getUserTags($this->_appID, $clientId);
         return !empty($ret['result']['Tags']) ? $ret['result']['Tags'] : [];
+    }
+
+    /**
+     * 单推接口案例
+     *
+     * @param $clientId
+     * @param $tempType
+     * @param $platform
+     * @param $title
+     * @param $message
+     * @param $link
+     * @param $badge
+     * @param string $logoUrl
+     * @return \Array
+     * @throws Exception
+     * @throws \Exception
+     */
+    public function pushMessageToSingle($clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
+    {
+        if (empty($clientId) || !in_array($tempType, ['Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
+            || empty($title) || strlen($title) >= 40 || empty($message) || strlen($message) >= 60
+        ) {
+            throw new Exception('error push param');
+        }
+        //APN高级推送
+        $apn = new \IGtAPNPayload();
+        $alertMsg = new \DictionaryAlertMsg();
+        $alertMsg->body = $message;
+//        IOS8.2 支持
+        $alertMsg->title = $title;
+        $alertMsg->titleLocKey = $title;
+
+        $apn->alertMsg = $alertMsg;
+        $apn->badge = $badge;
+        $apn->add_customMsg("payload", "payload");
+        $apn->contentAvailable = 1;
+        $apn->category = "ACTIONABLE";
+        $apn->customMsg = ['p' => $link];
+
+        $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+        $template->set_apnInfo($apn);
+        //个推信息体
+        $message = new \IGtSingleMessage();
+
+        $message->set_isOffline(true);//是否离线
+        $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
+        $message->set_data($template);//设置推送消息类型
+        //$message->set_PushNetWorkType(0);//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
+        //接收方
+        $target = new \IGtTarget();
+        $target->set_appId($this->_appID);
+        $target->set_clientId($clientId);
+        //$target->set_alias(Alias);
+
+        try {
+            $result = $this->_iGeTui->pushMessageToSingle($message, $target);
+            return $result;
+        } catch (\RequestException $e) {
+            $requestId = $e->getRequestId();
+            $result = $this->_iGeTui->pushMessageToSingle($message, $target, $requestId);
+            return $result;
+        }
+    }
+
+    /**
+     * 多推接口案例
+     *
+     * @param $clientList
+     * @param $tempType
+     * @param $platform
+     * @param $title
+     * @param $message
+     * @param $link
+     * @param string $logoUrl
+     * @return \Array
+     * @throws Exception
+     * @throws \Exception
+     */
+    public function pushMessageToList($clientList, $tempType, $platform, $title, $message, $link, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
+    {
+        if (empty($clientList) || !in_array($tempType, ['Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
+            || empty($title) || strlen($title) >= 40 || empty($message) || strlen($message) >= 60
+        ) {
+            throw new Exception('error push param');
+        }
+        putenv("gexin_pushList_needDetails=true");
+        putenv("gexin_pushList_needAsync=true");
+
+        //APN高级推送
+        $apn = new \IGtAPNPayload();
+        $alertMsg = new \DictionaryAlertMsg();
+        $alertMsg->body = $message;
+//        IOS8.2 支持
+        $alertMsg->title = $title;
+        $alertMsg->titleLocKey = $title;
+
+        $apn->alertMsg = $alertMsg;
+        $apn->add_customMsg("payload", "payload");
+        $apn->contentAvailable = 1;
+        $apn->category = "ACTIONABLE";
+        $apn->customMsg = ['p' => $link];
+        $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+        $template->set_apnInfo($apn);
+        //个推信息体
+        $message = new \IGtListMessage();
+        $message->set_isOffline(true);//是否离线
+        $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
+        $message->set_data($template);//设置推送消息类型
+//    $message->set_PushNetWorkType(1);	//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
+//    $contentId = $igt->getContentId($message);
+        $contentId = $this->_iGeTui->getContentId($message, date('YmdHis', time()) . '_' . $tempType);    //根据TaskId设置组名，支持下划线，中文，英文，数字
+        $targetList = [];
+        foreach ($clientList as $clientId) {
+            //接收方1
+            $target = new \IGtTarget();
+            $target->set_appId($this->_appID);
+            $target->set_clientId($clientId);
+            //$target1->set_alias(Alias);
+            $targetList[] = $target;
+        }
+        $result = $this->_iGeTui->pushMessageToList($contentId, $targetList);
+        return $result;
+    }
+
+    private function _setTemplate($type, $title, $message, $link = '', $logoUrl = '', $logo = 'logo.png', $transmission = 1, $transmissionContent = '')
+    {
+        //消息模版：
+        // 1.TransmissionTemplate:透传功能模板
+        // 2.LinkTemplate:通知打开链接功能模板
+        // 3.NotificationTemplate：通知透传功能模板
+        // 4.NotyPopLoadTemplate：通知弹框下载功能模板
+        $template = null;
+        switch ($type) {
+            case 'Notification' :
+                $template = new \IGtNotificationTemplate();
+                $template->set_appId($this->_appID);//应用appid
+                $template->set_appkey($this->_appKey);//应用appkey
+                $template->set_transmissionType($transmission);//透传消息类型
+                $template->set_transmissionContent($transmissionContent);//透传内容
+                $template->set_title($title);//通知栏标题
+                $template->set_text($message);//通知栏内容
+                $template->set_logo($logo);//通知的图标名称，包含后缀名（需要在客户端开发时嵌入），如“push.png”
+                $template->set_isRing(true);//是否响铃
+                $template->set_isVibrate(true);//是否震动
+                $template->set_isClearable(true);//通知栏是否可清除
+                $template->set_logoURL($logoUrl);
+                break;
+            case 'Link' :
+                $template = new \IGtLinkTemplate();
+                $template->set_appId($this->_appID);//应用appid
+                $template->set_appkey($this->_appKey);//应用appkey
+                $template->set_title($title);//通知栏标题
+                $template->set_text($message);//通知栏内容
+                $template->set_logo($logo);//通知栏logo
+                $template->set_isRing(true);//是否响铃
+                $template->set_isVibrate(true);//是否震动
+                $template->set_isClearable(true);//通知栏是否可清除
+                $template->set_url($link);//打开连接地址,不能超过200个字符
+                break;
+        }
+        if (empty($template)) {
+            throw new \Exception('error push Template' . $type);
+        }
+        return $template;
     }
 }
