@@ -153,7 +153,7 @@ class GeTui implements PushInterface
      */
     public function pushMessageToSingle($clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
     {
-        if (empty($clientId) || !in_array($tempType, ['Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
+        if (empty($clientId) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
             || empty($title) || strlen($title) >= 40 || empty($message) || strlen($message) >= 60
         ) {
             throw new Exception('error push param');
@@ -172,8 +172,13 @@ class GeTui implements PushInterface
         $apn->contentAvailable = 1;
         $apn->category = "ACTIONABLE";
         $apn->customMsg = ['p' => $link];
-
-        $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+        if ($platform == 'iphone') {
+            $tempType = 'Transmission';
+            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+            $template->set_pushInfo("", $badge, $message, "", "payload", "", "", "");
+        } else {
+            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+        }
         $template->set_apnInfo($apn);
         //个推信息体
         $message = new \IGtSingleMessage();
@@ -215,7 +220,7 @@ class GeTui implements PushInterface
      */
     public function pushMessageToList($clientList, $tempType, $platform, $title, $message, $link, $badge = 1, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
     {
-        if (empty($clientList) || !in_array($tempType, ['Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
+        if (empty($clientList) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
             || empty($title) || strlen($title) >= 40 || empty($message) || strlen($message) >= 60
         ) {
             throw new Exception('error push param');
@@ -236,7 +241,13 @@ class GeTui implements PushInterface
         $apn->contentAvailable = 1;
         $apn->category = "ACTIONABLE";
         $apn->customMsg = ['p' => $link];
-        $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+        if ($platform == 'iphone') {
+            $tempType = 'Transmission';
+            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+            $template->set_pushInfo("", $badge, $message, "", "payload", "", "", "");
+        } else {
+            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+        }
         $template->set_apnInfo($apn);
         //个推信息体
         $message = new \IGtListMessage();
@@ -293,6 +304,13 @@ class GeTui implements PushInterface
                 $template->set_isVibrate(true);//是否震动
                 $template->set_isClearable(true);//通知栏是否可清除
                 $template->set_url($link);//打开连接地址,不能超过200个字符
+                break;
+            case 'Transmission' :
+                $template = new \IGtTransmissionTemplate();
+                $template->set_appId($this->_appID);//应用appid
+                $template->set_appkey($this->_appKey);//应用appkey
+                $template->set_transmissionType(1);//透传消息类型
+                $template->set_transmissionContent($message);//透传内容
                 break;
         }
         if (empty($template)) {
