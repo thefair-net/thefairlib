@@ -154,9 +154,9 @@ class GeTui implements PushInterface
     public function pushMessageToSingle($clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
     {
         if (empty($clientId) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
-            || empty($title) || strlen($title) >= 40 || empty($message) || strlen($message) >= 60
+            || empty($title) || strlen($title) >= 40 || empty($message)
         ) {
-            throw new Exception('error push param');
+            throw new Exception('error push param' . json_decode([$clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl], JSON_UNESCAPED_UNICODE));
         }
         //APN高级推送
         $apn = new \IGtAPNPayload();
@@ -221,9 +221,9 @@ class GeTui implements PushInterface
     public function pushMessageToList($clientList, $tempType, $platform, $title, $message, $link, $badge = 1, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
     {
         if (empty($clientList) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
-            || empty($title) || strlen($title) >= 40 || empty($message) || strlen($message) >= 60
+            || empty($title) || strlen($title) >= 40 || empty($message)
         ) {
-            throw new Exception('error push param');
+            throw new Exception('error push param' . json_decode([$tempType, $platform, $title, $message, $link, $badge, $logoUrl], JSON_UNESCAPED_UNICODE));
         }
         putenv("gexin_pushList_needDetails=true");
         putenv("gexin_pushList_needAsync=true");
