@@ -2,7 +2,7 @@
 /**
  * VERSION 3.3.2.1
  */
-header("Content-Type: text/html; charset=utf-8");
+//header("Content-Type: text/html; charset=utf-8");
 require_once(dirname(__FILE__) . '/' . 'protobuf/pb_message.php');
 require_once(dirname(__FILE__) . '/' . 'igetui/IGt.Req.php');
 require_once(dirname(__FILE__) . '/' . 'igetui/IGt.Message.php');
