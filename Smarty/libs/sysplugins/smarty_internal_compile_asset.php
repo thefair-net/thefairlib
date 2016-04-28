@@ -33,15 +33,19 @@ class Smarty_Internal_Compile_Asset extends Smarty_Internal_Compile_Assign
         if (empty($config)) {
             throw new \Yaf\Exception('Smarty, asset, config/App.php not null');
         }
-        if ($config['phase'] == 'dev') {
+        if ($config['phase'] == 'rd') {
             $rand = time();
         } else {
             $rand = isset($config['static']['resource_time']) ? $config['static']['resource_time'] : date('Ymd');
         }
+        $asset = '/_assets';
+        if (preg_match('/debug=true$/', $_SERVER['QUERY_STRING'])) {
+            $asset = '';
+        }
         foreach ($_attr as $value) {
             if (!empty($value)) {
-                $value = trim(trim($value, "\""),"'");
-                return $config['static']['resource_host'] . $value . "?v=" . $rand;
+                $value = trim(trim($value, "\""), "'");
+                return $config['static']['resource_host'] . $asset . $value . "?v=" . $rand;
             }
         }
         throw new \Yaf\Exception('Smarty, asset, error');
