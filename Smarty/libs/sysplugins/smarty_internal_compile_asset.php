@@ -39,7 +39,7 @@ class Smarty_Internal_Compile_Asset extends Smarty_Internal_Compile_Assign
             $rand = isset($config['static']['resource_time']) ? $config['static']['resource_time'] : date('Ymd');
         }
         $asset = '/_assets';
-        switch($_SERVER['QUERY_STRING']) {
+        switch(true) {
             case preg_match('/\_\_D\_\_eBug\_=true$/', $_SERVER['QUERY_STRING']) :
                 $asset = '';
                 break;
