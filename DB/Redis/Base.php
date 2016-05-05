@@ -58,4 +58,17 @@ abstract class Base
 
         return self::$instance[$name];
     }
+
+    /**
+     * 关闭redis连接
+     */
+    public static function closeConnection(){
+        if(!empty(self::$instance)){
+            foreach(self::$instance as $name => $redis){
+                if($redis->isConnected()){
+                    $redis->disconnect();
+                }
+            }
+        }
+    }
 }
