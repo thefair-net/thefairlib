@@ -197,9 +197,10 @@ class GeTui implements PushInterface
             $result = $this->_iGeTui->pushMessageToSingle($message, $target);
             return $result;
         } catch (\RequestException $e) {
-            $requestId = $e->getRequestId();
-            $result = $this->_iGeTui->pushMessageToSingle($message, $target, $requestId);
-            return $result;
+//            $requestId = $e->getRequestId();
+//            $result = $this->_iGeTui->pushMessageToSingle($message, $target, $requestId);
+//            return $result;
+            return $e;
         }
     }
 
