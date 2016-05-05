@@ -61,6 +61,7 @@ abstract class Base
 
     /**
      * 关闭redis连接
+     * 用于service处理结束后手动关闭数据服务的连接
      */
     public static function closeConnection(){
         if(!empty(self::$instance)){
