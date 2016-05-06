@@ -135,6 +135,7 @@ class Sphinx
      */
     public function limit($page, $itemPerPage = 20, $maxMatches = 1000, $cutoff = 0)
     {
+        $this->setPage();
         $this->_page['page'] = $page;
         $offset = ($page - 1) * $itemPerPage;
         $this->_page['item_per_page'] = $itemPerPage;
@@ -217,10 +218,12 @@ class Sphinx
         $this->_data = $this->conn->query($this->_keywords, $this->_indexName);
         return $filter ? $this->_filterData() : $this->_data;
     }
+
     /**
      * 清空数据，以便二次查询
      */
-    public function setDate() {
+    public function setPage()
+    {
         $this->_page = [
             'page' => 1,
             'page_count' => 1,
@@ -229,6 +232,7 @@ class Sphinx
             'item_list' => [],
         ];
     }
+
     /**
      * 过滤结果数据
      *
