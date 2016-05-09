@@ -241,7 +241,7 @@ class Sphinx
     private function _filterData()
     {
         $itemList = [];
-        if (!empty($this->_data['total'])) {
+        if (!empty($this->_data['total']) && !empty($this->_data['matches'])) {
             $data = array_values($this->_data['matches']);
             foreach ($data as $value) {
                 $itemList[] = array_merge(['id' => $value['id']], $value['attrs']);
