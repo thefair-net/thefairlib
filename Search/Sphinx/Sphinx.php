@@ -126,7 +126,7 @@ class Sphinx
      * 给服务器端结果集设置一个偏移量（$offset）和从那个偏移量起向客户端返回的匹配项数目限制（$limit）。
      * 并且可以在服务器端设定当前查询的结果集大小（$max_matches），另有一个阈值（$cutoff），当找到的匹配项达到这个阀值时就停止搜索。
      * 全部这些参数都必须是非负整数。
-     *
+     * $page是需要获取的页数
      * @param $page
      * @param int $itemPerPage
      * @param int $maxMatches
@@ -135,9 +135,11 @@ class Sphinx
      */
     public function limit($page, $itemPerPage = 20, $maxMatches = 1000, $cutoff = 0)
     {
-        $this->_page['page'] = ($page - 1) * $itemPerPage;
+        $this->setPage();
+        $this->_page['page'] = $page;
+        $offset = ($page - 1) * $itemPerPage;
         $this->_page['item_per_page'] = $itemPerPage;
-        $this->conn->SetLimits($this->_page['page'], $this->_page['item_per_page'], $maxMatches, $cutoff);
+        $this->conn->SetLimits($offset, $this->_page['item_per_page'], $maxMatches, $cutoff);
         return $this;
     }
 
@@ -176,8 +178,11 @@ class Sphinx
             case SPH_MATCH_EXTENDED :
                 $this->conn->SetMatchMode(SPH_MATCH_EXTENDED);
                 break;
+            case SPH_MATCH_FULLSCAN :
+                $this->conn->SetMatchMode(SPH_MATCH_FULLSCAN);
+                break;
             default :
-                $this->conn->SetMatchMode(SPH_MATCH_EXTENDED);
+                $this->conn->SetMatchMode(SPH_MATCH_EXTENDED2);
                 break;
         }
         return $this;
@@ -215,6 +220,20 @@ class Sphinx
     }
 
     /**
+     * 清空数据，以便二次查询
+     */
+    public function setPage()
+    {
+        $this->_page = [
+            'page' => 1,
+            'page_count' => 1,
+            'item_count' => 0,
+            'item_per_page' => 20,
+            'item_list' => [],
+        ];
+    }
+
+    /**
      * 过滤结果数据
      *
      * @return array
@@ -222,7 +241,7 @@ class Sphinx
     private function _filterData()
     {
         $itemList = [];
-        if (!empty($this->_data['total'])) {
+        if (!empty($this->_data['total']) && !empty($this->_data['matches'])) {
             $data = array_values($this->_data['matches']);
             foreach ($data as $value) {
                 $itemList[] = array_merge(['id' => $value['id']], $value['attrs']);
