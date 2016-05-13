@@ -159,7 +159,18 @@ class Sphinx
         $this->conn->SetSortMode(SPH_SORT_EXTENDED, "{$field} $orderBy");
         return $this;
     }
-
+    public function sortMode($mode,$sortBy)
+    {
+        if (empty($mode)) {
+            throw new Exception('order error: field is null');
+        }
+        $this->conn->SetSortMode($mode, $sortBy);
+        return $this;
+    }
+    public function indexWeight($weight){
+        $this->conn->SetIndexWeights($weight);
+        return $this;
+    }
     public function match($desc = SPH_MATCH_ALL)
     {
         switch ($desc) {
@@ -253,6 +264,7 @@ class Sphinx
             $this->_page['item_list'] = $itemList;
             $this->_page['words'] = $this->_data['words'];
         }
+        $this->_page['words'] = $this->_data['words'];
         return $this->_data = $this->_page;
     }
 }
