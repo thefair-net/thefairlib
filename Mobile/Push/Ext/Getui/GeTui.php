@@ -156,7 +156,7 @@ class GeTui implements PushInterface
         if (empty($clientId) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
             || empty($title) || strlen($title) >= 40 || empty($message)
         ) {
-            throw new Exception('error push param' . json_decode([$clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl], JSON_UNESCAPED_UNICODE));
+            throw new Exception('error push param' . json_encode([$clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl], JSON_UNESCAPED_UNICODE));
         }
         //APN高级推送
         $apn = new \IGtAPNPayload();
