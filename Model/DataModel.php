@@ -12,7 +12,6 @@ use Illuminate\Database\Capsule\Manager;
 use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
 use TheFairLib\DB\Redis\Storage;
-use TheFairLib\Exception\Api\ApiException;
 use TheFairLib\Utility\Utility;
 
 abstract class DataModel
@@ -85,16 +84,20 @@ abstract class DataModel
      */
     protected function getPrefix($type, $dataType)
     {
+        $productPrefix = '';
+        if(defined('PRODUCT_NAME')){
+            $productPrefix = PRODUCT_NAME.'#';
+        }
         if (!in_array($type, ['Cache', 'Storage']) || !in_array($dataType, ['key', 'hash', 'set', 'zset', 'list', 'string'])) {
             throw new Exception('Redis cahce prefix config error!');
         }
-        return $type . '#' . Config::get_app('phase') . '#' . $dataType . '#';
+        return $productPrefix.$type . '#' . Config::get_app('phase') . '#' . $dataType . '#';
     }
 
     /**
      * @param $dbName
      * @return \Illuminate\Database\Connection
-     * @throws ApiException
+     * @throws Exception
      */
     protected function db($dbName = '')
     {
@@ -110,7 +113,7 @@ abstract class DataModel
         if (!in_array($dbName, self::$db)) {
             $conf = Config::get_db_mysql($dbName);
             if (empty($conf)) {
-                throw new ApiException('sys_db:' . $dbName);
+                throw new Exception('sys_db:' . $dbName);
             }
 
             self::$capsule->addConnection($conf, $dbName);
@@ -119,15 +122,35 @@ abstract class DataModel
         }
         $tmp = self::$capsule;
         return $tmp::connection($dbName);
+    }
 
+    /**
+     * 获取辅库连接
+     *
+     * @param string $dbName
+     * @return \PDO
+     * @throws Exception
+     */
+    protected function readDb($dbName = ''){
+        return $this->db($dbName)->getReadPdo();
+    }
 
+    /**
+     * 获取主库连接
+     *
+     * @param string $dbName
+     * @return \PDO
+     * @throws Exception
+     */
+    protected function writeDb($dbName = ''){
+        return $this->db($dbName)->getPdo();
     }
 
     /**
      * 获取数据库uuid
      *
      * @return int uuid
-     * @throws ApiException
+     * @throws Exception
      */
     protected function _getUuid()
     {
@@ -136,7 +159,7 @@ abstract class DataModel
         if (!empty($uuid)) {
             return $uuid;
         } else {
-            throw new ApiException('uuid error', [], 50000);
+            throw new Exception('uuid error', [], 50000);
         }
     }
 
@@ -144,7 +167,7 @@ abstract class DataModel
     {
         $tableName = !empty($tableName) ? $tableName : $this->_tableName;
         if (empty($tableName) || ($shardingKey !== null && empty($this->_shardingNum))) {
-            throw new ApiException('M Conf Err');
+            throw new Exception('M Conf Err');
         }
         return $this->_tableName . ($shardingKey !== null ? '_' . $this->_getShardingTableNum($shardingKey) : '');
     }
@@ -165,7 +188,7 @@ abstract class DataModel
      * @param string $order 排序规则，如：'uid desc'
      * @param int $itemPerPage 每页返回多少行数据
      * @return array 结果集
-     * @throws ApiException
+     * @throws Exception
      */
     protected function _getItemListByPage($dbName, $tableName, $where, $fields, $page = 1, $order = '', $itemPerPage = 20)
     {
@@ -201,14 +224,88 @@ abstract class DataModel
     }
 
     /**
+     * 从缓存中获取数据列表
+     *
+     * @param $listCacheKey
+     * @param $lastItemId
+     * @param string $order
+     * @param int $itemPerPage
+     * @param bool $withScores
+     * @return array
+     */
+    protected function _getItemListByPageFromCache($listCacheKey, $lastItemId, $order = 'desc', $itemPerPage = 20, $withScores = false)
+    {
+        $total = $this->Storage()->zCard($listCacheKey);
+        $itemPerPage = min(50, $itemPerPage);
+        $pageCount = ceil($total / $itemPerPage);
+        $list = [];
+        if($total){
+            if(!empty($lastItemId)){
+                $start = $order == 'desc' ? $this->Storage()->zRevRank($listCacheKey, $lastItemId) : $this->Storage()->zRank($listCacheKey, $lastItemId);
+                $start += 1;
+            }else{
+                $start = $lastItemId;
+            }
+
+            $end = $start + $itemPerPage - 1;
+            $funcName = $order == 'desc' ? 'zRevRange' : 'zRange';
+
+            if($withScores === true){
+                $list = $this->Storage()->$funcName($listCacheKey, $start, $end, 'WITHSCORES');
+            }else{
+                $list = $this->Storage()->$funcName($listCacheKey, $start, $end);
+            }
+            if(!empty($list)){
+                $lastItemId = end($list);
+                if($withScores === true){
+                    $lastItemId = key($list);
+                }
+            }
+        }
+
+        return [
+            'item_list' => $list,
+            'item_count' => $total,
+            'item_per_page' => $itemPerPage,
+            'page_count' => $pageCount,
+            'last_item_id' => (string)$lastItemId,
+        ];
+    }
+
+    /**
+     * 从缓存中获取随机数据列表
+     *
+     * @param $listCacheKey
+     * @param int $itemPerPage
+     * @return array
+     */
+    protected function _getRandomItemListByPageFromCache($listCacheKey, $itemPerPage = 20)
+    {
+        $total = $this->Storage()->sCard($listCacheKey);
+        $itemPerPage = min(50, $itemPerPage);
+        $pageCount = ceil($total / $itemPerPage);
+        $list = [];
+        if($total){
+            $list = $this->Storage()->sRandMember($listCacheKey, $itemPerPage);
+        }
+
+        return [
+            'item_list' => $list,
+            'item_count' => $total,
+            'item_per_page' => $itemPerPage,
+            'page_count' => $pageCount,
+        ];
+    }
+
+    /**
      * 获取单条数据
      *
      * @param $dbName
      * @param $tableName
      * @param $where
-     * @param $fields
+     * @param array $fields
      * @return mixed|static
-     * @throws ApiException
+     * @throws Exception
      */
     protected function _getItem($dbName, $tableName, $where, $fields = ['*'])
     {
@@ -221,7 +318,7 @@ abstract class DataModel
      * @param string $tag
      * @return string
      */
-    public function getUniqid($tag = 'tag')
+    public function getUniqid($tag)
     {
         return md5(uniqid($tag, true));
     }
@@ -233,7 +330,7 @@ abstract class DataModel
      * @param string $extWhere
      * @param bool $useShardingKeyMerge
      * @return array
-     * @throws ApiException
+     * @throws Exception
      */
     public function batchGetByShardingKeys($shardingKeys, $order = '', $fields = ['*'], $extWhere = '', $useShardingKeyMerge = true)
     {
