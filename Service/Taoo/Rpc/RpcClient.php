@@ -9,6 +9,7 @@
 namespace TheFairLib\Service\Taoo\Rpc;
 use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
+use TheFairLib\Exception\Base;
 use TheFairLib\Logger\Logger;
 use TheFairLib\Service\Swoole\Client\TCP;
 use Yaf\Exception;
@@ -36,12 +37,14 @@ class RpcClient extends TCP
     }
 
     /**
-     * 只能获取数据
+     * 智能获取数据
      *
      * @param $url
      * @param array $params
      * @param bool $showResultOnly
-     * @return mixed|string
+     * @return bool|mixed|string
+     * @throws Exception
+     * @throws \TheFairLib\Service\Exception
      */
     public function smart($url, $params = [], $showResultOnly = true){
         //获取缓存的key
@@ -55,7 +58,16 @@ class RpcClient extends TCP
             $result = json_decode($result, true);
         }
 
-        return $showResultOnly === true ? $result['result'] : $result;
+        //如果设置了只返回结果,当code!=0的时候,直接抛出异常
+        if($showResultOnly === true){
+            if(!empty($result['code'])){
+                throw new \TheFairLib\Service\Exception($result['message'], $result['code']);
+            }else{
+                return $result['result'];
+            }
+        }else{
+            return $result;
+        }
     }
 
     protected function _getClientType(){
