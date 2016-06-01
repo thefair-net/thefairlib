@@ -39,4 +39,7 @@ class Controller extends Base
         $this->showResult($result, $error, $code);
     }
 
+    public function showSuccess($msg = ''){
+        $this->showResult(['state' => true], (!empty($msg) ? $msg : 'success'));
+    }
 }
