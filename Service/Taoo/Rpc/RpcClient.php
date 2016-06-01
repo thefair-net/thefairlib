@@ -61,7 +61,7 @@ class RpcClient extends TCP
         //如果设置了只返回结果,当code!=0的时候,直接抛出异常
         if($showResultOnly === true){
             if(!empty($result['code'])){
-                throw new \TheFairLib\Service\Exception($result['message'], $result['code']);
+                throw new \TheFairLib\Service\Exception($result['message'], $result['code'], $result['result']);
             }else{
                 return $result['result'];
             }
