@@ -9,15 +9,26 @@
 namespace TheFairLib\Mobile\Push;
 
 use TheFairLib\Mobile\Push\Ext\Getui\GeTui;
+use TheFairLib\Mobile\Push\Ext\Jpush\Jpush;
 
 class Push
 {
     static public $instance;
 
-    public function getPushWork($pushService = 'getui'){
-        switch($pushService){
+    /**
+     *
+     * @param string $pushService
+     * @return Jpush|GeTui
+     * @throws \Exception
+     */
+    public function getPushWork($pushService = 'getui')
+    {
+        switch ($pushService) {
             case 'getui':
                 $class = new GeTui();
+                break;
+            case 'jpush' :
+                $class = new Jpush();
                 break;
             default:
                 throw new \Exception('push service not exist');

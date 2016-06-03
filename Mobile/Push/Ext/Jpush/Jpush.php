@@ -7,7 +7,7 @@
  * @copyright 2015-2015
  * @date 16/6/3 下午4:06
  */
-namespace TheFairLib\Mobile\Jpush;
+namespace TheFairLib\Mobile\Push\Ext\Jpush;
 
 use TheFairLib\Config\Config;
 use TheFairLib\Mobile\Push\Ext\PushInterface;
