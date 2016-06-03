@@ -219,7 +219,6 @@ abstract class DataModel
             'item_per_page' => $itemPerPage,
             'page' => $page,
             'page_count' => $pageCount,
-            'last_item_id' => 0,
         ];
     }
 
