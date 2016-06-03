@@ -13,7 +13,7 @@ use TheFairLib\Config\Config;
 use TheFairLib\Mobile\Push\Ext\PushInterface;
 use Yaf\Exception;
 
-require './src/JPush/JPush.php';
+require dirname(__FILE__) . '/src/JPush/JPush.php';
 
 
 class Jpush implements PushInterface
@@ -49,4 +49,67 @@ class Jpush implements PushInterface
     {
 
     }
+
+    /**
+     * 发送消息
+     *
+     * @param $clientId   可以为数组
+     * @param $platform
+     * @param $title
+     * @param $message
+     * @param $link
+     * @param $badge
+     * @return array|null|object
+     * @throws Exception
+     */
+    public function pushMessageToSingle($clientId, $platform, $title, $message, $link, $badge)
+    {
+        if (empty($clientId) || !in_array($platform, ['iphone', 'android'])
+            || empty($title) || strlen($title) >= 40 || empty($message)
+        ) {
+            throw new Exception('error push param' . json_encode([$clientId, $platform, $title, $message, $link, $badge], JSON_UNESCAPED_UNICODE));
+        }
+        $result = null;
+        switch ($platform) {
+            case 'iphone' :
+                $result = $this->_push->push()->setPlatform($platform)
+                    ->addRegistrationId($clientId)
+                    ->setNotificationAlert($message)
+                    ->addIosNotification($message, '', $badge, true, '', [
+                        'p' => $link,
+                    ])
+                    ->setOptions(86400, 3600, true, false)
+                    ->send();
+                break;
+            case 'android' :
+                $result = $this->_push->push()->setPlatform($platform)
+                    ->addRegistrationId($clientId)
+                    ->setNotificationAlert($message)
+                    ->addAndroidNotification($message, $title, '', [
+                        'p' => $link,
+                    ])
+                    ->setOptions(86400, 3600, true, false)
+                    ->send();
+                break;
+            default:
+                throw new Exception('error platform' . $platform);
+        }
+        return $result;
+    }
+
+    public function device()
+    {
+        return $this->_push->device();
+    }
+
+    public function report()
+    {
+        return $this->_push->report();
+    }
+
+    public function push()
+    {
+        return $this->_push->push();
+    }
+
 }
