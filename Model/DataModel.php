@@ -390,4 +390,22 @@ abstract class DataModel
         $get_keys = "get_{$prefix}_{$key}";
         return Utility::$get_keys();
     }
+
+    /**
+     * 关闭数据库连接
+     */
+    public static function closeDb(){
+        if(!empty(self::$capsule)){
+            $tmp = self::$capsule;
+            $connections = $tmp->getDatabaseManager()->getConnections();
+            if(!empty($connections)){
+                foreach($connections as $dbName => $connection){
+                    $tmp->getDatabaseManager()->disconnect($dbName);
+                }
+            }
+        }
+        //redis关闭
+        Storage::closeConnection();
+        Cache::closeConnection();
+    }
 }
