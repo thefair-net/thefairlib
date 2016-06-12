@@ -64,14 +64,15 @@ class Jpush implements PushInterface
      */
     public function pushMessageToSingle($clientId, $platform, $title, $message, $link, $badge)
     {
-        if (empty($clientId) || !in_array($platform, ['iphone', 'android'])
+        if($platform == 'iphone') $platform = 'ios';
+        if (empty($clientId) || !in_array($platform, ['ios', 'android', 'winphone'])
             || empty($title) || strlen($title) >= 40 || empty($message)
         ) {
             throw new Exception('error push param' . json_encode([$clientId, $platform, $title, $message, $link, $badge], JSON_UNESCAPED_UNICODE));
         }
         $result = null;
         switch ($platform) {
-            case 'iphone' :
+            case 'ios' :
                 $result = $this->_push->push()->setPlatform($platform)
                     ->addRegistrationId($clientId)
                     ->setNotificationAlert($message)
