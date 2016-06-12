@@ -53,7 +53,7 @@ abstract class DataModel
         if (empty(self::$instance[$class])) {
             self::$instance[$class] = new $class();
         }
-        self::$_params = Utility::get_api_params();
+        self::$_params = Utility::get_requset_params();
         return self::$instance[$class];
     }
 
