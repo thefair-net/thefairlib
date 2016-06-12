@@ -14,7 +14,7 @@ use TheFairLib\Http\Response\BigPipe;
 class Controller extends Base
 {
     /**
-     * @var Page
+     * @var BigPipe
      */
     protected static $_responseObj = false;
     protected function init(){
@@ -35,6 +35,11 @@ class Controller extends Base
 
     public function showError($error, $result = array() , $code = '10000'){
         $this->showResult($result, $error, $code);
+    }
+
+    public function showPage($pageName){
+        self::$_responseObj->setPage($pageName);
+        $this->_setResponse(self::$_responseObj->send());
     }
 
 }
