@@ -9,8 +9,7 @@
 namespace TheFairLib\Controller\Page;
 
 use TheFairLib\Controller\Base;
-use TheFairLib\Http\Response;
-use TheFairLib\Http\Response\Page;
+use TheFairLib\Http\Response\BigPipe;
 
 class Controller extends Base
 {
@@ -20,7 +19,7 @@ class Controller extends Base
     protected static $_responseObj = false;
     protected function init(){
         if(self::$_responseObj === false){
-            self::$_responseObj = new Page(new \stdClass());
+            self::$_responseObj = new BigPipe();
         }
     }
 
