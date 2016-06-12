@@ -10,12 +10,20 @@ namespace TheFairLib\BigPipe;
 class Pagelet implements \ArrayAccess,\IteratorAggregate  {
     static private $pageletNames = array();
     private $name = '';
+    /**
+     * @var array
+     */
     protected $children = array ();
     protected $data = array ();
     protected $tpl = '';
     protected $scripts = array();
     protected $styles = array();
     protected $isSkeleton = false;
+
+    public $showLoading = true;
+    /**
+     * @var \ArrayIterator
+     */
     protected $iterator;
 
     public function __construct($name, array $children = array()) {
@@ -69,12 +77,15 @@ class Pagelet implements \ArrayAccess,\IteratorAggregate  {
     }
 
     public function getMetaData(){
+        return [];
     }
 
     public function getGlobalMetaData(){
+        return [];
     }
 
     public function prepareData() {
+        return [];
     }
 
     public function getDependsScripts() {

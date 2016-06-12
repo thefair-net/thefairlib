@@ -8,11 +8,13 @@
  */
 namespace TheFairLib\BigPipe;
 
-use TheFairLib\Smarty\Smarty;
+use TheFairLib\BigPipe\Render\ScriptOnlyStreamlineRender;
+use TheFairLib\BigPipe\Render\StreamlineRender;
+use TheFairLib\BigPipe\Render\TraditionalRender;
+use TheFairLib\Smarty\Adapter;
+use Yaf\Registry;
 
 abstract class Render{
-    static protected $templateEngineClass = 'Smarty';
-
     /**
      * 当前需要渲染的根Pagelet
      *
@@ -29,20 +31,35 @@ abstract class Render{
 
     protected $exceptions = array();
 
+    /**
+     * @var \Smarty
+     */
+    protected static $templateEngine = false;
+
+    /**
+     * @param Pagelet $pl
+     * @param null $renderType
+     * @return ScriptOnlyStreamlineRender|StreamlineRender|TraditionalRender
+     * @throws Exception
+     */
     final static public function create(Pagelet $pl, $renderType = null){
         if(empty($renderType)){
             $renderType	= Render::getRenderType();
         }
 
-        $renderClass = '\\TheFairLib\\BigPipe\\Render\\' . ucfirst($renderType) . 'Render';
-        if(!class_exists($renderClass) || !is_subclass_of($renderClass, __CLASS__)){
-            if(class_exists($renderType) && is_subclass_of($renderType, __CLASS__)){
-                $renderClass = $renderType;
-            }
-            throw new Exception('Invalid render class:' . $renderType);
+        switch($renderType) {
+            case 'Streamline':
+                return new StreamlineRender($pl);
+                break;
+            case 'Traditional':
+                return new TraditionalRender($pl);
+                break;
+            case 'ScriptOnlyStreamline':
+                return new ScriptOnlyStreamlineRender($pl);
+                break;
+            default:
+                throw new Exception('Invalid render class:' . $renderType);
         }
-
-        return new $renderClass($pl);
     }
 
     public function __construct(Pagelet $pl = null){
@@ -55,9 +72,6 @@ abstract class Render{
             if(isset($_GET['__aj']) && !empty($_GET['__aj'])){
                 return 'ScriptOnlyStreamline';
             }
-// 			if($info['browser'] == 'Internet Explorer' && !strpos(Lib_Client_Prober::$user_agent, "MSIE 10.0") && !strpos(Lib_Client_Prober::$user_agent, "MSIE 9.0") && !strpos(Lib_Client_Prober::$user_agent, "MSIE 8.0") && !strpos(Lib_Client_Prober::$user_agent, "MSIE 7.0")) {
-// 				return 'Traditional';
-// 			}
 
             if(isset($_GET['__debug']) && $_GET['__debug']){
                 return 'Traditional';
@@ -100,7 +114,7 @@ abstract class Render{
     }
 
     public function render(){
-        $this->templateEngine = new self::$templateEngineClass();
+        self::getTemplateEngine();
         $this->prepare();
         self::dfs($this->pl, array($this, 'enter'), array($this, 'leave'));
         $this->closure();
@@ -109,14 +123,16 @@ abstract class Render{
     public static function renderSinglePagelet(Pagelet $pl, $returnHtml = false){
         $meta 	= $pl->getMetaData();
         $data 	= $pl->prepareData();
-        $tpl	= new Lib_Smarty2();
+        $tpl	= self::getTemplateEngine();
         $tpl->assign($meta);
         $tpl->assign($data);
         // 处理子pl
         if($pl->isSkeleton()){
             $childern = array();
             foreach ($pl->getChildren() as $cPl){
-                $childern[$cPl->getName()] = self::renderSinglePagelet($cPl, true);
+                if($cPl instanceof Pagelet){
+                    $childern[$cPl->getName()] = self::renderSinglePagelet($cPl, true);
+                }
             }
             $tpl->assign("pagelets", $childern);
         }
@@ -126,6 +142,7 @@ abstract class Render{
             return $html;
         }else{
             echo $html;
+            return null;
         }
     }
 
@@ -136,7 +153,7 @@ abstract class Render{
     public function closure(){
     }
 
-    static protected function renderPageletWithJson(Pagelet $pl, $tplEngine){
+    static protected function renderPageletWithJson(Pagelet $pl, \Smarty $tplEngine){
         $pid 	= 	isset($_GET["__d"]) && !empty($_GET["__d"]) ?
             strip_tags($_GET["__d"]) :
             $pl->getName();
@@ -159,7 +176,7 @@ abstract class Render{
         flush();
     }
 
-    static protected function assignMetaChainToTemplate($tpl, array $metaDataChain){
+    static protected function assignMetaChainToTemplate(\Smarty $tpl, array $metaDataChain){
         foreach ($metaDataChain as $meta){
             if($meta){
                 $tpl->assign($meta);
@@ -167,9 +184,18 @@ abstract class Render{
         }
     }
 
+    /**
+     * @return \Smarty|Adapter
+     */
     protected function getTemplateEngine(){
-        $this->templateEngine->clear_all_assign();
-        return $this->templateEngine ? $this->templateEngine : new self::$templateEngine_class();
+        if(self::$templateEngine === false){
+            $config = Registry::get("config")->smarty->toArray();
+            self::$templateEngine = new Adapter(null, $config);
+        }else{
+            self::$templateEngine->clearAllAssign();
+        }
+
+        return self::$templateEngine;
     }
 
     protected function collectException(Exception $exception){
