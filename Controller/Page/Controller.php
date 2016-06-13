@@ -37,8 +37,9 @@ class Controller extends Base
         $this->showResult($result, $error, $code);
     }
 
-    public function showPage($pageName){
-        self::$_responseObj->setPage($pageName);
+    public function showBPPage($pageName){
+        $pageClassName = ucfirst($this->getRequest()->getModuleName())."\\Page\\".ucfirst($this->getRequest()->getControllerName())."\\".ucfirst($pageName);
+        self::$_responseObj->setPage($pageClassName);
         $this->_setResponse(self::$_responseObj->send());
     }
 
