@@ -185,12 +185,13 @@ abstract class Render{
     }
 
     /**
-     * @return \Smarty|Adapter
+     * @return \Smarty
      */
     protected function getTemplateEngine(){
         if(self::$templateEngine === false){
             $config = Registry::get("config")->smarty->toArray();
-            self::$templateEngine = new Adapter(null, $config);
+            $adapter = new Adapter(null, $config);
+            self::$templateEngine = $adapter->getEngine();
         }else{
             self::$templateEngine->clearAllAssign();
         }

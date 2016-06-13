@@ -6,13 +6,13 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
-namespace TheFairLib\Model;
+namespace TheFairLib\BigPipe;
 
-abstract class BigPipePageModel extends BigPipePageLetModel
+abstract class AbstractPage extends AbstractPageLet
 {
 
-    public function __construct(Array $children = array()) {
-        parent::__construct($children);
+    public function __construct(Array $children = [], $tplPath = '') {
+        parent::__construct($children, $tplPath);
     }
     /**
      * 通过$this->get_page_meta_data方法获取每个pl的meta_data

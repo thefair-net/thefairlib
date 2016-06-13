@@ -29,6 +29,7 @@ class BigPipe extends Response
     private static $_isJsonp = false;
 
     public function __construct(){
+        parent::__construct();
     }
 
     public function getResult(){
@@ -77,8 +78,12 @@ class BigPipe extends Response
         return 'text/html;charset=utf-8';
     }
 
-    public function setPage($pagetName){
-        $this->_page = new $pagetName();
+    public function setPage($tplPath){
+        $pageName = str_replace(' ', '', lcfirst(ucwords(str_replace('_', ' ', $tplPath))));
+        $this->_page = new $pageName();
+        if($this->_page instanceof Pagelet){
+            $this->_page->setTemplate(strtolower($tplPath.'.tpl'));
+        }
     }
 
     /**

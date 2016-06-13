@@ -6,12 +6,11 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
-namespace TheFairLib\Model;
+namespace TheFairLib\BigPipe;
 
-use TheFairLib\BigPipe\Pagelet;
 use TheFairLib\Utility\Utility;
 
-abstract class BigPipePageLetModel extends Pagelet
+abstract class AbstractPageLet extends Pagelet
 {
     public $showLoading 	= false;
     protected $tpl 			= '';
@@ -20,12 +19,12 @@ abstract class BigPipePageLetModel extends Pagelet
     protected $isSkeleton 	= false;
 
 
-    public function __construct(Array $children = array()) {
+    public function __construct(Array $children = [], $tplPath = '') {
         if(empty($this->name)){
             $this->name = strtolower(get_class($this));
         }
 
-        $this->tpl = strtolower(str_replace("_", "/", get_class($this))).'.html';
+        $this->setTemplate(strtolower((!empty($tplPath) ? $tplPath : str_replace("_", "/", get_class($this)))).'.tpl');
         parent::__construct($this->name, $children);
     }
 
