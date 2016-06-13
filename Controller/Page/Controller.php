@@ -9,18 +9,17 @@
 namespace TheFairLib\Controller\Page;
 
 use TheFairLib\Controller\Base;
-use TheFairLib\Http\Response;
-use TheFairLib\Http\Response\Page;
+use TheFairLib\Http\Response\BigPipe;
 
 class Controller extends Base
 {
     /**
-     * @var Page
+     * @var BigPipe
      */
     protected static $_responseObj = false;
     protected function init(){
         if(self::$_responseObj === false){
-            self::$_responseObj = new Page(new \stdClass());
+            self::$_responseObj = new BigPipe();
         }
     }
 
@@ -36,6 +35,11 @@ class Controller extends Base
 
     public function showError($error, $result = array() , $code = '10000'){
         $this->showResult($result, $error, $code);
+    }
+
+    public function showPage($pageName){
+        self::$_responseObj->setPage($pageName);
+        $this->_setResponse(self::$_responseObj->send());
     }
 
 }

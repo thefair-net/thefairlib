@@ -47,13 +47,19 @@ class RpcClient extends TCP
      * @throws \TheFairLib\Service\Exception
      */
     public function smart($url, $params = [], $showResultOnly = true){
+        $result = null;
+        $cacheTtl = $this->_getServiceCacheTtl($url);
         //获取缓存的key
         $cacheKey = $this->_getServiceCacheKey($url, $params);
-        $result = $this->_getCache()->get($cacheKey);
+        if($cacheTtl !== false){
+            $result = $this->_getCache()->get($cacheKey);
+        }
+
         if(empty($result)){
             $result = $this->call($url, $params);
-            $cacheTtl = $this->_getServiceCacheTtl($url);
-            $this->_getCache()->setex($cacheKey, $cacheTtl, json_encode($result, JSON_UNESCAPED_UNICODE));
+            if($cacheTtl !== false){
+                $this->_getCache()->setex($cacheKey, $cacheTtl, json_encode($result, JSON_UNESCAPED_UNICODE));
+            }
         }else{
             $result = json_decode($result, true);
         }
@@ -61,7 +67,7 @@ class RpcClient extends TCP
         //如果设置了只返回结果,当code!=0的时候,直接抛出异常
         if($showResultOnly === true){
             if(!empty($result['code'])){
-                throw new \TheFairLib\Service\Exception($result['message'], $result['code'], $result['result']);
+                throw new \TheFairLib\Service\Exception($result['message'], $result['code']);
             }else{
                 return $result['result'];
             }
@@ -86,21 +92,18 @@ class RpcClient extends TCP
     }
 
     private function _getServiceCacheTtl($url){
-        $key = $this->_getClientType().'.'.$this->getServerTag().'.'.$url;
+        $key = $this->_getClientType().'.'.$this->getServerTag().'.'.str_replace('/', '_', substr($url, 1));
         $ttl = Config::get_service_cache($key);
-        if(empty($ttl)){
-            throw new Exception('Can not find service cache config:'.$key);
-        }
-
-        return $ttl;
+        return empty($ttl) ? false : $ttl;
     }
 
     private function _getServiceCacheKey($url, $params){
-        return 'service_cache_'.Config::get_app('phase').'::'.$this->_getServiceConfigKey($url).'_'.md5($this->getServerTag().$url.json_encode($params));
+        $serviceConfig = $this->_getServiceConfigKey($url);
+        return !empty($serviceConfig) ? 'service_cache_'.Config::get_app('phase').'::'.$serviceConfig.'_'.md5($this->getServerTag().$url.json_encode($params)) : null;
     }
 
     private function _getServiceConfigKey($url){
-        return strtolower($this->getServerTag().'::'.str_replace('/', '_', $url));
+        return strtolower($this->getServerTag().'::'.str_replace('/', '_', substr($url, 1)));
     }
 
     private function _getCache(){

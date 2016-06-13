@@ -65,8 +65,10 @@ class TraditionalRender extends Render{
         $children	= $this->pl->getChildren();
         if(!empty($children)){
             foreach($children as $child){
-                $childMeta = is_array($child->getGlobalMetaData()) ? array($child->getGlobalMetaData()) : array();
-                $metaData = array_merge($metaData, $childMeta);
+                if($child instanceof Pagelet){
+                    $childMeta = is_array($child->getGlobalMetaData()) ? array($child->getGlobalMetaData()) : array();
+                    $metaData = array_merge($metaData, $childMeta);
+                }
             }
         }
         $this->globalMetaData = array_merge($metaData, $this->globalMetaData);

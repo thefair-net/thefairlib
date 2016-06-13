@@ -140,11 +140,13 @@ class StreamlineRender extends Render{
         $children	= $this->pl->getChildren();
         if(!empty($children)){
             foreach($children as $child){
-                $childMeta = is_array($child->getGlobalMetaData()) ? array($child->getGlobalMetaData()) : array();
-                $metaData = !empty($childMeta) ? array_merge($metaData, $childMeta) : $metaData;
-                //判断是否显示自动loading
-                if($child->show_loading === true){
-                    $metaData["pagelets"][$child->getName()] = "<script>BigPipe && BigPipe.autoLoading('{$child->getName()}', 500)</script>";
+                if($child instanceof Pagelet){
+                    $childMeta = is_array($child->getGlobalMetaData()) ? array($child->getGlobalMetaData()) : array();
+                    $metaData = !empty($childMeta) ? array_merge($metaData, $childMeta) : $metaData;
+                    //判断是否显示自动loading
+                    if($child->showLoading === true){
+                        $metaData["pagelets"][$child->getName()] = "<script>BigPipe && BigPipe.autoLoading('{$child->getName()}', 500)</script>";
+                    }
                 }
             }
         }
