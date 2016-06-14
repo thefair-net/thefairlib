@@ -109,7 +109,6 @@ class BigPipe extends Response
             }
         }
         $this->_renderBigPipeBody();
-//        return parent::send();
         return '';
     }
 
