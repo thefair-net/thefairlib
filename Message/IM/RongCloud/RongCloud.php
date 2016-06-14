@@ -35,7 +35,7 @@ class RongCloud
     static public function Instance()
     {
         if (empty(self::$instance)) {
-            $config = Config::get_notification_push_jpush('system_conf');
+            $config = Config::get_notification_message_rongcloud('system_conf');
             if (empty($config) || empty($config['app_key']) || empty($config['app_secret'])) {
                 throw new Exception('RongCloud conf error');
             }
