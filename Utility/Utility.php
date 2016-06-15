@@ -550,4 +550,33 @@ class Utility
         unset ($proArr);
         return $result;
     }
+
+    /**
+     * 时间戳格式转换
+     *
+     * @param $timestamp
+     * @return bool|string
+     */
+    public static function formatTimestamp($timestamp){
+        $nowTime 	= time();
+        $showTime 	= is_numeric($timestamp) ? $timestamp : strtotime($timestamp);
+        $dur = $nowTime - $showTime;
+        if($dur < 180){
+            return '刚刚';
+        }else{
+            if($dur < 3600){
+                return floor($dur/60).'分钟前';
+            }else{
+                if($dur < 86400){
+                    return floor($dur/3600).'小时前';
+                }else{
+                    if($dur < 864000){
+                        return floor($dur/86400).'天前';
+                    }else{
+                        return date("Y-m-d", $showTime);
+                    }
+                }
+            }
+        }
+    }
 }

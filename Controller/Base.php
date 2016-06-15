@@ -10,6 +10,7 @@
 namespace TheFairLib\Controller;
 
 use TheFairLib\Config\Config;
+use TheFairLib\Http\Request;
 use TheFairLib\Http\Response;
 use TheFairLib\Utility\Utility;
 
@@ -58,7 +59,7 @@ abstract class Base extends \Yaf\Controller_Abstract
         }
         //初始化特殊设置
         $funcName = strtolower('get_params_'.$this->_request->getModuleName().'_'.$this->_request->getControllerName());
-        $specialParams = Config::$funcName($this->_getControllerName());
+        $specialParams = Config::$funcName(Request::getOriginalAction());
 
         if(!empty($specialParams)){
             foreach($specialParams as $key => $conf){

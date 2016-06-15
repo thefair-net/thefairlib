@@ -10,16 +10,17 @@ namespace TheFairLib\Controller\Page;
 
 use TheFairLib\Controller\Base;
 use TheFairLib\Http\Response\BigPipe;
+use TheFairLib\Http\Response\Page;
 
 class Controller extends Base
 {
     /**
-     * @var BigPipe
+     * @var Page
      */
     protected static $_responseObj = false;
     protected function init(){
         if(self::$_responseObj === false){
-            self::$_responseObj = new BigPipe();
+            self::$_responseObj = new Page(new \stdClass());
         }
     }
 
@@ -38,6 +39,9 @@ class Controller extends Base
     }
 
     public function showBPPage($pageName){
+        if(!self::$_responseObj instanceof BigPipe){
+            self::$_responseObj = new BigPipe();
+        }
         $pageClassName = ucfirst($this->getRequest()->getModuleName())."\\Page\\".ucfirst($this->getRequest()->getControllerName())."\\".ucfirst($pageName);
         self::$_responseObj->setPage($pageClassName);
         $this->_setResponse(self::$_responseObj->send());
