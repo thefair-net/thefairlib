@@ -8,12 +8,27 @@
  */
 namespace TheFairLib\Http;
 
-use Yaf\Request_Abstract;
+class Request{
+    private static $_instance = null;
+    static public function Instance()
+    {
+        if (empty(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
 
-class Request extends Request_Abstract{
-    public static function getOriginalAction(){
-        $uri = self::getRequestUri();
-        $uriAry = explode(DIRECTORY_SEPARATOR, $uri);
-        return end($uriAry);
+    public function getOriginalAction(){
+        return self::Instance()->_getPathInfo('filename');
+    }
+
+    public static function getRequestFormat(){
+        return self::Instance()->_getPathInfo('extension');
+    }
+
+    private function _getPathInfo($key = ''){
+        $uri = $_SERVER['REQUEST_URI'];
+        $pathInfo = pathinfo($uri);
+        return !empty($key) ? (isset($pathInfo[$key]) ? $pathInfo[$key] : '') : $pathInfo;
     }
 }

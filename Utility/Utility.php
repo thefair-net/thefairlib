@@ -579,4 +579,64 @@ class Utility
             }
         }
     }
+
+    /**
+     * 统一封装的encode方法
+     *
+     * @param $data
+     * @param string $format
+     * @return string
+     */
+    public static function encode($data, $format = 'json'){
+        switch($format){
+            case 'json':
+                if(extension_loaded('jsond')){
+                    $ret = jsond_encode($data, JSON_UNESCAPED_UNICODE);
+                }else{
+                    $ret = json_encode($data, JSON_UNESCAPED_UNICODE);
+                }
+                break;
+            case 'base64':
+                $ret = base64_encode($data);
+                break;
+            case 'serialize':
+                $ret = serialize($data);
+                break;
+            default:
+                $ret = $data;
+
+        }
+
+        return $ret;
+    }
+
+    /**
+     * 统一封装的decode方法
+     * 
+     * @param $data
+     * @param string $format
+     * @return mixed|string
+     */
+    public static function decode($data, $format = 'json'){
+        switch($format){
+            case 'json':
+                if(extension_loaded('jsond')){
+                    $ret = jsond_decode($data, true);
+                }else{
+                    $ret = json_decode($data, true);
+                }
+                break;
+            case 'base64':
+                $ret = base64_decode($data);
+                break;
+            case 'serialize':
+                $ret = unserialize($data);
+                break;
+            default:
+                $ret = $data;
+
+        }
+
+        return $ret;
+    }
 }
