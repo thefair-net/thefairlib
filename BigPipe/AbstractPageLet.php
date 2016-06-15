@@ -91,7 +91,7 @@ abstract class AbstractPageLet extends Pagelet
             "css" => array(),
             "content" => $html
         );
-        echo "<script>BigPipe && BigPipe.onPageletArrive(".json_encode($pl).")</script>\n";
+        echo "<script>BigPipe && BigPipe.onPageletArrive(".Utility::encode($pl).")</script>\n";
     }
 
 }

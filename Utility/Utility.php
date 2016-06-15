@@ -612,7 +612,7 @@ class Utility
 
     /**
      * 统一封装的decode方法
-     * 
+     *
      * @param $data
      * @param string $format
      * @return mixed|string

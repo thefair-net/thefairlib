@@ -9,6 +9,7 @@
 namespace TheFairLib\Http\Response;
 
 use TheFairLib\Http\Response;
+use TheFairLib\Utility\Utility;
 
 class Service extends Response
 {
@@ -62,7 +63,7 @@ class Service extends Response
     }
 
     protected function _serialize($content){
-        $content = json_encode($content, JSON_UNESCAPED_UNICODE);
+        $content = Utility::encode($content);
 
         return $content;
     }

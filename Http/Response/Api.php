@@ -63,7 +63,7 @@ class Api extends Response
     }
 
     protected function _serialize($content){
-        $content = json_encode($content, JSON_UNESCAPED_UNICODE);
+        $content = Utility::encode($content);
 
         if(self::$_isJsonp === true){
             $content = self::$_jsonpCallbackName . '(' . $content . ');';

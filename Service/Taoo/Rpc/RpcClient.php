@@ -12,6 +12,7 @@ use TheFairLib\DB\Redis\Cache;
 use TheFairLib\Exception\Base;
 use TheFairLib\Logger\Logger;
 use TheFairLib\Service\Swoole\Client\TCP;
+use TheFairLib\Utility\Utility;
 use Yaf\Exception;
 
 class RpcClient extends TCP
@@ -58,7 +59,7 @@ class RpcClient extends TCP
         if(empty($result)){
             $result = $this->call($url, $params);
             if($cacheTtl !== false){
-                $this->_getCache()->setex($cacheKey, $cacheTtl, json_encode($result, JSON_UNESCAPED_UNICODE));
+                $this->_getCache()->setex($cacheKey, $cacheTtl, Utility::encode($result));
             }
         }else{
             $result = json_decode($result, true);
@@ -99,7 +100,7 @@ class RpcClient extends TCP
 
     private function _getServiceCacheKey($url, $params){
         $serviceConfig = $this->_getServiceConfigKey($url);
-        return !empty($serviceConfig) ? 'service_cache_'.Config::get_app('phase').'::'.$serviceConfig.'_'.md5($this->getServerTag().$url.json_encode($params)) : null;
+        return !empty($serviceConfig) ? 'service_cache_'.Config::get_app('phase').'::'.$serviceConfig.'_'.md5($this->getServerTag().$url.Utility::encode($params)) : null;
     }
 
     private function _getServiceConfigKey($url){

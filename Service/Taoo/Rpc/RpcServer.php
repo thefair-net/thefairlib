@@ -12,6 +12,7 @@ use TheFairLib\Controller\Service\Error;
 use TheFairLib\Exception\Service\ServiceException;
 use TheFairLib\Logger\Logger;
 use TheFairLib\Service\Swoole\Network\Protocol\BaseServer;
+use TheFairLib\Utility\Utility;
 use Yaf\Application;
 use Yaf\Request\Http;
 
@@ -70,7 +71,7 @@ class RpcServer extends BaseServer
                 ];
             }
 
-            $result = json_encode($ret, JSON_UNESCAPED_UNICODE);
+            $result = Utility::encode($ret);
         }
 
         Logger::Instance()->info('onReceive');

@@ -9,6 +9,7 @@
 namespace TheFairLib\BigPipe\Render;
 
 use TheFairLib\BigPipe\Pagelet;
+use TheFairLib\Utility\Utility;
 
 class ScriptOnlyStreamlineRender extends StreamlineRender{
     protected $skeletonMetaData = array();
@@ -40,7 +41,7 @@ class ScriptOnlyStreamlineRender extends StreamlineRender{
     protected function surroundWithScriptTag($string){
         $jsonAry 	= json_decode($string, true);
         $jsonAry["js"] = array();
-        $string		= json_encode($jsonAry);
+        $string		= Utility::encode($jsonAry);
         $callback 	= !empty($_GET["__cb"]) ? strip_tags($_GET["__cb"]) : "BigPipe && BigPipe.onPageletArrive";
         return $_GET["__no_cb"] == 1 ? $string : "$callback({$string});\n";
     }

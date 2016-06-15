@@ -18,7 +18,7 @@ class Request{
         return self::$_instance;
     }
 
-    public function getOriginalAction(){
+    public static function getOriginalAction(){
         return self::Instance()->_getPathInfo('filename');
     }
 
