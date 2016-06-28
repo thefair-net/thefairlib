@@ -19,16 +19,23 @@ class Request{
     }
 
     public static function getOriginalAction(){
-        return self::Instance()->_getPathInfo('filename');
+        $path = self::Instance()->_getUriInfo('path');
+        return self::Instance()->_getPathInfo($path, 'filename');
     }
 
     public static function getRequestFormat(){
-        return self::Instance()->_getPathInfo('extension');
+        $path = self::Instance()->_getUriInfo('path');
+        return self::Instance()->_getPathInfo($path, 'extension');
     }
 
-    private function _getPathInfo($key = ''){
-        $uri = $_SERVER['REQUEST_URI'];
-        $pathInfo = pathinfo($uri);
+    private function _getPathInfo($path, $key = ''){
+        $pathInfo = pathinfo($path);
         return !empty($key) ? (isset($pathInfo[$key]) ? $pathInfo[$key] : '') : $pathInfo;
+    }
+
+    private function _getUriInfo($key = ''){
+        $uri = $_SERVER['REQUEST_URI'];
+        $uriInfo = parse_url($uri);
+        return !empty($key) ? (isset($uriInfo[$key]) ? $uriInfo[$key] : '') : $uriInfo;
     }
 }

@@ -10,16 +10,12 @@ namespace TheFairLib\BigPipe;
 
 abstract class AbstractPage extends AbstractPageLet
 {
-
-    public function __construct(Array $children = [], $tplPath = '') {
-        parent::__construct($children, $tplPath);
-    }
     /**
-     * 通过$this->get_page_meta_data方法获取每个pl的meta_data
+     * 通过$this->getPageMetaData方法获取每个pl的meta_data
      * 并在此merge全局公共的meta_data
      */
-    public function get_meta_data(){
-        $medaData = array_merge($this->get_page_meta_data(),[
+    public function getMetaData(){
+        $medaData = array_merge($this->getPageMetaData(),[
 // 			"UNREADNUM" 	=> $unread,
 // 			"GLOBAL_TITLE" 	=> Lang_Zh::$GlobalTitle,
 // 			"GLOBAL_DESC" 	=> Lang_Zh::$GlobalDESC,
@@ -32,7 +28,7 @@ abstract class AbstractPage extends AbstractPageLet
     /**
      * 每个page的meta_data在此定义为数组即可
      */
-    protected function get_page_meta_data(){
+    protected function getPageMetaData(){
         return [];
     }
 }

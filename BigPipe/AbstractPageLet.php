@@ -8,6 +8,7 @@
  */
 namespace TheFairLib\BigPipe;
 
+use TheFairLib\Config\Config;
 use TheFairLib\Utility\Utility;
 
 abstract class AbstractPageLet extends Pagelet
@@ -17,37 +18,45 @@ abstract class AbstractPageLet extends Pagelet
     protected $plGlobals 	= [];
     protected $name 		= '';
     protected $isSkeleton 	= false;
+    protected static $_params;
 
-
-    public function __construct(Array $children = [], $tplPath = '') {
+    public function __construct($tplPath = '') {
+        self::$_params = Utility::get_requset_params();
         if(empty($this->name)){
             $this->name = strtolower(get_class($this));
         }
-
         $this->setTemplate(strtolower((!empty($tplPath) ? $tplPath : str_replace("_", "/", get_class($this)))).'.tpl');
-        parent::__construct($this->name, $children);
+
+        $this->setDependsScripts();
+        $this->setDependsStyles();
+        parent::__construct($this->name, $this->_getChildren());
     }
 
-    public function get_global_meta_data(){
-        $meda_data = array_merge($this->get_pl_global_data(), $this->plGlobals);
-        if(!empty($meda_data["PAGE_TITLE"])){
-            $meda_data["PAGE_TITLE"] = Utility::utf8SubStr($meda_data["PAGE_TITLE"], 80);
+    /**
+     * @return array $children
+     */
+    abstract protected function _getChildren();
+
+    public function getGlobalMetaData(){
+        $medaData = array_merge($this->getPlGlobalData(), $this->plGlobals);
+        if(!empty($medaData["PAGE_TITLE"])){
+            $medaData["PAGE_TITLE"] = Utility::utf8SubStr($medaData["PAGE_TITLE"], 80);
         }
-        if(!empty($meda_data["PAGE_DESC"])){
-            $meda_data["PAGE_DESC"] = Utility::utf8SubStr($meda_data["PAGE_DESC"], 90);
+        if(!empty($medaData["PAGE_DESC"])){
+            $medaData["PAGE_DESC"] = Utility::utf8SubStr($medaData["PAGE_DESC"], 90);
         }
-        if(!empty($meda_data["PAGE_KWD"])){
-            $meda_data["PAGE_KWD"] = Utility::utf8SubStr($meda_data["PAGE_KWD"], 80);
+        if(!empty($medaData["PAGE_KWD"])){
+            $medaData["PAGE_KWD"] = Utility::utf8SubStr($medaData["PAGE_KWD"], 80);
         }
-        return $meda_data;
+        return $medaData;
     }
 
-    protected function get_pl_global_data(){
+    protected function getPlGlobalData(){
         $global_data =array();
         return $global_data;
     }
 
-    protected function set_pl_global($key, $value){
+    protected function setPlGlobal($key, $value){
         if(!empty($value)){
             $this->plGlobals[$key] = $value;
         }else{
@@ -57,16 +66,16 @@ abstract class AbstractPageLet extends Pagelet
         }
     }
 
-    protected function set_title($title, $type = "PAGE_TITLE"){
-        $this->set_pl_global($type, $title);
+    protected function setTitle($title, $type = "PAGE_TITLE"){
+        $this->setPlGlobal($type, $title);
     }
 
-    protected function set_desc($description, $type = "PAGE_DESC"){
-        $this->set_pl_global($type, $description);
+    protected function setDesc($description, $type = "PAGE_DESC"){
+        $this->setPlGlobal($type, $description);
     }
 
-    protected function set_kwd($keywords, $type = "PAGE_KWD"){
-        $this->set_pl_global($type, $keywords);
+    protected function setKwd($keywords, $type = "PAGE_KWD"){
+        $this->setPlGlobal($type, $keywords);
     }
 
     protected function message($msg, $redirect='/', $timeout=3){
@@ -75,7 +84,7 @@ abstract class AbstractPageLet extends Pagelet
             'redirect'=>$redirect,
             'timeout'=>$timeout,
         );
-        $this->end();
+        $this->end(new Exception($msg));
     }
 
     public function end(Exception $e){
@@ -94,4 +103,19 @@ abstract class AbstractPageLet extends Pagelet
         echo "<script>BigPipe && BigPipe.onPageletArrive(".Utility::encode($pl).")</script>\n";
     }
 
+    public function setDependsScripts($scripts = []) {
+        $config = Config::get_bigpipe_scripts(str_replace('_', '.', $this->name));
+        if(empty($config) || !is_array($config)){
+            $config = [];
+        }
+        $this->scripts = array_merge($scripts, $config);
+    }
+
+    public function setDependsStyles($styles = []) {
+        $config = Config::get_bigpipe_styles(str_replace('_', '.', $this->name));
+        if(empty($config) || !is_array($config)){
+            $config = [];
+        }
+        $this->styles = array_merge($styles, $config);
+    }
 }
