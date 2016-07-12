@@ -79,11 +79,8 @@ class BigPipe extends Response
     }
 
     public function setPage($tplPath){
-        $pageName = "\\BigPipe\\".str_replace(' ', '', lcfirst(ucwords(str_replace('_', ' ', $tplPath))));
+        $pageName = "\\BigPipe\\".str_replace(' ', '', ucwords(str_replace('_', ' ', $tplPath)));
         $this->_page = new $pageName();
-        if($this->_page instanceof Pagelet){
-            $this->_page->setTemplate(strtolower($tplPath.'.tpl'));
-        }
     }
 
     /**

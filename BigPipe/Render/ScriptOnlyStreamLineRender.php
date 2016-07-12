@@ -39,7 +39,7 @@ class ScriptOnlyStreamlineRender extends StreamlineRender{
     }
 
     protected function surroundWithScriptTag($string){
-        $jsonAry 	= json_decode($string, true);
+        $jsonAry 	= Utility::decode($string);
         $jsonAry["js"] = array();
         $string		= Utility::encode($jsonAry);
         $callback 	= !empty($_GET["__cb"]) ? strip_tags($_GET["__cb"]) : "BigPipe && BigPipe.onPageletArrive";

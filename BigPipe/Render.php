@@ -9,7 +9,7 @@
 namespace TheFairLib\BigPipe;
 
 use TheFairLib\BigPipe\Render\ScriptOnlyStreamlineRender;
-use TheFairLib\BigPipe\Render\StreamlineRender;
+use TheFairLib\BigPipe\Render\StreamLineRender;
 use TheFairLib\BigPipe\Render\TraditionalRender;
 use TheFairLib\Smarty\Adapter;
 use TheFairLib\Utility\Utility;
@@ -50,7 +50,7 @@ abstract class Render{
 
         switch($renderType) {
             case 'Streamline':
-                return new StreamlineRender($pl);
+                return new StreamLineRender($pl);
                 break;
             case 'Traditional':
                 return new TraditionalRender($pl);

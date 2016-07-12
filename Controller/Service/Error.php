@@ -12,6 +12,7 @@ use TheFairLib\Controller\ErrorBase;
 use TheFairLib\Exception\Service\ServiceException;
 use TheFairLib\Http\Response\Service;
 use TheFairLib\Logger\Logger;
+use TheFairLib\Utility\Utility;
 use \Yaf\Exception as Exception;
 
 class Error extends ErrorBase
@@ -35,7 +36,7 @@ class Error extends ErrorBase
             if(defined('APP_NAME')){
                 Logger::Instance()->error(  date("Y-m-d H:i:s +u")."\n"
                                             ."请求接口:{$_SERVER['REQUEST_URI']}\n"
-                                            ."请求参数:".json_encode($_REQUEST)."\n"
+                                            ."请求参数:".Utility::encode($_REQUEST)."\n"
                                             ."错误信息:".$e->getMessage()."\n"
                                             ."Trace:".$e->getTraceAsString()."\n\n");
             }

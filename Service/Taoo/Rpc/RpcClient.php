@@ -62,7 +62,7 @@ class RpcClient extends TCP
                 $this->_getCache()->setex($cacheKey, $cacheTtl, Utility::encode($result));
             }
         }else{
-            $result = json_decode($result, true);
+            $result = Utility::decode($result);
         }
 
         //如果设置了只返回结果,当code!=0的时候,直接抛出异常
@@ -82,14 +82,14 @@ class RpcClient extends TCP
     }
 
     protected function _encode($data){
-        $data = base64_encode(gzcompress(json_encode($data, JSON_UNESCAPED_UNICODE)));
+        $data = base64_encode(gzcompress(Utility::encode($data)));
         //因为swoole扩展启用了open_length_check,需要在数据头部增加header @todo 增加长度校验及扩展头
         return pack("N", strlen($data)) .$data;
     }
 
     protected function _decode($data){
         $data = substr($data, 4);
-        return json_decode(gzuncompress(base64_decode($data)), true);
+        return Utility::decode(gzuncompress(base64_decode($data)));
     }
 
     private function _getServiceCacheTtl($url){

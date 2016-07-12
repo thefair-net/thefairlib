@@ -11,6 +11,7 @@ namespace TheFairLib\Controller\Api;
 use TheFairLib\Controller\ErrorBase;
 use TheFairLib\Exception\Api\ApiException;
 use TheFairLib\Logger\Logger;
+use TheFairLib\Utility\Utility;
 use \Yaf\Exception as Exception;
 use TheFairLib\Http\Response\Api;
 
@@ -33,8 +34,8 @@ class Error extends ErrorBase
                 Logger::Instance()->error(  date("Y-m-d H:i:s +u")."\n"
                                             ."来源IP:{$_SERVER['REMOTE_ADDR']}\n"
                                             ."请求接口:{$_SERVER['REQUEST_URI']}\n"
-                                            ."请求Cookie:".json_encode($_COOKIE)."\n"
-                                            ."请求参数:".json_encode($_REQUEST)."\n"
+                                            ."请求Cookie:".Utility::encode($_COOKIE)."\n"
+                                            ."请求参数:".Utility::encode($_REQUEST)."\n"
                                             ."错误信息:".$e->getMessage()."\n"
                                             ."Trace:".$e->getTraceAsString()."\n\n");
             }

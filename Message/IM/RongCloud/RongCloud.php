@@ -16,6 +16,7 @@
 namespace TheFairLib\Message\IM\RongCloud;
 
 use TheFairLib\Config\Config;
+use TheFairLib\Utility\Utility;
 use Yaf\Exception;
 
 class RongCloud
@@ -1155,7 +1156,7 @@ class RongCloud
             if (empty($notification['alert']))
                 throw new Exception('	默认推送消息内容不能为空');
 
-            $message['content'] = json_encode($message['content']);
+            $message['content'] = Utility::encode($message['content']);
             $params['platform'] = $platform;
             $params['fromuserid'] = $fromuserid;
             $params['audience'] = $audience;

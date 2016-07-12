@@ -7,7 +7,7 @@
  * @copyright 2015-2025 TheFair
  */
 namespace TheFairLib\BigPipe;
-class Pagelet implements \ArrayAccess,\IteratorAggregate  {
+class PageLet implements \ArrayAccess,\IteratorAggregate  {
     static private $pageletNames = array();
     private $name = '';
     /**

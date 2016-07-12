@@ -13,7 +13,7 @@ use TheFairLib\BigPipe\Pagelet;
 use TheFairLib\BigPipe\Render;
 use TheFairLib\Utility\Utility;
 
-class StreamlineRender extends Render{
+class StreamLineRender extends Render{
     protected $deferedPagelets = array();
     protected $scripts = array();
     protected $skeletonScripts = array();

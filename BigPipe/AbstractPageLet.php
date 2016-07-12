@@ -11,7 +11,7 @@ namespace TheFairLib\BigPipe;
 use TheFairLib\Config\Config;
 use TheFairLib\Utility\Utility;
 
-abstract class AbstractPageLet extends Pagelet
+abstract class AbstractPageLet extends PageLet
 {
     public $showLoading 	= false;
     protected $tpl 			= '';
@@ -25,7 +25,8 @@ abstract class AbstractPageLet extends Pagelet
         if(empty($this->name)){
             $this->name = strtolower(get_class($this));
         }
-        $this->setTemplate(strtolower((!empty($tplPath) ? $tplPath : str_replace("_", "/", get_class($this)))).'.tpl');
+
+        $this->setTemplate($this->_getTplPath($tplPath));
 
         $this->setDependsScripts();
         $this->setDependsStyles();
@@ -117,5 +118,16 @@ abstract class AbstractPageLet extends Pagelet
             $config = [];
         }
         $this->styles = array_merge($styles, $config);
+    }
+
+    protected function _getTplPath($tplPath){
+        if(empty($tplPath)){
+            $tplPath = str_replace("_", DIRECTORY_SEPARATOR, get_class($this));
+        }else{
+            $tplPath = str_replace('\\', DIRECTORY_SEPARATOR, $tplPath);
+        }
+
+        $pathAry = pathinfo($tplPath);
+        return strtolower($pathAry['dirname']).DIRECTORY_SEPARATOR.lcfirst($pathAry['basename']).'.tpl';
     }
 }
