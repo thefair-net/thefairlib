@@ -262,13 +262,18 @@ abstract class DataModel
             }
         }
 
-        return [
+        $result = [
             'item_list' => $list,
             'item_count' => $total,
             'item_per_page' => $itemPerPage,
             'page_count' => $pageCount,
-            'last_item_id' => (string)$lastItemId,
         ];
+
+        $lastPos = $order == 'desc' ? $this->Storage()->zRevRank($listCacheKey, $lastItemId) : $this->Storage()->zRank($listCacheKey, $lastItemId);
+        if($lastPos != $total - 1 && !empty($list)){
+            $result['last_item_id'] = (string)$lastItemId;
+        }
+        return $result;
     }
 
     /**

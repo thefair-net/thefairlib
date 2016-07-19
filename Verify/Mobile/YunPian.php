@@ -16,8 +16,10 @@ use TheFairLib\Verify\Mobile\Inter\Sms;
 
 class YunPian implements Sms
 {
-    const SEND_URL = 'http://yunpian.com/v1/sms/send.json';
-    const SEND_URL_TPL = 'http://yunpian.com/v1/sms/tpl_send.json';
+    const SEND_URL = 'https://sms.yunpian.com/v2/sms/single_send.json';
+    const SEND_URL_TPL = 'https://sms.yunpian.com/v2/sms/tpl_single_send.json';
+    const BATCH_SEND_URL = 'https://sms.yunpian.com/v2/sms/multi_send.json';
+    const BATCH_SEND_URL_TPL = 'https://sms.yunpian.com/v2/sms/tpl_batch_send.json';
 
     private $_appKey;
 
@@ -40,13 +42,6 @@ class YunPian implements Sms
      */
     public function sendMessage($mobile, $msg)
     {
-        if (!Utility::isMobile($mobile)) {
-            throw new Exception('error mobile :' . $mobile);
-        }
-        if (empty($msg)) {
-            throw new Exception('`msg` is not null');
-        }
-
         $data = array(
             'apikey' => $this->_appKey,
             'mobile' => $mobile,
@@ -68,13 +63,6 @@ class YunPian implements Sms
      */
     public function sendTplMessage($tpl, $mobile, $msg)
     {
-        if (!Utility::isMobile($mobile)) {
-            throw new Exception('error mobile :' . $mobile);
-        }
-        if (empty($msg)) {
-            throw new Exception('`msg` is not null');
-        }
-
         $data = array(
             'apikey' => $this->_appKey,
             'mobile' => $mobile,
@@ -89,18 +77,50 @@ class YunPian implements Sms
     /**
      * 群发信息
      *
-     * @param $mobile
-     * @param $msg
+     * @param $mobileAndMsgList
+     * @return null
      * @throws Exception
      */
-    public function sendMessageList($mobile, $msg)
+    public function sendMessageList($mobileAndMsgList)
     {
-        if (is_array($mobile)) {
-            throw new Exception('mobile is array');
+        if(empty($mobileAndMsgList) || !is_array($mobileAndMsgList)){
+            throw new Exception('mobileAndMsgList error');
         }
-        if (empty($msg)) {
-            throw new Exception('`msg` is not null');
+        if(count($mobileAndMsgList) > 1000){
+            throw new Exception('mobileAndMsgList is too many');
+        }
+        $mobileList = $msgList = [];
+        foreach($mobileAndMsgList as $item){
+            $mobileList[] = $item['mobile'];
+            $msgList[] = urlencode($item['msg']);
         }
 
+        $data = array(
+            'apikey' => $this->_appKey,
+            'mobile' => implode(',', $mobileList),
+            'text' => implode(',', $msgList),
+        );
+        $curl = new Curl();
+        $curl->post(self::SEND_URL_TPL, $data);
+        return $curl->response;
+    }
+
+    public function sendTplMessageList($tpl, $mobileList, $msg){
+        if(empty($mobileList) || !is_array($mobileList)){
+            throw new Exception('mobileAndMsgList error');
+        }
+        if(count($mobileList) > 1000){
+            throw new Exception('mobileAndMsgList is too many');
+        }
+        $mobile = implode(',', $mobileList);
+        $data = array(
+            'apikey' => $this->_appKey,
+            'mobile' => $mobile,
+            'tpl_id' => $tpl,
+            'tpl_value' => $msg,
+        );
+        $curl = new Curl();
+        $curl->post(self::SEND_URL_TPL, $data);
+        return $curl->response;
     }
 }
