@@ -9,41 +9,113 @@
 namespace TheFairLib\Controller\Page;
 
 use TheFairLib\Controller\ErrorBase;
+use TheFairLib\Exception\Page\PageException;
+use TheFairLib\Http\Response\Page;
+use TheFairLib\Logger\Logger;
+use TheFairLib\Utility\Utility;
 use \Yaf\Exception as Exception;
 use Yaf\Registry;
-use \Exception as E;
 
 
 abstract class Error extends ErrorBase
 {
-
-    public function errorAction(E $exception)
-    {
-        if (Registry::get('config')->phase != 'pro') {
-//            echo '<pre>';
-//            print_r($exception);
-        }
+    protected static $_responseObj = false;
+    protected function init(){
         \Yaf\Dispatcher::getInstance()->autoRender(false);
-        switch ($exception->getCode()) {
-            case \YAF\ERR\NOTFOUND\MODULE:
-            case \YAF\ERR\NOTFOUND\CONTROLLER:
-            case \YAF\ERR\NOTFOUND\ACTION:
-            case \YAF\ERR\NOTFOUND\VIEW:
-            case 404:
-                header("Content-type: text/html; charset=utf-8");
-                header("status: 404 Not Found");
-                $this->display("404");
-                break;
-            default :
-                header("Content-type: text/html; charset=utf-8");
-                header("status: 500 Internal Server Error");
-                if (Registry::get('config')->phase == 'pro') {
-                    $this->display("500");
-                } else {
-                    echo $exception->getMessage();
-                }
-                break;
+        if(self::$_responseObj === false){
+            self::$_responseObj = new Page(new \stdClass());
+        }
+    }
+
+    protected function _errorDefault(\Exception $e){
+        if($e instanceof PageException){
+            $this->showError(
+                $e->getMessage(), $e->getExtData(),  $e->getExtCode(), $e->getHttpStatus()
+            );
+        }else{
+            if(defined('APP_NAME')){
+                Logger::Instance()->error(  date("Y-m-d H:i:s +u")."\n"
+                    ."来源IP:{$_SERVER['REMOTE_ADDR']}\n"
+                    ."请求接口:{$_SERVER['REQUEST_URI']}\n"
+                    ."请求Cookie:".Utility::encode($_COOKIE)."\n"
+                    ."请求参数:".Utility::encode($_REQUEST)."\n"
+                    ."错误信息:".$e->getMessage()."\n"
+                    ."Trace:".$e->getTraceAsString()."\n\n");
+            }
+            $this->_DealIllegalRequest($e->getMessage());
         }
 
+    }
+
+    protected function _errorNotfoundModule(Exception $e){
+        $this->_DealNotfoundRequest();
+    }
+
+    protected function _errorNotfoundController(Exception $e){
+        $this->_DealNotfoundRequest();
+    }
+
+    protected function _errorNotfoundAction(Exception $e){
+        $this->_DealNotfoundRequest();
+    }
+
+    protected function _errorNotfoundView(Exception $e){
+        $this->_DealNotfoundRequest();
+    }
+
+    protected function _DealIllegalRequest($msg = ''){
+        header("Content-type: text/html; charset=utf-8");
+        header("status: 500 Internal Server Error");
+        if (Registry::get('config')->phase == 'pro') {
+            $this->display("500");
+        } else {
+            echo $msg;
+        }
+    }
+
+    protected function _DealNotfoundRequest(){
+        header("Content-type: text/html; charset=utf-8");
+        header("status: 404 Not Found");
+        $this->display("404");
+    }
+
+    public function showResult($result, $msg = '', $code = '0'){
+        self::$_responseObj->setCode($code);
+        self::$_responseObj->setMsg($msg);
+        if(!empty($result)){
+            self::$_responseObj->setResult($result);
+
+        }
+        $this->_setResponse(self::$_responseObj->send());
+    }
+
+    public function showError($error, $result = array() , $code = '10000', $httpCode = 400){
+        self::$_responseObj->setHttpCode($httpCode);
+        if($this->isAjax()){
+            $this->showResult($result, $error, $code);
+        }else{
+            $this->display('500', ['error' => $error, 'result' => $result , 'code' => $code]);
+        }
+    }
+
+    public function assign($varName, $varValue){
+        return $this->getView()->assign($varName, $varValue);
+    }
+
+    public function display($actionName = '', $varArray = [])
+    {
+        if(empty($actionName)){
+            $actionName = $this->getRequest()->getActionName();
+        }
+        parent::display($actionName, $varArray);
+    }
+
+    /**
+     * 判断是否为AJAX请求
+     *
+     * @return bool
+     */
+    public function isAjax(){
+        return $this->getRequest()->isXmlHttpRequest();
     }
 }
