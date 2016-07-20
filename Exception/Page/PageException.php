@@ -9,9 +9,9 @@
  */
 namespace TheFairLib\Exception\Page;
 
-use TheFairLib\Exception\Base;
+use TheFairLib\Exception\BaseException;
 
-class PageException extends Base
+class PageException extends BaseException
 {
 
 }

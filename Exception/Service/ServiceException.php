@@ -10,9 +10,9 @@
 namespace TheFairLib\Exception\Service;
 
 use TheFairLib\Config\Config;
-use TheFairLib\Exception\Base;
+use TheFairLib\Exception\BaseException;
 
-class ServiceException extends Base
+class ServiceException extends BaseException
 {
     private $extData = array();
     private $extCode = '10000';

@@ -10,10 +10,10 @@
 namespace TheFairLib\Exception\Api;
 
 use TheFairLib\Config\Config;
-use TheFairLib\Exception\Base;
+use TheFairLib\Exception\BaseException;
 use TheFairLib\I18N\TranslateHelper;
 
-class ApiException extends Base
+class ApiException extends BaseException
 {
     private $extData = array();
     private $extCode = '10000';

@@ -9,7 +9,7 @@
  */
 namespace TheFairLib\Exception;
 
-abstract class Base extends \Yaf\Exception
+abstract class BaseException extends \Yaf\Exception
 {
 
 }
