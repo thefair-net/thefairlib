@@ -9,9 +9,9 @@
 
 namespace TheFairLib\Controller;
 
-use TheFairLib\Exception\Base;
+use TheFairLib\Exception\Base as BaseException;
 
-class Exception extends Base
+class Exception extends BaseException
 {
 
 }

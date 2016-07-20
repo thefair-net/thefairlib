@@ -233,7 +233,7 @@ class Upload
             "name" => $this->fileName,
             //"path" => $this->fullName,
             "size" => $this->fileSize,
-            //"type" => $this->fileType,
+            "type" => substr($this->fileType, 1),
             "state" => $this->stateInfo,
             "info" => $this->imageInfo,
         ];

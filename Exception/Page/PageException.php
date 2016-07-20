@@ -11,7 +11,7 @@ namespace TheFairLib\Exception\Page;
 
 use TheFairLib\Exception\Base;
 
-class Exception extends Base
+class PageException extends Base
 {
 
 }
