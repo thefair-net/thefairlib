@@ -20,50 +20,58 @@ use Yaf\Registry;
 abstract class Error extends ErrorBase
 {
     protected static $_responseObj = false;
-    protected function init(){
+
+    protected function init()
+    {
         \Yaf\Dispatcher::getInstance()->autoRender(false);
-        if(self::$_responseObj === false){
+        if (self::$_responseObj === false) {
             self::$_responseObj = new Page(new \stdClass());
         }
     }
 
-    protected function _errorDefault(\Exception $e){
-        if($e instanceof PageException){
+    protected function _errorDefault(\Exception $e)
+    {
+        if ($e instanceof PageException) {
             $this->showError(
-                $e->getMessage(), $e->getExtData(),  $e->getExtCode(), $e->getHttpStatus()
+                $e->getMessage(), $e->getExtData(), $e->getExtCode(), $e->getHttpStatus()
             );
-        }else{
-            if(defined('APP_NAME')){
-                Logger::Instance()->error(  date("Y-m-d H:i:s +u")."\n"
-                    ."来源IP:{$_SERVER['REMOTE_ADDR']}\n"
-                    ."请求接口:{$_SERVER['REQUEST_URI']}\n"
-                    ."请求Cookie:".Utility::encode($_COOKIE)."\n"
-                    ."请求参数:".Utility::encode($_REQUEST)."\n"
-                    ."错误信息:".$e->getMessage()."\n"
-                    ."Trace:".$e->getTraceAsString()."\n\n");
+        } else {
+            if (defined('APP_NAME')) {
+                Logger::Instance()->error(date("Y-m-d H:i:s +u") . "\n"
+                    . "来源IP:{$_SERVER['REMOTE_ADDR']}\n"
+                    . "请求接口:{$_SERVER['REQUEST_URI']}\n"
+                    . "请求Cookie:" . Utility::encode($_COOKIE) . "\n"
+                    . "请求参数:" . Utility::encode($_REQUEST) . "\n"
+                    . "错误信息:" . $e->getMessage() . "\n"
+                    . "Trace:" . $e->getTraceAsString() . "\n\n");
             }
             $this->_DealIllegalRequest($e->getMessage());
         }
 
     }
 
-    protected function _errorNotfoundModule(Exception $e){
+    protected function _errorNotfoundModule(Exception $e)
+    {
         $this->_DealNotfoundRequest();
     }
 
-    protected function _errorNotfoundController(Exception $e){
+    protected function _errorNotfoundController(Exception $e)
+    {
         $this->_DealNotfoundRequest();
     }
 
-    protected function _errorNotfoundAction(Exception $e){
+    protected function _errorNotfoundAction(Exception $e)
+    {
         $this->_DealNotfoundRequest();
     }
 
-    protected function _errorNotfoundView(Exception $e){
+    protected function _errorNotfoundView(Exception $e)
+    {
         $this->_DealNotfoundRequest();
     }
 
-    protected function _DealIllegalRequest($msg = ''){
+    protected function _DealIllegalRequest($msg = '')
+    {
         header("Content-type: text/html; charset=utf-8");
         header("status: 500 Internal Server Error");
         if (Registry::get('config')->phase == 'pro') {
@@ -73,38 +81,42 @@ abstract class Error extends ErrorBase
         }
     }
 
-    protected function _DealNotfoundRequest(){
+    protected function _DealNotfoundRequest()
+    {
         header("Content-type: text/html; charset=utf-8");
         header("status: 404 Not Found");
         $this->display("404");
     }
 
-    public function showResult($result, $msg = '', $code = '0'){
+    public function showResult($result, $msg = '', $code = '0')
+    {
         self::$_responseObj->setCode($code);
         self::$_responseObj->setMsg($msg);
-        if(!empty($result)){
+        if (!empty($result)) {
             self::$_responseObj->setResult($result);
 
         }
         $this->_setResponse(self::$_responseObj->send());
     }
 
-    public function showError($error, $result = array() , $code = '10000', $httpCode = 400){
+    public function showError($error, $result = array(), $code = '10000', $httpCode = 400)
+    {
         self::$_responseObj->setHttpCode($httpCode);
-        if($this->isAjax()){
+        if ($this->isAjax()) {
             $this->showResult($result, $error, $code);
-        }else{
-            $this->display('500', ['error' => $error, 'result' => $result , 'code' => $code]);
+        } else {
+            $this->display('500', ['error' => $error, 'result' => $result, 'code' => $code]);
         }
     }
 
-    public function assign($varName, $varValue){
+    public function assign($varName, $varValue)
+    {
         return $this->getView()->assign($varName, $varValue);
     }
 
     public function display($actionName = '', $varArray = [])
     {
-        if(empty($actionName)){
+        if (empty($actionName)) {
             $actionName = $this->getRequest()->getActionName();
         }
         parent::display($actionName, $varArray);
@@ -115,7 +127,8 @@ abstract class Error extends ErrorBase
      *
      * @return bool
      */
-    public function isAjax(){
+    public function isAjax()
+    {
         return $this->getRequest()->isXmlHttpRequest();
     }
 }
