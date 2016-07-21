@@ -9,7 +9,7 @@
 namespace TheFairLib\Service\Taoo\Rpc;
 use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
-use TheFairLib\Exception\Base;
+use TheFairLib\Exception\BaseException;
 use TheFairLib\Logger\Logger;
 use TheFairLib\Service\Swoole\Client\TCP;
 use TheFairLib\Utility\Utility;

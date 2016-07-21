@@ -7,9 +7,9 @@
  * @copyright 2015-2025 TheFair
  */
 namespace TheFairLib\Verify;
-use TheFairLib\Exception\Base;
+use TheFairLib\Exception\BaseException;
 
-class Exception extends Base
+class Exception extends BaseException
 {
 
 }

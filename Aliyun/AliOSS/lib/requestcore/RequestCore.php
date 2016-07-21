@@ -1030,4 +1030,4 @@ class ResponseCore
 /**
  * Default RequestCore Exception.
  */
-class RequestCore_Exception extends \TheFairLib\Exception\Base {}
+class RequestCore_Exception extends \TheFairLib\Exception\BaseException {}

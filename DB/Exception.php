@@ -8,9 +8,9 @@
  */
 namespace TheFairLib\Db;
 
-use TheFairLib\Exception\Base;
+use TheFairLib\Exception\BaseException;
 
-class Exception extends Base
+class Exception extends BaseException
 {
 
 }

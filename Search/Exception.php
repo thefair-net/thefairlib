@@ -10,8 +10,8 @@
 
 namespace TheFairLib\Search;
 
-use TheFairLib\Exception\Base;
+use TheFairLib\Exception\BaseException;
 
-class Exception extends Base {
+class Exception extends BaseException {
 
 }
