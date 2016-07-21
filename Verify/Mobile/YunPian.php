@@ -101,7 +101,7 @@ class YunPian implements Sms
             'text' => implode(',', $msgList),
         );
         $curl = new Curl();
-        $curl->post(self::SEND_URL_TPL, $data);
+        $curl->post(self::BATCH_SEND_URL, $data);
         return $curl->response;
     }
 
@@ -120,7 +120,7 @@ class YunPian implements Sms
             'tpl_value' => $msg,
         );
         $curl = new Curl();
-        $curl->post(self::SEND_URL_TPL, $data);
+        $curl->post(self::BATCH_SEND_URL_TPL, $data);
         return $curl->response;
     }
 }
