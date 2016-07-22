@@ -57,7 +57,7 @@ class Client
         }
     }
 
-    public function checkAccountCookie(){
+    public function checkLogin(){
         $checkRet = true;
         $token = Utility::getGpc(self::$_tokenCookieKey, 'C');
         $account = Utility::getGpc(self::$_accountCookieKey, 'C');
@@ -79,24 +79,59 @@ class Client
         return $checkRet;
     }
 
-    public function getAccountCookie($userInfo, $autoSetCookie = true, $keepLoginStatus = true){
+    public function doLogin($userInfo, $autoSetCookie = true, $keepLoginStatus = true){
         $token = $this->_getToken();
         $ttl = $this->_getCookieTtl($keepLoginStatus);
-        $account = $this->_getEncryptAccount($userInfo['uid'], $userInfo['mobile'], $userInfo['nick'], $userInfo['password'], $userInfo['state'], $token);
+        $uid = $userInfo['uid'];
+        $account = $this->_getEncryptAccount($uid, $userInfo['mobile'], $userInfo['nick'], $userInfo['password'], $userInfo['state'], $token);
         $cookies = [
             [self::$_tokenCookieKey, $token, $ttl],
             [self::$_accountCookieKey, $account, $ttl],
-            ['uid', $userInfo['uid'], $ttl],
+            ['uid', $uid, $ttl],
         ];
 
-        if($autoSetCookie === true){
-            foreach($cookies as $cookie){
-                list($K, $v, $t) = $cookie;
+
+        foreach($cookies as $cookie){
+            list($K, $v, $t) = $cookie;
+            $_COOKIE[$K] = $v;
+            if($autoSetCookie === true){
                 Utility::setResponseCookie($K, $v, $t, self::$_cookieDomain);
             }
         }
 
+        $this->_setCurrentUid($uid);
+
         return $cookies;
+    }
+
+    public function doLogout($autoSetCookie = true){
+        $now = time();
+        $ttl = $now - 10000;
+        $cookies = [
+            [self::$_tokenCookieKey, '', $ttl],
+            [self::$_accountCookieKey, '', $ttl],
+            ['uid', '', $ttl],
+        ];
+
+        foreach($cookies as $cookie){
+            list($K, $v, $t) = $cookie;
+            unset($_COOKIE[$K]);
+            if($autoSetCookie === true){
+                Utility::setResponseCookie($K, $v, $t, self::$_cookieDomain);
+            }
+        }
+
+        $this->_setCurrentUid(0);
+
+        return $cookies;
+    }
+
+    public function getCurrentUid(){
+        return Utility::get_uid();
+    }
+
+    private function _setCurrentUid($uid){
+        Utility::set_uid($uid);
     }
 
     private function _getCookieTtl($keepLoginStatus = true){
