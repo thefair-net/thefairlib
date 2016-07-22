@@ -11,7 +11,7 @@ namespace TheFairLib\SSO;
 use TheFairLib\Config\Config;
 use TheFairLib\Utility\Utility;
 
-class Client
+class SSOClient
 {
     static public $instance;
 
@@ -132,7 +132,7 @@ class Client
 
     public function getCurrentUid()
     {
-        return Utility::get_uid();
+        return (int)Utility::get_uid();
     }
 
     private function _setCurrentUid($uid)
