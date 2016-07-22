@@ -34,13 +34,14 @@ class Client
 
     public function __construct($customConfig = [])
     {
-        $systemConfig = (array) Config::get_sso('client');
+        $systemConfig = (array)Config::get_sso('client');
         $config = array_merge($systemConfig, $customConfig);
 
         self::_checkConfig($config);
     }
 
-    private static function _checkConfig($config){
+    private static function _checkConfig($config)
+    {
         $checkList = [
             '_cookieDomain' => 'cookie_domain',
             '_accountCookieKey' => 'account_cookie_key',
@@ -48,16 +49,17 @@ class Client
             '_secret' => 'secret',
         ];
 
-        foreach($checkList as $key => $confKey){
-            if(!empty($config[$confKey])){
+        foreach ($checkList as $key => $confKey) {
+            if (!empty($config[$confKey])) {
                 self::${$key} = $config[$confKey];
-            }else{
-                throw new Exception('config error:'.$confKey);
+            } else {
+                throw new Exception('config error:' . $confKey);
             }
         }
     }
 
-    public function checkLogin(){
+    public function checkLogin()
+    {
         $checkRet = true;
         $token = Utility::getGpc(self::$_tokenCookieKey, 'C');
         $account = Utility::getGpc(self::$_accountCookieKey, 'C');
@@ -79,7 +81,8 @@ class Client
         return $checkRet;
     }
 
-    public function doLogin($userInfo, $autoSetCookie = true, $keepLoginStatus = true){
+    public function doLogin($userInfo, $autoSetCookie = true, $keepLoginStatus = true)
+    {
         $token = $this->_getToken();
         $ttl = $this->_getCookieTtl($keepLoginStatus);
         $uid = $userInfo['uid'];
@@ -91,10 +94,10 @@ class Client
         ];
 
 
-        foreach($cookies as $cookie){
+        foreach ($cookies as $cookie) {
             list($K, $v, $t) = $cookie;
             $_COOKIE[$K] = $v;
-            if($autoSetCookie === true){
+            if ($autoSetCookie === true) {
                 Utility::setResponseCookie($K, $v, $t, self::$_cookieDomain);
             }
         }
@@ -104,7 +107,8 @@ class Client
         return $cookies;
     }
 
-    public function doLogout($autoSetCookie = true){
+    public function doLogout($autoSetCookie = true)
+    {
         $now = time();
         $ttl = $now - 10000;
         $cookies = [
@@ -113,10 +117,10 @@ class Client
             ['uid', '', $ttl],
         ];
 
-        foreach($cookies as $cookie){
+        foreach ($cookies as $cookie) {
             list($K, $v, $t) = $cookie;
             unset($_COOKIE[$K]);
-            if($autoSetCookie === true){
+            if ($autoSetCookie === true) {
                 Utility::setResponseCookie($K, $v, $t, self::$_cookieDomain);
             }
         }
@@ -126,28 +130,34 @@ class Client
         return $cookies;
     }
 
-    public function getCurrentUid(){
+    public function getCurrentUid()
+    {
         return Utility::get_uid();
     }
 
-    private function _setCurrentUid($uid){
+    private function _setCurrentUid($uid)
+    {
         Utility::set_uid($uid);
     }
 
-    private function _getCookieTtl($keepLoginStatus = true){
+    private function _getCookieTtl($keepLoginStatus = true)
+    {
         $now = time();
         return $keepLoginStatus ? $now + 86400 * 30 : $now + 86400;
     }
 
-    private function _getEncryptAccount($uid, $mobile, $nick, $md5Password, $state, $token){
+    private function _getEncryptAccount($uid, $mobile, $nick, $md5Password, $state, $token)
+    {
         return Utility::Encrypt(implode('|', [$uid, md5($mobile), $nick, $md5Password, $state, $token]), self::$_secret);
     }
 
-    private function _getDecryptAccount($account){
+    private function _getDecryptAccount($account)
+    {
         return explode('|', Utility::Decrypt($account, self::$_secret));
     }
 
-    private function _getToken(){
+    private function _getToken()
+    {
         $time = time();
         $token = sha1($time);
         return $token;
