@@ -22,7 +22,7 @@ class SSOClient
 
     /**
      * @param array $customConfig
-     * @return Client
+     * @return SSOClient
      */
     static public function Instance($customConfig = [])
     {
