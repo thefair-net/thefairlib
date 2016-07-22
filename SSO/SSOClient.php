@@ -34,7 +34,7 @@ class SSOClient
 
     public function __construct($customConfig = [])
     {
-        $systemConfig = (array)Config::get_sso('client');
+        $systemConfig = (array)Config::get_user_sso_client();
         $config = array_merge($systemConfig, $customConfig);
 
         self::_checkConfig($config);
@@ -73,6 +73,8 @@ class SSOClient
             list($uid, $md5Mobile, $nick, $md5Password, $state, $serverTk) = $fields;
             if ($token != $serverTk) {
                 $checkRet = false;
+            }else {
+                $this->_setCurrentUid($uid);
             }
         } else {
             $checkRet = false;
