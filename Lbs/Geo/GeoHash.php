@@ -8,7 +8,8 @@
  */
 namespace TheFairLib\Lbs\Geo;
 
-class Geohash {
+class GeoHash {
+    private static $instance = null;
     private $bitss = array(16, 8, 4, 2, 1);
     private $neighbors = array();
     private $borders = array();
@@ -16,7 +17,14 @@ class Geohash {
     private $coding = "0123456789bcdefghjkmnpqrstuvwxyz";
     private $codingMap = array();
 
-    public function Geohash() {
+    static public function Instance(){
+        if (empty(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    public function GeoHash() {
 
         $this->neighbors['right']['even'] = 'bc01fg45238967deuvhjyznpkmstqrwx';
         $this->neighbors['left']['even'] = '238967debc01fg45kmstqrwxuvhjyznp';
@@ -72,7 +80,7 @@ class Geohash {
 
         $latPlaces = max(1, -round(log10($latErr))) - 1;
         $longPlaces = max(1, -round(log10($longErr))) - 1;
-        
+
         $lat = round($lat, $latPlaces);
         $long = round($long, $longPlaces);
         return array($lat, $long);
@@ -152,7 +160,7 @@ class Geohash {
             $latbits += !$addlong;
             $addlong = !$addlong;
         }
-        
+
         $blat = $this->binEncode($lat, -90, 90, $latbits);
         $blong = $this->binEncode($long, -180, 180, $longbits);
 
