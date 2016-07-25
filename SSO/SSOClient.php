@@ -66,15 +66,15 @@ class SSOClient
 
         if (!empty($account)) {
             $fields = $this->_getDecryptAccount($account);
-            if (count($fields) == 6) {
+            if (count($fields) != 6) {
                 $checkRet = false;
-            }
-
-            list($uid, $md5Mobile, $nick, $md5Password, $state, $serverTk) = $fields;
-            if ($token != $serverTk) {
-                $checkRet = false;
-            }else {
-                $this->_setCurrentUid($uid);
+            }else{
+                list($uid, $md5Mobile, $nick, $md5Password, $state, $serverTk) = $fields;
+                if ($token != $serverTk) {
+                    $checkRet = false;
+                }else {
+                    $this->_setCurrentUid($uid);
+                }
             }
         } else {
             $checkRet = false;
