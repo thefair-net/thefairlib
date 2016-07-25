@@ -24,7 +24,7 @@ class GeoHash {
         return self::$instance;
     }
 
-    public function GeoHash() {
+    public function __construct() {
 
         $this->neighbors['right']['even'] = 'bc01fg45238967deuvhjyznpkmstqrwx';
         $this->neighbors['left']['even'] = '238967debc01fg45kmstqrwxuvhjyznp';
