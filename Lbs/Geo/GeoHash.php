@@ -152,9 +152,7 @@ class Geohash {
             $latbits += !$addlong;
             $addlong = !$addlong;
         }
-
-
-        //encode each as binary string
+        
         $blat = $this->binEncode($lat, -90, 90, $latbits);
         $blong = $this->binEncode($long, -180, 180, $longbits);
 
