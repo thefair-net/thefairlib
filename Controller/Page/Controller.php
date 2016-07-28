@@ -11,6 +11,7 @@ namespace TheFairLib\Controller\Page;
 use TheFairLib\Controller\Base;
 use TheFairLib\Http\Response\BigPipe;
 use TheFairLib\Http\Response\Page;
+use TheFairLib\Utility\Utility;
 
 class Controller extends Base
 {
@@ -56,6 +57,15 @@ class Controller extends Base
         if(empty($actionName)){
             $actionName = $this->getRequest()->getActionName();
         }
+        $cookies = Utility::getResponseCookie();
+        if(!empty($cookies)){
+            foreach ($cookies as $cookie) {
+                setcookie($cookie->getName(), $cookie->getValue(),
+                    $cookie->getExpire(), $cookie->getPath(),
+                    $cookie->getDomain(), $cookie->getSecure(),
+                    $cookie->getHttpOnly());
+            }
+        }
         parent::display($actionName, $varArray);
     }
 
@@ -66,5 +76,10 @@ class Controller extends Base
      */
     public function isAjax(){
         return $this->getRequest()->isXmlHttpRequest();
+    }
+
+    public function redirect($url)
+    {
+        self::$_responseObj->redirect($url);
     }
 }
