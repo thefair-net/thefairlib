@@ -9,6 +9,7 @@
 namespace TheFairLib\Controller\Page;
 
 use TheFairLib\Controller\Base;
+use TheFairLib\Http\Cookie;
 use TheFairLib\Http\Response\BigPipe;
 use TheFairLib\Http\Response\Page;
 use TheFairLib\Utility\Utility;
@@ -60,10 +61,12 @@ class Controller extends Base
         $cookies = Utility::getResponseCookie();
         if(!empty($cookies)){
             foreach ($cookies as $cookie) {
-                setcookie($cookie->getName(), $cookie->getValue(),
-                    $cookie->getExpire(), $cookie->getPath(),
-                    $cookie->getDomain(), $cookie->getSecure(),
-                    $cookie->getHttpOnly());
+                if($cookie instanceof Cookie){
+                    setcookie($cookie->getName(), $cookie->getValue(),
+                        $cookie->getExpire(), $cookie->getPath(),
+                        $cookie->getDomain(), $cookie->getSecure(),
+                        $cookie->getHttpOnly());
+                }
             }
         }
         parent::display($actionName, $varArray);
