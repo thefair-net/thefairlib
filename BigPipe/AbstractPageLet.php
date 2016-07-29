@@ -128,6 +128,6 @@ abstract class AbstractPageLet extends PageLet
         }
 
         $pathAry = pathinfo($tplPath);
-        return strtolower($pathAry['dirname']).DIRECTORY_SEPARATOR.lcfirst($pathAry['basename']).'.tpl';
+        return ucfirst(strtolower($pathAry['dirname'])).DIRECTORY_SEPARATOR.lcfirst($pathAry['basename']).'.tpl';
     }
 }
