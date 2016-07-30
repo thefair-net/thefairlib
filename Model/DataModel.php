@@ -88,7 +88,7 @@ abstract class DataModel
         if(defined('PRODUCT_NAME')){
             $productPrefix = PRODUCT_NAME.'#';
         }
-        if (!in_array($type, ['Cache', 'Storage']) || !in_array($dataType, ['key', 'hash', 'set', 'zset', 'list', 'string'])) {
+        if (!in_array($type, ['Cache', 'Storage']) || !in_array($dataType, ['key', 'hash', 'set', 'zset', 'list', 'string', 'geo'])) {
             throw new Exception('Redis cahce prefix config error!');
         }
         return $productPrefix.$type . '#' . Config::get_app('phase') . '#' . $dataType . '#';
