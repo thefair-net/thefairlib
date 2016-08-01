@@ -9,10 +9,6 @@
 
 namespace TheFairLib\Controller;
 
-use TheFairLib\Exception\Api\ApiException;
-use TheFairLib\Http\Response\Api;
-use \Yaf\Exception as Exception;
-
 abstract class ErrorBase extends Base
 {
     /**
@@ -70,40 +66,40 @@ abstract class ErrorBase extends Base
     /**
      * 当module找不到时的默认异常处理
      *
-     * @param Exception $e
-     * @throws Exception
+     * @param \Yaf\Exception $e
+     * @throws \Exception
      */
-    protected function _errorNotfoundModule(Exception $e){
+    protected function _errorNotfoundModule(\Yaf\Exception $e){
         $this->_DealWithException($e);
     }
 
     /**
      * 当controller找不到时的默认异常处理
      *
-     * @param Exception $e
-     * @throws Exception
+     * @param \Yaf\Exception $e
+     * @throws \Exception
      */
-    protected function _errorNotfoundController(Exception $e){
+    protected function _errorNotfoundController(\Yaf\Exception $e){
         $this->_DealWithException($e);
     }
 
     /**
      * 当action找不到时的默认异常处理
      *
-     * @param Exception $e
-     * @throws Exception
+     * @param \Yaf\Exception $e
+     * @throws \Exception
      */
-    protected function _errorNotfoundAction(Exception $e){
+    protected function _errorNotfoundAction(\Yaf\Exception $e){
         $this->_DealWithException($e);
     }
 
     /**
      * 当视图找不到时的默认异常处理
      *
-     * @param Exception $e
-     * @throws Exception
+     * @param \Yaf\Exception $e
+     * @throws \Exception
      */
-    protected function _errorNotfoundView(Exception $e){
+    protected function _errorNotfoundView(\Yaf\Exception $e){
         $this->_DealWithException($e);
     }
 
