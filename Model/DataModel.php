@@ -413,4 +413,8 @@ abstract class DataModel
         Storage::closeConnection();
         Cache::closeConnection();
     }
+
+    public static function clearSessionCache(){
+        Utility::clearRegistry();
+    }
 }

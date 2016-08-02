@@ -14,7 +14,7 @@ use TheFairLib\Http\Cookie;
 
 class Utility
 {
-    private static $registry = array();
+    private static $registry = [];
 
     /**
      * 设置全局静态变量，方便在module、controller调用
@@ -50,6 +50,10 @@ class Utility
         }
 
         return null;
+    }
+
+    public static function clearRegistry(){
+        self::$registry = [];
     }
 
     /**
@@ -113,7 +117,7 @@ class Utility
      */
     public static function getPhase()
     {
-        $phase = \Config::get('app.phase');
+        $phase = Config::get('app.phase');
         if ($phase != 'staging')
             $phase = '';
 
