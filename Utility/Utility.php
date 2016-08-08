@@ -574,11 +574,12 @@ class Utility
                 if($dur < 86400){
                     return floor($dur/3600).'小时前';
                 }else{
-                    if($dur < 864000){
-                        return floor($dur/86400).'天前';
-                    }else{
-                        return date("Y-m-d", $showTime);
-                    }
+                    return date("m-d H:i", $showTime);
+//                    if($dur < 864000){
+//                        return floor($dur/86400).'天前';
+//                    }else{
+//                        return date("Y-m-d", $showTime);
+//                    }
                 }
             }
         }
