@@ -574,7 +574,7 @@ class Utility
                 if($dur < 86400){
                     return floor($dur/3600).'小时前';
                 }else{
-                    return date("m-d H:i", $showTime);
+                    return date("n月j日 H:i", $showTime);
 //                    if($dur < 864000){
 //                        return floor($dur/86400).'天前';
 //                    }else{
