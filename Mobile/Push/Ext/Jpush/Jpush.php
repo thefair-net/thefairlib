@@ -21,15 +21,19 @@ class Jpush implements PushInterface
 
     private $_appKey = null;
     private $_masterSecret = null;
-
+    private $_apnsProduction = false;//生成环境为true
     private $_push = null;
 
     public function __construct()
     {
         //获取个推配置
         $config = Config::get_notification_push_jpush('system_conf');
-        if (empty($config) || empty($config['app_key']) || empty($config['master_secret'])) {
+        $phase = Config::get_app('phase');
+        if (empty($config) || empty($config['app_key']) || empty($config['master_secret']) || empty($phase)) {
             throw new Exception('getui conf error');
+        }
+        if($phase == 'prod'){
+            $this->_apnsProduction = true;
         }
         $this->_appKey = $config['app_key'];
         $this->_masterSecret = $config['master_secret'];
@@ -79,7 +83,7 @@ class Jpush implements PushInterface
                     ->addIosNotification($message, '', $badge, true, '', [
                         'p' => $link,
                     ])
-                    ->setOptions(86400, 3600, true, false)
+                    ->setOptions(86400, 3600, null, $this->_apnsProduction)
                     ->send();
                 break;
             case 'android' :
@@ -89,7 +93,7 @@ class Jpush implements PushInterface
                     ->addAndroidNotification($message, $title, '', [
                         'p' => $link,
                     ])
-                    ->setOptions(86400, 3600, true, false)
+                    ->setOptions(86400, 3600, null, $this->_apnsProduction)
                     ->send();
                 break;
             default:

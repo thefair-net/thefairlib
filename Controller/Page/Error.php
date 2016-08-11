@@ -74,7 +74,7 @@ abstract class Error extends ErrorBase
     {
         header("Content-type: text/html; charset=utf-8");
         header("status: 500 Internal Server Error");
-        if (Registry::get('config')->phase == 'pro') {
+        if (Registry::get('config')->phase == 'prod') {
             $this->display("500");
         } else {
             echo $msg;
