@@ -150,6 +150,7 @@ class SSOClient
 
     private function _getEncryptAccount($uid, $mobile, $nick, $md5Password, $state, $token)
     {
+        $nick = str_replace('|', 'œ', $nick);
         return Utility::Encrypt(implode('|', [$uid, md5($mobile), $nick, $md5Password, $state, $token]), self::$_secret);
     }
 
