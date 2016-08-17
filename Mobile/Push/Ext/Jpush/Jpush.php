@@ -24,10 +24,10 @@ class Jpush implements PushInterface
     private $_apnsProduction = false;//生成环境为true
     private $_push = null;
 
-    public function __construct()
+    public function __construct($configLabel = 'system_conf')
     {
         //获取个推配置
-        $config = Config::get_notification_push_jpush('system_conf');
+        $config = Config::get_notification_push_jpush($configLabel);
         $phase = Config::get_app('phase');
         if (empty($config) || empty($config['app_key']) || empty($config['master_secret']) || empty($phase)) {
             throw new Exception('getui conf error');

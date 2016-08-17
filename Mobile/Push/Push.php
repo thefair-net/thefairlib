@@ -18,17 +18,18 @@ class Push
     /**
      *
      * @param string $pushService
+     * @param string $configLabel
      * @return Jpush|GeTui
      * @throws \Exception
      */
-    public function getPushWork($pushService = 'getui')
+    public function getPushWork($pushService = 'getui', $configLabel = 'system_conf')
     {
         switch ($pushService) {
             case 'getui':
-                $class = new GeTui();
+                $class = new GeTui($configLabel);
                 break;
             case 'jpush' :
-                $class = new Jpush();
+                $class = new Jpush($configLabel);
                 break;
             default:
                 throw new \Exception('push service not exist');

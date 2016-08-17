@@ -32,10 +32,10 @@ class GeTui implements PushInterface
 
     private $_iGeTui = null;
 
-    public function __construct()
+    public function __construct($configLabel = 'system_conf')
     {
         //获取个推配置
-        $config = Config::get_notification_push_getui('system_conf');
+        $config = Config::get_notification_push_getui($configLabel);
         if (empty($config) || empty($config['app_id']) || empty($config['app_secret']) || empty($config['app_key']) || empty($config['master_secret'])) {
             throw new Exception('getui conf error');
         }
