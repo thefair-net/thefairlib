@@ -45,7 +45,11 @@ abstract class Error extends ErrorBase
                     . "错误信息:" . $e->getMessage() . "\n"
                     . "Trace:" . $e->getTraceAsString() . "\n\n");
             }
-            $this->_DealIllegalRequest($e->getMessage());
+            if ($this->isAjax()) {
+                $this->showError($e->getMessage());
+            } else {
+                $this->_DealIllegalRequest($e->getMessage());
+            }
         }
 
     }
