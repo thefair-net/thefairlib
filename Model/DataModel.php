@@ -240,7 +240,7 @@ abstract class DataModel
         $list = [];
         if($total){
             if(!empty($lastItemId)){
-                $start = $order == 'desc' ? $this->Storage()->zRevRank($listCacheKey, $lastItemId) : $this->Storage()->zRank($listCacheKey, $lastItemId);
+                $start = $this->_getItemRankFromCache($listCacheKey, $lastItemId, $order);
                 $start += 1;
             }else{
                 $start = $lastItemId;
@@ -269,11 +269,23 @@ abstract class DataModel
             'page_count' => $pageCount,
         ];
 
-        $lastPos = $order == 'desc' ? $this->Storage()->zRevRank($listCacheKey, $lastItemId) : $this->Storage()->zRank($listCacheKey, $lastItemId);
+        $lastPos = $this->_getItemRankFromCache($listCacheKey, $lastItemId, $order);
         if($lastPos != $total - 1 && !empty($list)){
             $result['last_item_id'] = (string)$lastItemId;
         }
         return $result;
+    }
+
+    /**
+     * 获取缓存中成员的排名,用于展示未读消息数或者获取列表的起始位置
+     *
+     * @param $listCacheKey
+     * @param $lastItemId
+     * @param string $order
+     * @return int
+     */
+    protected function _getItemRankFromCache($listCacheKey, $lastItemId, $order = 'desc'){
+        return $order == 'desc' ? $this->Storage()->zRevRank($listCacheKey, $lastItemId) : $this->Storage()->zRank($listCacheKey, $lastItemId);
     }
 
     /**
