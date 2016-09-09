@@ -20,6 +20,7 @@ class YunPian implements Sms
     const SEND_URL_TPL = 'https://sms.yunpian.com/v2/sms/tpl_single_send.json';
     const BATCH_SEND_URL = 'https://sms.yunpian.com/v2/sms/multi_send.json';
     const BATCH_SEND_URL_TPL = 'https://sms.yunpian.com/v2/sms/tpl_batch_send.json';
+    const VOICE_MSG_URL = 'https://voice.yunpian.com/v2/voice/send.json';
 
     private $_appKey;
 
@@ -30,6 +31,13 @@ class YunPian implements Sms
             throw new Exception('common.appKey error');
         }
         $this->_appKey = $config['appKey']['YunPian']['key'];
+    }
+
+    protected function _sendPostRequest($url, $postData = []){
+        $postData['apikey'] = $this->_appKey;
+        $curl = new Curl();
+        $curl->post($url, $postData);
+        return Utility::decode($curl->response);
     }
 
     /**
@@ -43,13 +51,10 @@ class YunPian implements Sms
     public function sendMessage($mobile, $msg)
     {
         $data = array(
-            'apikey' => $this->_appKey,
             'mobile' => $mobile,
             'text' => $msg,
         );
-        $curl = new Curl();
-        $curl->post(self::SEND_URL, $data);
-        return $curl->response;
+        return $this->_sendPostRequest(self::SEND_URL, $data);
     }
 
     /**
@@ -64,14 +69,11 @@ class YunPian implements Sms
     public function sendTplMessage($tpl, $mobile, $msg)
     {
         $data = array(
-            'apikey' => $this->_appKey,
             'mobile' => $mobile,
             'tpl_id' => $tpl,
             'tpl_value' => $msg,
         );
-        $curl = new Curl();
-        $curl->post(self::SEND_URL_TPL, $data);
-        return $curl->response;
+        return $this->_sendPostRequest(self::SEND_URL_TPL, $data);
     }
 
     /**
@@ -96,13 +98,10 @@ class YunPian implements Sms
         }
 
         $data = array(
-            'apikey' => $this->_appKey,
             'mobile' => implode(',', $mobileList),
             'text' => implode(',', $msgList),
         );
-        $curl = new Curl();
-        $curl->post(self::BATCH_SEND_URL, $data);
-        return $curl->response;
+        return $this->_sendPostRequest(self::BATCH_SEND_URL, $data);
     }
 
     public function sendTplMessageList($tpl, $mobileList, $msg){
@@ -114,13 +113,30 @@ class YunPian implements Sms
         }
         $mobile = implode(',', $mobileList);
         $data = array(
-            'apikey' => $this->_appKey,
             'mobile' => $mobile,
             'tpl_id' => $tpl,
             'tpl_value' => $msg,
         );
-        $curl = new Curl();
-        $curl->post(self::BATCH_SEND_URL_TPL, $data);
-        return $curl->response;
+        return $this->_sendPostRequest(self::BATCH_SEND_URL_TPL, $data);
+    }
+
+    public function sendVoiceVerifyCode($mobile, $code){
+        $data = array(
+            'mobile' => $mobile,
+            'code' => $code,
+        );
+        return $this->_sendPostRequest(self::VOICE_MSG_URL, $data);
+    }
+
+    public function sendVerifyCode($mobile, $code, $company){
+        //触发语音短信的code
+        $needSendVoiceSmsCodeList = ['10'];
+
+        $result = $this->sendTplMessage(1, $mobile, '#code#='.$code.'&#company#='.$company);
+        if(!empty($result['code']) && in_array($result['code'], $needSendVoiceSmsCodeList)){
+            $this->sendVoiceVerifyCode($mobile, $code);
+        }
+
+        return $result;
     }
 }

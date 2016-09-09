@@ -21,4 +21,7 @@ interface Sms
 
     //模板信息
     public function sendTplMessageList($tpl, $mobileList, $msg);
+
+    //发送验证码
+    public function sendVerifyCode($mobile, $codeMsg, $extParam);
 }
