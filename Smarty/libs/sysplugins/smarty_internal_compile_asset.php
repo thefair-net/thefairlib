@@ -38,16 +38,10 @@ class Smarty_Internal_Compile_Asset extends Smarty_Internal_Compile_Assign
         } else {
             $rand = isset($config['static']['resource_time']) ? $config['static']['resource_time'] : date('Ymd');
         }
-        $asset = '/_assets';
-        switch(true) {
-            case preg_match('/\_\_D\_\_eBug\_=true$/', $_SERVER['QUERY_STRING']) :
-                $asset = '';
-                break;
-        }
         foreach ($_attr as $value) {
             if (!empty($value)) {
                 $value = trim(trim($value, "\""), "'");
-                return $config['static']['resource_host'] . $asset . $value . "?v=" . $rand;
+                return $config['static']['resource_host'] . $value . "?v=" . $rand;
             }
         }
         throw new \Yaf\Exception('Smarty, asset, error');
