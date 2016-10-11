@@ -29,10 +29,7 @@ class Controller extends Base
     public function showResult($result, $msg = '', $code = '0'){
         self::$_responseObj->setCode($code);
         self::$_responseObj->setMsg($msg);
-        if(!empty($result)){
-            self::$_responseObj->setResult($result);
-
-        }
+        self::$_responseObj->setResult($result);
         $this->_setResponse(self::$_responseObj->send());
     }
 
