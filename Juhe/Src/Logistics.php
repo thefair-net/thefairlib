@@ -1,6 +1,6 @@
 <?php
 /**
- * JuHe.php
+ * Logistics.php
  *
  * @author liumingzhi
  * @version 1.0
@@ -10,29 +10,22 @@
 namespace TheFairLib\Juhe\Src;
 
 use TheFairLib\Config\Config;
-use TheFairLib\Http\Curl;
 
-class Logistics
+class Logistics extends API
 {
     private $_queryUrl = 'http://v.juhe.cn/exp/index';
 
     private $_comUrl = 'http://v.juhe.cn/exp/com';
-
-    static public $instance;
 
     /**
      * @return Logistics
      */
     static public function Instance()
     {
-        $class = get_called_class();
-        if (empty(self::$instance[$class])) {
-            self::$instance[$class] = new $class();
-        }
-        return self::$instance[$class];
+        return parent::Instance();
     }
 
-    private function _getAppKey()
+    protected function _getAppKey()
     {
         return Config::get_order_logistics('default.app_key');
     }
@@ -42,16 +35,11 @@ class Logistics
         $result = [];
         switch (true) {
             case $this->_getCompanyName($companyName):
-                $curl = new Curl();
                 $param = [
-                    'key' => $this->_getAppKey(),
                     'com' => $companyName,
                     'no' => $logisticsId,
                 ];
-                $curl->get($this->_queryUrl, $param);
-                if (!empty($curl->response)) {
-                    $result = json_decode($curl->response, true);
-                }
+                $result = $this->_sendRequest($this->_queryUrl, $param);
                 break;
         }
         return $result;
