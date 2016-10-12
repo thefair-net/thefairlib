@@ -646,7 +646,7 @@ class Utility
     }
 
     /**
-     * 分词
+     * 分词,需要引入 "lmz/phpanalysis": "*"
      *
      * @param $str
      * @return array
