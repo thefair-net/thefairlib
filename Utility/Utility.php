@@ -653,8 +653,8 @@ class Utility
      */
     public static function participle($str)
     {
-        \Phpanalysis\PhpAnalysis::$loadInit = false;
-        $pa = new \Phpanalysis\PhpAnalysis('utf-8', 'utf-8', true);
+        \Phpanalysis\Phpanalysis::$loadInit = false;
+        $pa = new \Phpanalysis\Phpanalysis('utf-8', 'utf-8', true);
         //载入词典
         $pa->LoadDict();
         //执行分词
