@@ -82,6 +82,7 @@ abstract class Error extends ErrorBase
         header("Content-type: text/html; charset=utf-8");
         header("status: 500 Internal Server Error");
         if (Registry::get('config')->phase == 'prod') {
+            $this->assign('error', $msg);
             $this->display("500");
         } else {
             echo $msg;
@@ -109,7 +110,10 @@ abstract class Error extends ErrorBase
         if ($this->isAjax()) {
             $this->showResult($result, $error, $code);
         } else {
-            $this->display('500', ['error' => $error, 'result' => $result, 'code' => $code]);
+            $this->assign('error', $error);
+            $this->assign('code', $code);
+            $this->assign('result', $result);
+            $this->display('500');
         }
     }
 
