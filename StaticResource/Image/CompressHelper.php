@@ -20,7 +20,7 @@ class CompressHelper
                 $urlAry = parse_url($url);
                 if($urlAry['host'] == 'static.bj.taooo.cc' || $urlAry['host'] == 'static.thefair.net.cn'){
                     $urlAry['host'] = $urlAry['host'] == 'static.thefair.net.cn' ? 'image.thefair.net.cn' : 'image.bj.taooo.cc';
-                    $urlAry['path'] = $urlAry['path'].'@1pr_'.(int)$width.'w'.($quality != '100' && $type != 'webp' ? '_'.$quality.'q' : '').'.'.$type;
+                    $urlAry['path'] = $urlAry['path'].'@1pr_'.(int)$width.'w'.($quality != '100' && $type != 'webp' ? '_'.$quality.'q' : '').'_1o'.'.'.$type;
                 }
                 break;
             default :
