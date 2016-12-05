@@ -277,6 +277,60 @@ abstract class DataModel
     }
 
     /**
+     * 从缓存中获取数据列表(限定score 范围)
+     *
+     * @param $listCacheKey
+     * @param $rangeMin
+     * @param $rangeMax
+     * @param $lastItemId
+     * @param string $order
+     * @param int $itemPerPage
+     * @param bool $withScores
+     * @return array
+     */
+    protected function _getItemListByScoreRangeFromCache($listCacheKey, $rangeMin, $rangeMax, $lastItemId, $order = 'desc', $itemPerPage = 20, $withScores = false)
+    {
+        $total = $this->Storage()->zCard($listCacheKey);
+        $itemPerPage = min(50, $itemPerPage);
+        $pageCount = ceil($total / $itemPerPage);
+        $list = [];
+        if($total){
+            if(!empty($lastItemId)){
+                $offset = $this->_getItemRankFromCache($listCacheKey, $lastItemId, $order);
+                $offset += 1;
+            }else{
+                $offset = $lastItemId;
+            }
+
+            $funcName = $order == 'desc' ? 'zRevRangeByScore' : 'zRangeByScore';
+
+            $options = [
+                'withscores' => TRUE, 'limit' => [$itemPerPage, $offset]
+            ];
+            $list = $this->Storage()->$funcName($listCacheKey, $rangeMin, $rangeMax, $options);
+            if(!empty($list)){
+                $lastItemId = end($list);
+                if($withScores === true){
+                    $lastItemId = key($list);
+                }
+            }
+        }
+
+        $result = [
+            'item_list' => $list,
+            'item_count' => $total,
+            'item_per_page' => $itemPerPage,
+            'page_count' => $pageCount,
+        ];
+
+        $lastPos = $this->_getItemRankFromCache($listCacheKey, $lastItemId, $order);
+        if($lastPos != $total - 1 && !empty($list)){
+            $result['last_item_id'] = (string)$lastItemId;
+        }
+        return $result;
+    }
+
+    /**
      * 获取缓存中成员的排名,用于展示未读消息数或者获取列表的起始位置
      *
      * @param $listCacheKey
