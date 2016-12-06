@@ -32,7 +32,7 @@ class Jpush implements PushInterface
         if (empty($config) || empty($config['app_key']) || empty($config['master_secret']) || empty($phase)) {
             throw new Exception('getui conf error');
         }
-        if($phase == 'prod'){
+        if ($phase == 'prod') {
             $this->_apnsProduction = true;
         }
         $this->_appKey = $config['app_key'];
@@ -63,12 +63,13 @@ class Jpush implements PushInterface
      * @param $message
      * @param $link
      * @param $badge
+     * @param $builderId
      * @return array|null|object
      * @throws Exception
      */
-    public function pushMessageToSingle($clientId, $platform, $title, $message, $link, $badge)
+    public function pushMessageToSingle($clientId, $platform, $title, $message, $link, $badge, $builderId = 1)
     {
-        if($platform == 'iphone') $platform = 'ios';
+        if ($platform == 'iphone') $platform = 'ios';
         if (empty($clientId) || !in_array($platform, ['ios', 'android', 'winphone'])
             || empty($title) || strlen($title) >= 40 || empty($message)
         ) {
@@ -90,7 +91,7 @@ class Jpush implements PushInterface
                 $result = $this->_push->push()->setPlatform($platform)
                     ->addRegistrationId($clientId)
                     ->setNotificationAlert($message)
-                    ->addAndroidNotification($message, $title, '', [
+                    ->addAndroidNotification($message, $title, $builderId, [
                         'p' => $link,
                     ])
                     ->setOptions(86400, 3600, null, $this->_apnsProduction)
