@@ -28,9 +28,12 @@ class Mobile
      * @throws Exception
      * @throws \TheFairLib\Config\Exception
      */
-    private function _setOptions($config)
+    private function _setOptions($config = [])
     {
-        $config = Config::get_verify();
+        if(empty($config)){
+            $config = Config::get_verify();
+        }
+
         //如果默认手机验证码提供商为空，或手机验证码提供商不在列表内
         if (!isset($config['mobileVerify']) || !isset($config['mobileVerifyList']) || !in_array($config['mobileVerify']['name'], $config['mobileVerifyList'])) {
             throw new Exception('common.mobileVerify error');
