@@ -2531,7 +2531,6 @@ class Client
         return $this->oauth->get('search/suggestions/users', $params);
     }
 
-
     /**
      * 搜索微博时的联想搜索建议
      *
