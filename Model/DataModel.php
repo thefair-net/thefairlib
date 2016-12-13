@@ -303,9 +303,14 @@ abstract class DataModel
             }
 
             $funcName = $order == 'desc' ? 'zRevRangeByScore' : 'zRangeByScore';
+            if($order == 'desc'){
+                $tmp = $rangeMin;
+                $rangeMin = $rangeMax;
+                $rangeMax = $tmp;
+            }
 
             $options = [
-                'withscores' => TRUE, 'limit' => [$itemPerPage, $offset]
+                'withscores' => TRUE, 'limit' => [$offset, $itemPerPage]
             ];
             $list = $this->Storage()->$funcName($listCacheKey, $rangeMin, $rangeMax, $options);
             if(!empty($list)){
