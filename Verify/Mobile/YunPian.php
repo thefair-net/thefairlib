@@ -24,9 +24,12 @@ class YunPian implements Sms
 
     private $_appKey;
 
-    public function __construct()
+    public function __construct($config = [])
     {
-        $config = Config::get_verify();
+        if(empty($config)){
+            $config = Config::get_verify();
+        }
+
         if (!isset($config['appKey']) || empty($config['appKey']['YunPian']['key'])) {
             throw new Exception('common.appKey error');
         }
