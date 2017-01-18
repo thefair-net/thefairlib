@@ -52,7 +52,8 @@ class Utility
         return null;
     }
 
-    public static function clearRegistry(){
+    public static function clearRegistry()
+    {
         self::$registry = [];
     }
 
@@ -363,35 +364,36 @@ class Utility
      * @param string $padding
      * @return string
      */
-    public static function utf8SubStr($input, $length, $ignore_html = true, $padding = '...'){
+    public static function utf8SubStr($input, $length, $ignore_html = true, $padding = '...')
+    {
         $strlen = strlen($input);
-        if($strlen <= $length) return $input;
+        if ($strlen <= $length) return $input;
 
         $selfclosing = array('br', 'img', 'hr', 'base', 'meta', 'area', 'input'); // 不考虑注释<!--
         $pos = $width = 0;
         $tag_stack = array();
-        while($pos < $strlen && $width < $length - 0.5) {
+        while ($pos < $strlen && $width < $length - 0.5) {
             $prechar = ord($input{$pos});
-            if($prechar < 128) { //单字节
-                if($ignore_html && $prechar == 60) {// <
+            if ($prechar < 128) { //单字节
+                if ($ignore_html && $prechar == 60) {// <
                     $spacepos = strpos($input, ' ', $pos);
                     $closepos = strpos($input, '>', $pos);
                     $tagpos = $spacepos === false ? $closepos : min($spacepos, $closepos);
-                    if($tagpos == false) {
+                    if ($tagpos == false) {
                         $pos_length = 1;
                         $word_length = 0.5;
                     } else {
-                        if($input{$pos+1} == '/') { // 出栈
+                        if ($input{$pos + 1} == '/') { // 出栈
                             // 不考虑标签错位闭合情况:<a><b></a></b>
                             array_pop($tag_stack);
                         } else { // 入栈
-                            $tag = substr($input, $pos + 1, $tagpos- $pos - 1);
-                            if(!in_array($tag, $selfclosing)) {
+                            $tag = substr($input, $pos + 1, $tagpos - $pos - 1);
+                            if (!in_array($tag, $selfclosing)) {
                                 array_push($tag_stack, $tag);
                             }
                         }
                         $endpos = strpos($input, '>', $pos);
-                        if($endpos === false) {
+                        if ($endpos === false) {
                             $pos_length = 1;
                             $word_length = 0.5;
                         } else {
@@ -399,14 +401,14 @@ class Utility
                             $word_length = 0;
                         }
                     }
-                } else if($prechar == '38'){ // &
+                } else if ($prechar == '38') { // &
                     $semipos = strpos($input, ';', $pos);
                     /*
                      * &#1234; 应该是占一个汉字的宽度
                      * &nbsp; 占半个汉字宽度,
                      * todo区分
                      */
-                    if($semipos !== FALSE && $semipos - $pos < 6) { // &#1234; 最多支持6字节长的
+                    if ($semipos !== FALSE && $semipos - $pos < 6) { // &#1234; 最多支持6字节长的
                         $pos_length = $semipos - $pos + 1;
                         $word_length = 0.5;
                     } else {
@@ -419,15 +421,15 @@ class Utility
                 }
             } else {
                 $word_length = 1;
-                if($prechar < 192) {
+                if ($prechar < 192) {
                     $pos_length = 1;//error
-                } elseif($prechar < 224) {
+                } elseif ($prechar < 224) {
                     $pos_length = 2;
-                } elseif($prechar < 240) {
+                } elseif ($prechar < 240) {
                     $pos_length = 3;
-                } elseif($prechar < 248) {
+                } elseif ($prechar < 248) {
                     $pos_length = 4;
-                } elseif($prechar < 252) {
+                } elseif ($prechar < 252) {
                     $pos_length = 5;
                 } else {
                     $pos_length = 6;
@@ -437,9 +439,9 @@ class Utility
             $pos += $pos_length;
             $width += $word_length;
         }
-        $return = $pos < $strlen ? substr($input, 0, $pos).$padding : $input;
-        if(!empty($tag_stack)) {
-            while(!empty($tag_stack)) {
+        $return = $pos < $strlen ? substr($input, 0, $pos) . $padding : $input;
+        if (!empty($tag_stack)) {
+            while (!empty($tag_stack)) {
                 $tag = array_pop($tag_stack);
                 $return .= "</$tag>";
             }
@@ -561,19 +563,20 @@ class Utility
      * @param $timestamp
      * @return bool|string
      */
-    public static function formatTimestamp($timestamp){
-        $nowTime 	= time();
-        $showTime 	= is_numeric($timestamp) ? $timestamp : strtotime($timestamp);
+    public static function formatTimestamp($timestamp)
+    {
+        $nowTime = time();
+        $showTime = is_numeric($timestamp) ? $timestamp : strtotime($timestamp);
         $dur = $nowTime - $showTime;
-        if($dur < 180){
+        if ($dur < 180) {
             return '刚刚';
-        }else{
-            if($dur < 3600){
-                return floor($dur/60).'分钟前';
-            }else{
-                if($dur < 86400){
-                    return floor($dur/3600).'小时前';
-                }else{
+        } else {
+            if ($dur < 3600) {
+                return floor($dur / 60) . '分钟前';
+            } else {
+                if ($dur < 86400) {
+                    return floor($dur / 3600) . '小时前';
+                } else {
                     return date("n月j日 H:i", $showTime);
 //                    if($dur < 864000){
 //                        return floor($dur/86400).'天前';
@@ -592,12 +595,13 @@ class Utility
      * @param string $format
      * @return string
      */
-    public static function encode($data, $format = 'json'){
-        switch($format){
+    public static function encode($data, $format = 'json')
+    {
+        switch ($format) {
             case 'json':
-                if(extension_loaded('jsond')){
+                if (extension_loaded('jsond')) {
                     $ret = jsond_encode($data, JSON_UNESCAPED_UNICODE);
-                }else{
+                } else {
                     $ret = json_encode($data, JSON_UNESCAPED_UNICODE);
                 }
                 break;
@@ -622,12 +626,13 @@ class Utility
      * @param string $format
      * @return mixed|string
      */
-    public static function decode($data, $format = 'json'){
-        switch($format){
+    public static function decode($data, $format = 'json')
+    {
+        switch ($format) {
             case 'json':
-                if(extension_loaded('jsond')){
+                if (extension_loaded('jsond')) {
                     $ret = jsond_decode($data, true);
-                }else{
+                } else {
                     $ret = json_decode($data, true);
                 }
                 break;
@@ -668,6 +673,34 @@ class Utility
             $data = explode('###', $result);
         }
         return $data;
+    }
+
+    /**
+     * 生成二维码
+     *
+     * @param $content
+     * @param int $setSize
+     * @param int $padding
+     * @param string $logoPath
+     * @return mixed
+     */
+    public static function qrCode($content, $setSize = 300, $padding = 0, $logoPath = '')
+    {
+        $qrCode = new \Endroid\QrCode\QrCode();
+        $qrCode
+            ->setText($content)
+            ->setExtension('png')
+            ->setSize($setSize)
+            ->setPadding($padding)
+            ->setErrorCorrection('high')
+            ->setForegroundColor(array('r' => 0, 'g' => 0, 'b' => 0, 'a' => 0))
+            ->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0))
+            ->setLabelFontSize(16)
+            ->setImageType(QrCode::IMAGE_TYPE_PNG);
+        if(!empty($logoPath) && file_exists($logoPath)) {
+            $qrCode->setLogo($logoPath);
+        }
+        return $qrCode->get();
     }
 
 }
