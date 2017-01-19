@@ -11,6 +11,7 @@ namespace TheFairLib\Utility;
 
 use TheFairLib\Config\Config;
 use TheFairLib\Http\Cookie;
+use Endroid\QrCode\QrCode;
 
 class Utility
 {
@@ -681,12 +682,13 @@ class Utility
      * @param $content
      * @param int $setSize
      * @param int $padding
+     * @param bool $base64
      * @param string $logoPath
      * @return mixed
      */
-    public static function qrCode($content, $setSize = 300, $padding = 0, $logoPath = '')
+    public static function qrCode($content, $setSize = 300, $padding = 0, $base64 = false,$logoPath = '')
     {
-        $qrCode = new \Endroid\QrCode\QrCode();
+        $qrCode = new QrCode();
         $qrCode
             ->setText($content)
             ->setExtension('png')
@@ -700,7 +702,11 @@ class Utility
         if(!empty($logoPath) && file_exists($logoPath)) {
             $qrCode->setLogo($logoPath);
         }
-        return $qrCode->get();
+        $data = $qrCode->get();
+        if($base64) {
+            $data = base64_encode($data);
+        }
+        return $data;
     }
 
 }
