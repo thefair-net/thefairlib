@@ -686,7 +686,7 @@ class Utility
      * @param string $logoPath
      * @return mixed
      */
-    public static function qrCode($content, $setSize = 300, $padding = 0, $base64 = false,$logoPath = '')
+    public static function qrCode($content, $setSize = 300, $padding = 0, $base64 = false, $logoPath = '')
     {
         $qrCode = new QrCode();
         $qrCode
@@ -699,12 +699,12 @@ class Utility
             ->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0))
             ->setLabelFontSize(16)
             ->setImageType(QrCode::IMAGE_TYPE_PNG);
-        if(!empty($logoPath) && file_exists($logoPath)) {
+        if (!empty($logoPath) && file_exists($logoPath)) {
             $qrCode->setLogo($logoPath);
         }
         $data = $qrCode->get();
-        if($base64) {
-            $data = base64_encode($data);
+        if ($base64) {
+            $data = 'data:image/png;base64,' . base64_encode($data);
         }
         return $data;
     }
