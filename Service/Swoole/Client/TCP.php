@@ -13,7 +13,7 @@ class TCP extends Base
             'package_length_type' => 'N',
             'package_length_offset' => 0,       //第N个字节是包长度的值
             'package_body_offset' => 4,       //第几个字节开始计算长度
-            'package_max_length' => 1024 * 1024 * 1,  //协议最大长度
+            'package_max_length' => 1024 * 1024 * 10,  //协议最大长度
         ]);
         if (!$client->connect($this->_ip, $this->_port, $this->_timeout)) {
             exit("connect failed. Error: {$client->errCode}\n");
