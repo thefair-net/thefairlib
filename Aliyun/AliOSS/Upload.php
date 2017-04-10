@@ -52,24 +52,26 @@ class Upload
      * @param array $config 配置项
      * @param bool $base64 是否解析base64编码，可省略。若开启，则$fileField代表的是base64编码的字符串表单名
      */
-    public function __construct($fileField, $config, $base64 = false)
+    public function __construct($fileField, $config, $base64 = false, $label = 'OSS')
     {
         $this->fileField = $fileField;
         $this->config = $config;
         $this->stateInfo = $this->stateMap[0];
-        $this->_upFile($base64);
+        $this->_upFile($base64, $label);
     }
 
     /**
      * 上传文件的主处理方法
+     *
      * @param $base64
-     * @return mixed
+     * @param $label
+     * @throws Exception
      */
-    private function _upFile($base64)
+    private function _upFile($base64, $label)
     {
         //处理base64上传
         if ("base64" == $base64) {
-            $this->_base64ToImage($this->fileField);
+            $this->_base64ToImage($this->fileField, $label);
             return;
         }
 
@@ -79,35 +81,44 @@ class Upload
             $this->stateInfo = $this->_getStateInfo('POST');
             return;
         }
-        if ($this->file['error']) {
+
+        if (isset($this->file['error'])) {
             $this->stateInfo = $this->_getStateInfo($file['error']);
             return;
         }
-        if (!is_uploaded_file($file['tmp_name'])) {
-            $this->stateInfo = $this->_getStateInfo("UNKNOWN");
-            return;
-        }
+
+//        if (!is_uploaded_file($file['tmp_name'])) {
+//            $this->stateInfo = $this->_getStateInfo("UNKNOWN");
+//            return;
+//        }
 
         $this->oriName = $file['name'];
         $this->fileSize = $file['size'];
         $this->fileType = $this->_getFileExt();
-
         if (!$this->_checkSize()) {
             $this->stateInfo = $this->_getStateInfo("SIZE");
             return;
         }
+
         if (!$this->_checkType()) {
             $this->stateInfo = $this->_getStateInfo("TYPE");
             return;
         }
+
         $this->newName = $this->_getName();
         $this->fullName = $this->_getFolder() . '/' . $this->newName . $this->_getFileExt();
-        $this->ossPath = $this->_getOssFolder();
+        $this->ossPath = $this->_getOssFolder($label);
         if ($this->stateInfo == $this->stateMap[0]) {
-            if (!move_uploaded_file($file["tmp_name"], $this->fullName)) {
-                $this->stateInfo = $this->_getStateInfo("MOVE");
+
+            if (is_uploaded_file($file['tmp_name'])) {
+                if (!move_uploaded_file($file["tmp_name"], $this->fullName)) {
+                    $this->stateInfo = $this->_getStateInfo("MOVE");
+                    return;
+                }
+            } else {
+                $this->fullName = $file['tmp_name'];
             }
-            $this->uploadOSS();
+            $this->uploadOSS(false, $label);
         }
     }
 
@@ -115,16 +126,17 @@ class Upload
      * 上传文件到阿里云中
      *
      * @param bool $base64
+     * @param string $label
      * @throws Exception
      */
-    private function uploadOSS($base64 = false)
+    private function uploadOSS($base64 = false, $label = 'OSS')
     {
         $OSS = Base::Instance();
-        $state = $OSS->getALIOSSSDK()->createObjectDir($OSS->getBucketName(), $this->ossPath);//创建目录，如果存在也会返回true
+        $state = $OSS->getALIOSSSDK($label)->createObjectDir($OSS->getBucketName(), $this->ossPath);//创建目录，如果存在也会返回true
         if ($state->isOK()) {
             $path = $this->ossPath . DIRECTORY_SEPARATOR . $this->newName;
             $obj = $base64 ? $path . $this->fileType : $path . $this->_getFileExt();
-            $file = $OSS->getALIOSSSDK()->uploadFileByFile($OSS->getBucketName(), $obj, $this->fullName);
+            $file = $OSS->getALIOSSSDK($label)->uploadFileByFile($OSS->getBucketName(), $obj, $this->fullName);
             $this->getImageInfo($this->fullName);
             $this->_rm();//删除本地文件
             if ($file->isOK()) {
@@ -138,10 +150,12 @@ class Upload
 
     /**
      * 处理base64编码的图片上传
+     *
      * @param $base64Data
-     * @return mixed
+     * @param $label
+     * @throws Exception
      */
-    private function _base64ToImage($base64Data)
+    private function _base64ToImage($base64Data, $label)
     {
         if (strpos($base64Data, ',') !== false) {
             list($type, $img) = explode(',', $base64Data, 2);
@@ -160,7 +174,7 @@ class Upload
         $this->newName = md5(time() . rand(1, 10000));
         $this->fileName = $this->newName;
         $this->fullName = $this->_getFolder() . '/' . $this->fileName . $this->fileType;
-        $this->ossPath = $this->_getOssFolder();
+        $this->ossPath = $this->_getOssFolder($label);
         if (!in_array($this->fileType, $this->config["allowFiles"])) {
             $this->stateInfo = $this->_getStateInfo("TYPE");
             return;
@@ -174,7 +188,7 @@ class Upload
             $this->stateInfo = $this->_getStateInfo("SIZE");
             return;
         }
-        $this->uploadOSS(true);
+        $this->uploadOSS(true, $label);
         $this->oriName = "";
         $this->fileSize = strlen($img);
     }
@@ -239,6 +253,18 @@ class Upload
         ];
     }
 
+    public function getVideoInfo()
+    {
+        return [
+            "url" => str_replace($this->_getFileExt(), '.m3u8', $this->ossPath),
+            "source_url" => $this->ossPath,
+            "name" => $this->fileName,
+            "size" => $this->fileSize,
+            "state" => $this->stateInfo,
+            'file' => $this->fullName,
+        ];
+    }
+
     /**
      * 上传错误检查
      * @param $errCode
@@ -271,7 +297,7 @@ class Upload
      * 文件大小检测
      * @return bool
      */
-    private function  _checkSize()
+    private function _checkSize()
     {
         return $this->fileSize <= ($this->config["maxSize"] * 1024);
     }
@@ -301,10 +327,11 @@ class Upload
     /**
      * 按照日期自动创建存储文件夹
      *
+     * @param $label
      * @return string
-     * @throws util\OSS_Exception
+     * @throws Exception
      */
-    private function _getOssFolder()
+    private function _getOssFolder($label)
     {
         $pathStr = $this->config["ossPath"];
         if (strrchr($pathStr, "/") != "/") {
@@ -312,7 +339,7 @@ class Upload
         }
         $pathStr .= date("Ymd");
         $OSS = Base::Instance();
-        $ret = $OSS->getALIOSSSDK()->createObjectDir($OSS->getBucketName(), $pathStr);
+        $ret = $OSS->getALIOSSSDK($label)->createObjectDir($OSS->getBucketName(), $pathStr);
         if ($ret->isOK()) {
             return $pathStr;
         }

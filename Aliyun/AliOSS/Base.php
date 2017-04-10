@@ -14,29 +14,29 @@ if (!defined('OSS_API_PATH'))
     define('OSS_API_PATH', dirname(__FILE__));
 
 //加载conf.inc.php文件,里面保存着OSS的地址以及用户访问的ID和KEY
-$lang = TranslateHelper::getLang();
-$config = Config::get_aliyun();
-if(empty($lang)) {
-    $config = $config[$lang]['OSS'];
-} else {
-    $config = $config['cn']['OSS'];
-}
-define('OSS_ACCESS_ID', $config['OSS_ACCESS_ID']);
-define('OSS_ACCESS_KEY', $config['OSS_ACCESS_KEY']);
-define('OSS_ENDPOINT', $config['OSS_ENDPOINT']);
-define('OSS_TEST_BUCKET', $config['OSS_TEST_BUCKET']);
+//$lang = TranslateHelper::getLang();
+//$config = Config::get_aliyun();
+//if (empty($lang)) {
+//    $config = $config[$lang]['OSS'];
+//} else {
+//    $config = $config['cn']['OSS'];
+//}
+//define('OSS_ACCESS_ID', $config['OSS_ACCESS_ID']);
+//define('OSS_ACCESS_KEY', $config['OSS_ACCESS_KEY']);
+//define('OSS_ENDPOINT', $config['OSS_ENDPOINT']);
+//define('OSS_TEST_BUCKET', $config['OSS_TEST_BUCKET']);
 
 //是否记录日志
-define('ALI_LOG', $config['ALI_LOG']);
+define('ALI_LOG', false);
 
 //自定义日志路径，如果没有设置，则使用系统默认路径，在./logs/
 //define('ALI_LOG_PATH','');
 
 //是否显示LOG输出
-define('ALI_DISPLAY_LOG', $config['ALI_DISPLAY_LOG']);
+define('ALI_DISPLAY_LOG', false);
 
 //语言版本设置
-define('ALI_LANG', $config['ALI_LANG']);
+define('ALI_LANG', 'zh');
 
 //检测语言包
 if (file_exists(OSS_API_PATH . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . ALI_LANG . '.inc.php')) {
@@ -70,13 +70,8 @@ if (function_exists('get_loaded_extensions')) {
 }
 
 
-
 class Base
 {
-    const endpoint = OSS_ENDPOINT;
-    const accessKeyId = OSS_ACCESS_ID;
-    const accesKeySecret = OSS_ACCESS_KEY;
-    const bucket = OSS_TEST_BUCKET;
 
     static public $instance;
 
@@ -93,18 +88,36 @@ class Base
     }
 
     /**
-     * @return ALIOSSSDK
+     * ALIOSSSDK
+     *
+     * @param string $label
+     * @return mixed
      */
-    public function getALIOSSSDK()
+    public function getALIOSSSDK($label = 'OSS')
     {
         if (empty(self::$instance['ALIOSSSDK'])) {
-            self::$instance['ALIOSSSDK'] = new ALIOSSSDK(self::accessKeyId, self::accesKeySecret, self::endpoint);
+
+            $config = Config::get_aliyun();
+            $lang = TranslateHelper::getLang();
+            if (empty($lang)) {
+                $config = $config[$lang];
+            } else {
+                $config = $config['cn'];
+            }
+
+            define('OSS_ACCESS_ID', $config[$label]['OSS_ACCESS_ID']);
+            define('OSS_ACCESS_KEY', $config[$label]['OSS_ACCESS_KEY']);
+            define('OSS_ENDPOINT', $config[$label]['OSS_ENDPOINT']);
+            define('OSS_TEST_BUCKET', $config[$label]['OSS_TEST_BUCKET']);
+
+            self::$instance['ALIOSSSDK'] = new ALIOSSSDK(OSS_ACCESS_ID, OSS_ACCESS_KEY, OSS_ENDPOINT);
         }
         return self::$instance['ALIOSSSDK'];
     }
 
-    public function getBucketName() {
-        return self::bucket;
+    public function getBucketName()
+    {
+        return OSS_TEST_BUCKET;
     }
 
 
