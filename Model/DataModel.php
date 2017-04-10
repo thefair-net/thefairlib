@@ -288,9 +288,10 @@ abstract class DataModel
      * @param bool $withScores
      * @return array
      */
-    protected function _getItemListByScoreRangeFromCache($listCacheKey, $rangeMin, $rangeMax, $lastItemId, $order = 'desc', $itemPerPage = 20, $withScores = false)
+    protected function _getItemListByScoreRangeFromCache($listCacheKey, $rangeMin, $rangeMax, $lastItemId, $order = 'desc', $itemPerPage = 20, $withScores = true)
     {
-        $total = $this->Storage()->zCard($listCacheKey);
+        $total = $this->Storage()->zCount($listCacheKey, $rangeMin, $rangeMax);
+
         $itemPerPage = min(50, $itemPerPage);
         $pageCount = ceil($total / $itemPerPage);
         $list = [];
@@ -310,7 +311,7 @@ abstract class DataModel
             }
 
             $options = [
-                'withscores' => TRUE, 'limit' => [$offset, $itemPerPage]
+                'withscores' => $withScores, 'limit' => [$offset, $itemPerPage]
             ];
             $list = $this->Storage()->$funcName($listCacheKey, $rangeMin, $rangeMax, $options);
             if(!empty($list)){
