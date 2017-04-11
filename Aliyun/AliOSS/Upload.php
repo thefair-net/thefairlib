@@ -256,7 +256,8 @@ class Upload
     public function getVideoInfo()
     {
         return [
-            "url" => str_replace($this->_getFileExt(), '.m3u8', $this->ossPath),
+            "url_m3u8" => str_replace($this->_getFileExt(), '.m3u8', $this->ossPath),
+            "url_mp4" => str_replace($this->_getFileExt(), '.mp4', $this->ossPath),
             "source_url" => str_replace($this->config['host'], $this->config['source_host'], $this->ossPath),
             "cover_img" => str_replace($this->_getFileExt(), '.jpg', $this->ossPath),
             "name" => $this->fileName,
