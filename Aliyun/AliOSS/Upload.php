@@ -257,7 +257,8 @@ class Upload
     {
         return [
             "url" => str_replace($this->_getFileExt(), '.m3u8', $this->ossPath),
-            "source_url" => $this->ossPath,
+            "source_url" => str_replace($this->config['host'], $this->config['source_host'], $this->ossPath),
+            "cover_img" => str_replace($this->_getFileExt(), '.jpg', $this->ossPath),
             "name" => $this->fileName,
             "size" => $this->fileSize,
             "state" => $this->stateInfo,
