@@ -7,6 +7,7 @@
  * @copyright 2015-2015
  * @date 16/6/3 下午4:06
  */
+
 namespace TheFairLib\Mobile\Push\Ext\Jpush;
 
 use TheFairLib\Config\Config;
@@ -100,6 +101,16 @@ class Jpush implements PushInterface
             default:
                 throw new Exception('error platform' . $platform);
         }
+        return $result;
+    }
+
+    public function pushMessageToAll($message)
+    {
+        $result = $this->_push->push()->setPlatform('all')
+            ->addAllAudience()
+            ->setNotificationAlert($message)
+            ->setOptions(86400, 3600, null, $this->_apnsProduction)
+            ->send();
         return $result;
     }
 
