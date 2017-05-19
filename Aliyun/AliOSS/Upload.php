@@ -82,7 +82,7 @@ class Upload
             return;
         }
 
-        if (isset($this->file['error'])) {
+        if ($this->file['error']) {
             $this->stateInfo = $this->_getStateInfo($file['error']);
             return;
         }
