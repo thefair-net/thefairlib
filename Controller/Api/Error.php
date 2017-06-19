@@ -64,11 +64,11 @@ class Error extends ErrorBase
     }
 
     protected function _DealIllegalRequest($msg = ''){
-        $this->showError('Illegal Request: '.$msg, [], 40000, 500);
+        $this->showError('Illegal Request: '.$msg, [], 40001, 500);
     }
 
     protected function _DealNotfoundRequest(){
-        $this->showError('Not Found', [], 40000, 404);
+        $this->showError('Not Found', [], 40001, 404);
     }
 
     public function showResult($result, $msg = '', $code = '0'){
@@ -78,7 +78,7 @@ class Error extends ErrorBase
         $this->_setResponse(self::$_responseObj->send());
     }
 
-    public function showError($error, $result = array() , $code = '10000', $httpCode = 400){
+    public function showError($error, $result = array() , $code = '40001', $httpCode = 400){
         self::$_responseObj->setHttpCode($httpCode);
         $this->showResult($result, $error, $code);
     }

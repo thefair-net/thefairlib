@@ -31,7 +31,7 @@ class Controller extends Base
         $this->_setResponse(self::$_responseObj->send());
     }
 
-    public function showError($error, $result = array() , $code = '10000'){
+    public function showError($error, $result = array() , $code = '40001'){
         $this->showResult($result, $error, $code);
     }
 

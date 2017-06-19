@@ -104,7 +104,7 @@ abstract class Error extends ErrorBase
         $this->_setResponse(self::$_responseObj->send());
     }
 
-    public function showError($error, $result = array(), $code = '10000', $httpCode = 400)
+    public function showError($error, $result = array(), $code = '40001', $httpCode = 400)
     {
         self::$_responseObj->setHttpCode($httpCode);
         if ($this->isAjax()) {
