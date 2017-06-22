@@ -62,7 +62,6 @@ class Rabbitmq
                 'content_type' => 'text/plain',
                 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT
             ];
-            $messageBody = json_encode($messageBody, JSON_UNESCAPED_UNICODE);
             if (is_array($messageBody)) {
                 $messageBody = json_encode($messageBody, JSON_UNESCAPED_UNICODE);
                 $header = [
@@ -100,7 +99,7 @@ class Rabbitmq
             $channel->queue_bind($queue, $exchange);
 
             $channel->basic_consume($queue, $consumerTag, false, false, false, false, $func);
-            
+
             while (count($channel->callbacks)) {
                 $channel->wait();
             }
