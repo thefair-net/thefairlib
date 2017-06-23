@@ -50,7 +50,7 @@ class Rabbitmq
      * @param string $exchange //交换器
      * @throws \Exception
      */
-    public function publish($queue, $messageBody, $exchange = 'router')
+    public function publish($queue, $messageBody, $exchange)
     {
         $channel = self::$_conn->channel();
         try {
@@ -70,7 +70,10 @@ class Rabbitmq
                 ];
             }
             $message = new AMQPMessage($messageBody, $header);
-            return $channel->basic_publish($message, $exchange);
+            $channel->basic_publish($message, $exchange);
+            $channel->close();
+            self::$_conn->close();
+            return true;
         } catch (\Exception $e) {
             $channel->close();
             self::$_conn->close();
@@ -79,7 +82,7 @@ class Rabbitmq
     }
 
     /**
-     * 消息费
+     * 消费者
      *
      * @param $queue
      * @param $func //回调函数
@@ -87,7 +90,7 @@ class Rabbitmq
      * @param string $consumerTag
      * @throws \Exception
      */
-    public function consumer($queue, $func, $exchange = 'router', $consumerTag = 'consumer')
+    public function consumer($queue, $func, $exchange, $consumerTag = 'consumer')
     {
         $channel = self::$_conn->channel();
         try {
