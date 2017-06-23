@@ -28,7 +28,7 @@ class Green
         $this->_config = $config;
     }
 
-    public function singleTextScan($content, $scenes = ["antispam"])
+    public function singleTextScan($content, $scenes = ["antispam"], $labelWhiteList = [])
     {
         $return = true;
 
@@ -45,6 +45,9 @@ class Green
         if(200 == $taskResult['code']){
             $sceneResults = $taskResult['results'];
             foreach ($sceneResults as $sceneResult) {
+                if(!empty($labelWhiteList) && in_array($sceneResult['label'], $labelWhiteList)){
+                    continue;
+                }
                 $suggestion = $sceneResult['suggestion'];
                 if($suggestion != 'pass'){
                     $return = false;
