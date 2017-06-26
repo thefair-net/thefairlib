@@ -13,6 +13,7 @@
 
 namespace TheFairLib\Queue\Rabbitmq;
 
+use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use TheFairLib\Config\Config;
 use \PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -28,6 +29,13 @@ class Rabbitmq
      */
     static private $_conn = null;
 
+
+    /**
+     * @var AMQPChannel
+     */
+    static private $_channel = null;
+
+
     /**
      * @return Rabbitmq
      */
@@ -38,8 +46,19 @@ class Rabbitmq
             self::$instance = new $class();
             $config = Config::get_queue_rabbitmq(self::$server);
             self::$_conn = new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['pass'], $config['vhost']);
+            self::$_channel = self::$_conn->channel();
         }
         return self::$instance;
+    }
+
+    static public function closeConnection()
+    {
+        if (!empty(self::$instance) && !empty(self::$_conn)) {
+            self::$_conn = null;
+            self::$_channel = null;
+            self::$_channel->close();
+            self::$_conn->close();
+        }
     }
 
     /**
@@ -48,15 +67,17 @@ class Rabbitmq
      * @param $queue //队列名称
      * @param $messageBody //内容
      * @param string $exchange //交换器
+     * @param string //$type
+     * @param $router //router
+     * @return bool
      * @throws \Exception
      */
-    public function publish($queue, $messageBody, $exchange)
+    public function publish($queue, $messageBody, $exchange, $type, $router)
     {
-        $channel = self::$_conn->channel();
         try {
-            $channel->queue_declare($queue, false, true, false, false);
-            $channel->exchange_declare($exchange, 'direct', false, true, false);
-            $channel->queue_bind($queue, $exchange);
+            self::$_channel->queue_declare($queue, false, true, false, false);
+            self::$_channel->exchange_declare($exchange, $type, false, true, false);
+            self::$_channel->queue_bind($queue, $exchange, $router);
 
             $header = [
                 'content_type' => 'text/plain',
@@ -70,14 +91,10 @@ class Rabbitmq
                 ];
             }
             $message = new AMQPMessage($messageBody, $header);
-            $channel->basic_publish($message, $exchange);
-            $channel->close();
-            self::$_conn->close();
+            self::$_channel->basic_publish($message, $exchange, $router);
             return true;
         } catch (\Exception $e) {
-            $channel->close();
-            self::$_conn->close();
-            throw $e;
+            self::closeConnection();
         }
     }
 
@@ -86,31 +103,22 @@ class Rabbitmq
      *
      * @param $queue
      * @param $func //回调函数
-     * @param string $exchange
-     * @param string $consumerTag
      * @throws \Exception
      */
-    public function consumer($queue, $func, $exchange, $consumerTag = 'consumer')
+    public function consumer($queue, $func)
     {
-        $channel = self::$_conn->channel();
         try {
 
-            $channel->queue_declare($queue, false, true, false, false);
+            self::$_channel->queue_declare($queue, false, true, false, false);
 
-            $channel->exchange_declare($exchange, 'direct', false, true, false);
+            self::$_channel->basic_consume($queue, '', false, false, false, false, $func);
 
-            $channel->queue_bind($queue, $exchange);
-
-            $channel->basic_consume($queue, $consumerTag, false, false, false, false, $func);
-
-            while (count($channel->callbacks)) {
-                $channel->wait();
+            while (count(self::$_channel->callbacks)) {
+                self::$_channel->wait();
             }
 
         } catch (\Exception $e) {
-            $channel->close();
-            self::$_conn->close();
-            throw $e;
+            self::closeConnection();
         }
     }
 

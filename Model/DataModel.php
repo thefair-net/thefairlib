@@ -12,6 +12,7 @@ use Illuminate\Database\Capsule\Manager;
 use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
 use TheFairLib\DB\Redis\Storage;
+use TheFairLib\Queue\Rabbitmq\Rabbitmq;
 use TheFairLib\Utility\Utility;
 
 abstract class DataModel
@@ -484,6 +485,7 @@ abstract class DataModel
         //redis关闭
         Storage::closeConnection();
         Cache::closeConnection();
+        Rabbitmq::closeConnection();//关闭MQ
     }
 
     public static function clearSessionCache(){
