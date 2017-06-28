@@ -9,6 +9,7 @@
 
 namespace TheFairLib\Aliyun\AliGreen;
 
+use Green\Request\V20170112\ImageSyncScanRequest;
 use Green\Request\V20170112\TextScanRequest;
 use TheFairLib\Aliyun\Exception;
 use TheFairLib\Utility\Utility;
@@ -28,9 +29,19 @@ class Green
         $this->_config = $config;
     }
 
-    public function singleTextScan($content, $scenes = ["antispam"], $labelWhiteList = [])
+    /**
+     * 文案检测
+     *
+     * @param $content
+     * @param array $scenes
+     * @param array $labelWhiteList
+     * @param array $passSuggestionList
+     * @param array $blockResult
+     * @return bool
+     * @throws Exception
+     */
+    public function singleTextScan($content, $scenes = ["antispam"], $labelWhiteList = [], $passSuggestionList = ['pass'], &$blockResult = [])
     {
-        $return = true;
 
         $request = new TextScanRequest();
         $params = [
@@ -49,16 +60,64 @@ class Green
                     continue;
                 }
                 $suggestion = $sceneResult['suggestion'];
-                if($suggestion != 'pass'){
-                    $return = false;
-                    break;
+                if(in_array($suggestion , $passSuggestionList)){
+                    $blockResult[] = $sceneResult;
                 }
             }
         }else{
             throw new Exception(Utility::encode($taskResults));
         }
 
-        return $return;
+        return !empty($blockResult) ? false : true;
+
+    }
+
+    /**
+     * 图片扫描
+     *
+     * @param $imgUrl
+     * @param array $scenes
+     * @param array $labelWhiteList
+     * @param array $passSuggestionList
+     * @param array $blockResult
+     * @param array $orcResult
+     * @return bool
+     * @throws Exception
+     */
+    public function singleImageScan($imgUrl, $scenes = ["porn"], $labelWhiteList = [], $passSuggestionList = ['pass'], &$blockResult = [], &$orcResult = [])
+    {
+
+        $request = new ImageSyncScanRequest();
+        $params = [
+            "tasks" => [[
+                'dataId' => uniqid(),
+                'url' => $imgUrl,
+                'time' => round(microtime(true)*1000),
+            ]],
+            "scenes" => $scenes];
+
+        $taskResults = $this->sendRequest($request, $params);
+        $taskResult = current($taskResults);
+        if(200 == $taskResult['code']){
+            $sceneResults = $taskResult['results'];
+            foreach ($sceneResults as $sceneResult) {
+                if(!empty($labelWhiteList) && in_array($sceneResult['label'], $labelWhiteList)){
+                    continue;
+                }
+                $suggestion = $sceneResult['suggestion'];
+                if($sceneResult['scene'] != 'ocr' && in_array($suggestion , $passSuggestionList)){
+                    $blockResult[] = $sceneResult;
+                }
+
+                if($sceneResult['scene'] == 'ocr'){
+                    $orcResult[] = $sceneResult;
+                }
+            }
+        }else{
+            throw new Exception(Utility::encode($taskResults));
+        }
+
+        return !empty($blockResult) ? false : true;
 
     }
 
