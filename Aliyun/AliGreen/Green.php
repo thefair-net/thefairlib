@@ -112,6 +112,7 @@ class Green
                 if($sceneResult['scene'] == 'ocr'){
                     $orcResult[] = $sceneResult;
                 }
+
             }
         }else{
             throw new Exception(Utility::encode($taskResults));
