@@ -60,7 +60,7 @@ class Green
                     continue;
                 }
                 $suggestion = $sceneResult['suggestion'];
-                if(in_array($suggestion , $passSuggestionList)){
+                if(!in_array($suggestion , $passSuggestionList)){
                     $blockResult[] = $sceneResult;
                 }
             }
@@ -105,7 +105,7 @@ class Green
                     continue;
                 }
                 $suggestion = $sceneResult['suggestion'];
-                if($sceneResult['scene'] != 'ocr' && in_array($suggestion , $passSuggestionList)){
+                if($sceneResult['scene'] != 'ocr' && !in_array($suggestion , $passSuggestionList)){
                     $blockResult[] = $sceneResult;
                 }
 
