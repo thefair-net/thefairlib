@@ -2,6 +2,7 @@
 
 namespace TheFairLib\Aliyun\AliOSS;
 
+use OSS\Core\OssException;
 use TheFairLib\Config\Config;
 
 class OssClient
@@ -15,17 +16,45 @@ class OssClient
 
     /**
      * @param $bucket
-     * @return \OSS\OssClient
+     * @return OssClient
      */
     static public function Instance($bucket)
     {
-        if (empty(self::$instance[$bucket])) {
+        $class = get_called_class();
+        if (empty(self::$instance[$class])) {
             $config = Config::get_api_ali_oss("{$bucket}");//固定的文件目录
-            self::$instance[$bucket] = new \OSS\OssClient($config['app_key'], $config['app_secret'], $config['endpoint']);
             self::$bucket = $bucket;
             self::$config = $config;
+            self::$instance[$class] = new $class();
         }
-        return self::$instance[$bucket];
+        return self::$instance[$class];
+    }
+
+    /**
+     * @return \OSS\OssClient
+     */
+    public function ossClient()
+    {
+        if (empty(self::$instance[self::$bucket])) {
+            self::$instance[self::$bucket] = new \OSS\OssClient(self::$config['app_key'], self::$config['app_secret'], self::$config['endpoint']);
+        }
+        return self::$instance[self::$bucket];
+    }
+
+    public function signObject($url, $timeout = 60, $method = 'GET', $options = NULL)
+    {
+        if (self::$config['acl_type'] == 'private') {//私有读
+            try {
+                $info = parse_url($url);
+                $object = ltrim($info['path'], '/');
+                $signUrl = $this->ossClient()->signUrl(self::$bucket, $object, $timeout, $method, $options);
+                $result = parse_url($signUrl);
+                $url = $info['scheme'] . '://' . $info['host'] . $info['path'] . '?' . $result['query'];
+            } catch (\Exception $e) {
+                throw new OssException('signUrl error ' . $e->getMessage());
+            }
+        }
+        return $url;
     }
 
 }

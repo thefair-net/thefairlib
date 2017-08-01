@@ -131,7 +131,7 @@ class OssUpload
     private function uploadOSS($base64 = false)
     {
         try {
-            $ossClient = OssClient::Instance($this->bucket);
+            $ossClient = OssClient::Instance($this->bucket)->ossClient();
             $this->ossPath = $this->_getOssFolder();
             $path = $this->ossPath . DIRECTORY_SEPARATOR . $this->newName;  //创建路径加文件名
             $obj = $base64 ? $path . $this->fileType : $path . $this->_getFileExt();
@@ -145,7 +145,7 @@ class OssUpload
      * 处理base64编码的图片上传
      *
      * @param $base64Data
-     * @throws Exception
+     * @throws \Exception
      */
     private function _base64ToImage($base64Data)
     {
@@ -355,7 +355,7 @@ class OssUpload
         }
         $pathStr .= date("Ymd");
         try {
-            OssClient::Instance($this->bucket)->createObjectDir($this->bucket, $pathStr);
+            OssClient::Instance($this->bucket)->ossClient()->createObjectDir($this->bucket, $pathStr);
         } catch (OssException $e) {
             throw new \Exception("自动创建存储文件夹失败：" . $e->getMessage());
         }
