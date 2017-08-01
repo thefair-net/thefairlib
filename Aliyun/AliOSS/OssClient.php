@@ -57,4 +57,20 @@ class OssClient
         return $url;
     }
 
+    public function signCdn($url, $timeout = 1800)
+    {
+        $timeout = time() - 1800 + $timeout;//阿里云默认时间1800秒
+        if (self::$config['acl_type'] == 'private') {//私有读
+            try {
+                $info = parse_url($url);
+                $date = date('YmdHi', $timeout);
+                $sign = md5(self::$config['cdn_sign_key'] . $date . $info['path']);
+                $url = $info['scheme'] . '://' . $info['host'] . '/' . $date . '/' . $sign . $info['path'];
+            } catch (\Exception $e) {
+                throw new OssException('signCdn error ' . $e->getMessage());
+            }
+        }
+        return $url;
+    }
+
 }
