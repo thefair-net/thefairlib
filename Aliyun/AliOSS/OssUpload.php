@@ -270,15 +270,18 @@ class OssUpload
     public function getAudioInfo()
     {
         return [// {ObjectPrefix}{FileName}/{FileName}
-            "url" => $this->host . $this->ossPath . '/' . $this->newName . '/' . $this->newName . '.m3u8',
+//            "url" => $this->host . $this->ossPath . '/' . $this->newName . '/' . $this->newName . '.m3u8',
+            "url_m3u8" => $this->host . $this->ossPath . '/' . $this->newName . '/' . $this->newName . '.m3u8',
         ];
     }
 
     public function getVideoInfo()
     {
         return [// {ObjectPrefix}{FileName}/{FileName}
-            "url" => $this->host . $this->ossPath . '/' . $this->newName . '/' . $this->newName . '.m3u8',
+            "url_m3u8" => $this->host . $this->ossPath . '/' . $this->newName . '/' . $this->newName . '.m3u8',
+            "url_mp4" => $this->host . $this->ossPath . '/' . $this->newName . '/' . $this->newName . '.mp4',
             "cover_img" => $this->host . $this->ossPath . '/' . $this->newName . '/' . $this->newName . '.jpg',
+            "source_url" => str_replace($this->config['host'], $this->config['source_host'], $this->ossPath),
         ];
     }
 
