@@ -180,7 +180,8 @@ class Client
             if (!is_a($query, 'SolrQuery')) {
                 throw new Exception('query必须是一个SolrParams对象');
             }
-            if (empty($query->getStart())) {
+            $start = $query->getStart();
+            if (empty($start)) {
                 $offset = ($page - 1) * $limit;
                 $query->setStart($offset);
                 $query->setRows($limit);
