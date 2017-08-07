@@ -102,16 +102,19 @@ class Rabbitmq
      * 消费者
      *
      * @param $queue
-     * @param $func //回调函数
-     * @throws \Exception
+     * @param $exchange
+     * @param $router
+     * @param $func
      */
-    public function consumer($queue, $func)
+    public function consumer($queue, $exchange, $router, $func)
     {
         try {
 
             self::$_channel->queue_declare($queue, false, true, false, false);
 
             self::$_channel->basic_consume($queue, '', false, false, false, false, $func);
+
+            self::$_channel->queue_bind($queue, $exchange, $router);
 
             while (count(self::$_channel->callbacks)) {
                 self::$_channel->wait();
