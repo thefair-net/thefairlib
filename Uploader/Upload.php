@@ -109,7 +109,20 @@ class Upload
      */
     private function _base64ToImage($base64Data)
     {
-        $img = base64_decode($base64Data);
+        if (strpos($base64Data, ',') !== false) {
+            list($type, $img) = explode(',', $base64Data, 2);
+            preg_match_all('/^data:image\/(\w+);base64$/', $type, $imgType);
+            if (!empty($imgType[1][0])) {
+                if (in_array($imgType[1][0], ['jpeg', 'jpg'])) {
+                    $this->fileType = '.jpg';
+                } else {
+                    $this->fileType = '.' . $imgType[1][0];
+                }
+            }
+            $img = base64_decode($img);
+        } else {
+            $img = base64_decode($base64Data);
+        }
         $this->fileName = time() . rand(1, 10000) . ".png";
         $this->fullName = $this->_getFolder() . '/' . $this->fileName;
         if (!file_put_contents($this->fullName, $img)) {

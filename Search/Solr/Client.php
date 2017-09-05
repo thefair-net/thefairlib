@@ -196,6 +196,8 @@ class Client
                 $this->_page['page_count'] = $pageCount;
                 $this->_page['item_count'] = $result['numFound'];
                 $this->_page['item_list'] = $result['docs'];
+                $hl = $queryResponse->getResponse()->highlighting;
+                $this->_page['highlighting'] = !empty($hl) ? $hl : [];
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
