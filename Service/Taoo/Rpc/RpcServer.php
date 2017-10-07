@@ -84,6 +84,9 @@ class RpcServer extends BaseServer
      */
     public function onStart($server, $workerId)
     {
+        if(function_exists('opcache_reset')){
+            opcache_reset();
+        }
         //检查需要的常量是否存在
         if (!defined('APP_NAME') || !defined('APP_PATH')) {
             Logger::Instance()->error('APP_NAME or APP_PATH is not defined');

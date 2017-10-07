@@ -72,7 +72,7 @@ abstract class Base extends \Yaf\Controller_Abstract
         static::$_params = $this->_request->getParams();
         Utility::set_requset_params(self::$_params);
 
-        $_GET = $_POST = [];
+        $_GET = $_POST = $_REQUEST = [];
     }
 
     protected function _checkParam($key, $paramConf){
