@@ -57,7 +57,7 @@ class Youzanyun
             if (empty(self::$config)) {
                 throw new Exception('error youzanyum appKey');
             }
-            self::$client = new \YZTokenClient(self::getToken());
+            self::$client = new \YZTokenClient(self::getToken($type));
         }
         return self::$instance;
     }
@@ -72,10 +72,11 @@ class Youzanyun
         return self::$client->post($method, self::$config['version'], $params, $files);
     }
 
-    static public function getToken()
+    static public function getToken($type)
     {
         $redis = Cache::getInstance('default');
-        $accessToken = $redis->get(self::TOKEN);
+        $name = self::TOKEN . '#' . $type;
+        $accessToken = $redis->get($name);
         if (empty($accessToken)) {
             $token = new \YZGetTokenClient(self::$config['app_id'], self::$config['secret']);
             $param['kdt_id'] = self::$config['kdt_id'];
@@ -83,7 +84,7 @@ class Youzanyun
             $ret = $token->get_token(self::$config['grant_type'], $param);
 
             if (!empty($ret)) {
-                $redis->setex(self::TOKEN, $ret['expires_in'] - 100, $ret['access_token']);
+                $redis->setex($name, $ret['expires_in'] - 100, $ret['access_token']);
             }
             $accessToken = $ret['access_token'];
         }
