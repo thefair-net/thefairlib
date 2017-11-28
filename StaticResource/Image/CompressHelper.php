@@ -13,14 +13,24 @@ use TheFairLib\StaticResource\Exception;
 
 class CompressHelper
 {
-    public static function getCompressImgUrl($url, $width, $type = 'jpg', $quality = '100'){
+    public static function getCompressImgUrl($url, $width, $type = 'jpg', $quality = '100', $useIntraDomain = false){
         $service = Config::get_image('auto_compress_service');
         switch($service){
             case 'aliyun':
+//                $urlAry = parse_url($url);
+//                if($urlAry['host'] == 'static.bj.taooo.cc' || $urlAry['host'] == 'static.thefair.net.cn'){
+//                    $urlAry['host'] = $urlAry['host'] == 'static.thefair.net.cn' ? 'image.thefair.net.cn' : 'image.bj.taooo.cc';
+//                    $urlAry['path'] = $urlAry['path'].'@1pr_'.(int)$width.'w'.($quality != '100' && $type != 'webp' ? '_'.$quality.'q' : '').'_1o'.'.'.$type;
+//                }
+
                 $urlAry = parse_url($url);
                 if($urlAry['host'] == 'static.bj.taooo.cc' || $urlAry['host'] == 'static.thefair.net.cn'){
-                    $urlAry['host'] = $urlAry['host'] == 'static.thefair.net.cn' ? 'image.thefair.net.cn' : 'image.bj.taooo.cc';
-                    $urlAry['path'] = $urlAry['path'].'@1pr_'.(int)$width.'w'.($quality != '100' && $type != 'webp' ? '_'.$quality.'q' : '').'_1o'.'.'.$type;
+                    if($useIntraDomain){
+                        $urlAry['host'] = 'static-thefair-bj.oss-cn-beijing-internal.aliyuncs.com';
+                    }else{
+                        $urlAry['host'] = $urlAry['host'] == 'static.thefair.net.cn' ? 'image.thefair.net.cn' : 'image.bj.taooo.cc';
+                    }
+                    $urlAry['query'] = 'x-oss-process=image/auto-orient,1/'.($width ? 'resize,w_'.(int)$width.'/' : '').'format,'.$type.'/interlace,1'.($quality != '100' && $type != 'webp' ? '/quality,q_'.$quality : '');
                 }
                 break;
             default :
@@ -28,6 +38,8 @@ class CompressHelper
         }
 
         return $urlAry['scheme'].'://'.$urlAry['host'].$urlAry['path'].(!empty($urlAry['query']) ? '?'.$urlAry['query'] : '');
+
+
     }
 
     /**
@@ -38,6 +50,8 @@ class CompressHelper
      * @param $platform string iphone/ipad/android/h5
      * @param $resolutionWidth string 屏幕宽度
      * @param $type string 图片类型
+     * @param bool $useIntraDomain
+     *
      * @return string  图片url
      * @throws Exception
      *
@@ -54,7 +68,7 @@ class CompressHelper
      *      'custom_compress_rate' => 0.5,
      * );
      */
-    public static function autoCompressImg($imgTag, $options, $platform, $resolutionWidth, $type = 'png'){
+    public static function autoCompressImg($imgTag, $options, $platform, $resolutionWidth, $type = 'png', $useIntraDomain = false){
         if(empty($resolutionWidth)){
             throw new Exception('resolution error');
         }
@@ -116,7 +130,7 @@ class CompressHelper
                     $imgUrl = $options['url'];
                 }
                 if(!empty($imgUrl)){
-                    $imgUrl = self::getCompressImgUrl($imgUrl, $resolutionWidth * (float) $tmpSetting, $type, $tmpQuality);
+                    $imgUrl = self::getCompressImgUrl($imgUrl, $resolutionWidth * (float) $tmpSetting, $type, $tmpQuality, $useIntraDomain);
                 }
             }else{
                 throw new Exception('resolution error 1');
