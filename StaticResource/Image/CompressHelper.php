@@ -17,11 +17,6 @@ class CompressHelper
         $service = Config::get_image('auto_compress_service');
         switch($service){
             case 'aliyun':
-//                $urlAry = parse_url($url);
-//                if($urlAry['host'] == 'static.bj.taooo.cc' || $urlAry['host'] == 'static.thefair.net.cn'){
-//                    $urlAry['host'] = $urlAry['host'] == 'static.thefair.net.cn' ? 'image.thefair.net.cn' : 'image.bj.taooo.cc';
-//                    $urlAry['path'] = $urlAry['path'].'@1pr_'.(int)$width.'w'.($quality != '100' && $type != 'webp' ? '_'.$quality.'q' : '').'_1o'.'.'.$type;
-//                }
 
                 $urlAry = parse_url($url);
                 if($urlAry['host'] == 'static.bj.taooo.cc' || $urlAry['host'] == 'static.thefair.net.cn'){
