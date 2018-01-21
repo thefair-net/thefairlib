@@ -62,7 +62,7 @@ abstract class DataModel
     /**
      * 存储
      *
-     * @param string $serverName
+     * @param string $serverName 集群标识
      * @return \Redis
      */
     protected function Storage($serverName = '')
@@ -76,7 +76,7 @@ abstract class DataModel
     /**
      * 缓存
      *
-     * @param string $serverName
+     * @param string $serverName 集群标识
      * @return \Redis
      */
     protected function Cache($serverName = '')
