@@ -61,20 +61,30 @@ abstract class DataModel
 
     /**
      * 存储
+     *
+     * @param string $serverName
      * @return \Redis
      */
-    protected function Storage()
+    protected function Storage($serverName = '')
     {
-        return Storage::getInstance($this->server);
+        if(empty($serverName)){
+            $serverName = $this->server;
+        }
+        return Storage::getInstance($serverName);
     }
 
     /**
      * 缓存
+     *
+     * @param string $serverName
      * @return \Redis
      */
-    protected function Cache()
+    protected function Cache($serverName = '')
     {
-        return Cache::getInstance($this->server);
+        if(empty($serverName)){
+            $serverName = $this->server;
+        }
+        return Cache::getInstance($serverName);
     }
 
     /**
