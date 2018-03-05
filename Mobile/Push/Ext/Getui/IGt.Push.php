@@ -2,7 +2,7 @@
 /**
  * VERSION 3.3.2.1
  */
-//header("Content-Type: text/html; charset=utf-8");
+header("Content-Type: text/html; charset=utf-8");
 require_once(dirname(__FILE__) . '/' . 'protobuf/pb_message.php');
 require_once(dirname(__FILE__) . '/' . 'igetui/IGt.Req.php');
 require_once(dirname(__FILE__) . '/' . 'igetui/IGt.Message.php');
@@ -54,7 +54,7 @@ Class IGeTui
         {
             $this->domainUrlList = array($domainUrl);
         }
-        $this->initOSDomain($this->domainUrlList);
+        $this->initOSDomain(null);
     }
 
     private function initOSDomain($hosts)
@@ -361,21 +361,8 @@ Class IGeTui
                 $params["tagList"] = $message->get_tagList();
             } else {
                 $conditions = $message->get_conditions();
-                foreach ($conditions as $condition) {
-                    if(AppConditions::PHONE_TYPE == $condition["key"]) {
-                        $params["phoneTypeList"] = $condition["values"];
-                    } elseif (AppConditions::REGION == $condition["key"]) {
-                        $params["provinceList"] = $condition["values"];
-                    } elseif (AppConditions::TAG == $condition["key"]) {
-                        $params["tagList"] = $condition["values"];
-                    } else {
-                        $personaTag["tag"] = $condition["key"];
-                        $personaTag["codes"] = $condition["values"];
-                        $personaTags[] = $personaTag;
-                    }
-                }
+                $params["conditions"] = $conditions->getCondition();
             }
-            $params["personaTags"] = $personaTags;
         }
         $rep = $this->httpPostJSON($this->host,$params);
         if($rep['result'] == 'ok')
@@ -516,6 +503,19 @@ Class IGeTui
         $params["taskId"] = $taskId;
         return $this->httpPostJson($this->host, $params);
     }
+	
+	public function getPushResultByTaskidList( $taskIdList) {
+		return $this->getPushActionResultByTaskids($taskIdList, null);
+	}
+	
+	public function getPushActionResultByTaskids( $taskIdList, $actionIdList) {
+        $params = array();
+        $params["action"] = "getPushMsgResultByTaskidList";
+        $params["appkey"] = $this->appkey;
+        $params["taskIdList"] = $taskIdList;
+		$params["actionIdList"] = $actionIdList;
+        return $this->httpPostJson($this->host, $params);
+    }
 
     public function getUserTags($appId, $clientId) {
         $params = array();
@@ -583,6 +583,37 @@ Class IGeTui
         return $this->httpPostJson($this->host, $params);
     }
 
+    public function pushTagMessage($message, $requestId = null) {
+        if(!$message instanceof IGtTagMessage) {
+            return $this->get_result("MsgTypeError");
+        }
+
+        if($requestId == null  || trim($requestId) == "") {
+            $requestId = uniqid();
+        }
+
+        $params = array();
+        $params["action"] = "pushMessageByTagAction";
+        $params["appkey"] = $this->appkey;
+        $params["clientData"] = base64_encode($message->get_data()->get_transparent());
+        $params["transmissionContent"] = $message->get_data()->get_transmissionContent();
+        $params["isOffline"] = $message->get_isOffline();
+        $params["offlineExpireTime"] = $message->get_offlineExpireTime();
+        $params["pushNetWorkType"] = $message->get_pushNetWorkType();
+        $params["appIdList"] = $message->get_appIdList();
+        $params["speed"] = $message->get_speed();
+        $params["requestId"] = $requestId;
+
+        $params["tag"] = $message->get_tag();
+        return $this->httpPostJSON($this->host, $params);
+    }
+
+    private function get_result($info) {
+        $ret = array();
+        $ret["result"] = $info;
+        return $ret;
+    }
+    
     private function micro_time()
     {
         list($usec, $sec) = explode(" ", microtime());

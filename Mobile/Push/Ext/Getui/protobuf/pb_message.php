@@ -342,7 +342,7 @@ abstract class PBMessage
      * thanks to cheton
      * http://code.google.com/p/pb4php/issues/detail?id=3&can=1
      */
-    public function __destruct()
+    public function _destruct()
     {
         if (isset($this->reader))
         {
