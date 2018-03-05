@@ -72,7 +72,7 @@ class Jpush implements PushInterface
     {
         if ($platform == 'iphone') $platform = 'ios';
         if (empty($clientId) || !in_array($platform, ['ios', 'android', 'winphone'])
-            || empty($title) || strlen($title) >= 40 || empty($message)
+            || empty($title) || empty($message)
         ) {
             throw new Exception('error push param' . json_encode([$clientId, $platform, $title, $message, $link, $badge], JSON_UNESCAPED_UNICODE));
         }

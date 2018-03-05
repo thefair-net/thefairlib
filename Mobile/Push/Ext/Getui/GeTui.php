@@ -147,14 +147,14 @@ class GeTui implements PushInterface
      * @param $link
      * @param $badge
      * @param string $logoUrl
-     * @return \Array
+     * @return array
      * @throws Exception
      * @throws \Exception
      */
     public function pushMessageToSingle($clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
     {
         if (empty($clientId) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
-            || empty($title) || strlen($title) >= 40 || empty($message)
+            || empty($title) || empty($message)
         ) {
             throw new Exception('error push param' . json_encode([$clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl], JSON_UNESCAPED_UNICODE));
         }
