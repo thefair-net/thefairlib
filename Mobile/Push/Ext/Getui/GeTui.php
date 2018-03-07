@@ -6,6 +6,7 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
+
 namespace TheFairLib\Mobile\Push\Ext\Getui;
 
 use TheFairLib\Config\Config;
@@ -172,12 +173,13 @@ class GeTui implements PushInterface
         $apn->contentAvailable = 1;
         $apn->category = "ACTIONABLE";
         $apn->customMsg = ['p' => $link];
+        $msg = ['p' => $link, 'title' => $title, 'content' => $message];
         if ($platform == 'iphone') {
             $tempType = 'Transmission';
-            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl, 'logo.png', 1, $msg);
             $template->set_pushInfo("", $badge, $message, "", "payload", "", "", "");
         } else {
-            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl, 'logo.png', 2, $msg);
         }
         $template->set_apnInfo($apn);
         //个推信息体
@@ -215,7 +217,7 @@ class GeTui implements PushInterface
      * @param $link
      * @param int $badge
      * @param string $logoUrl
-     * @return \Array
+     * @return array
      * @throws Exception
      * @throws \Exception
      */
@@ -310,8 +312,8 @@ class GeTui implements PushInterface
                 $template = new \IGtTransmissionTemplate();
                 $template->set_appId($this->_appID);//应用appid
                 $template->set_appkey($this->_appKey);//应用appkey
-                $template->set_transmissionType(1);//透传消息类型
-                $template->set_transmissionContent($message);//透传内容
+                $template->set_transmissionType($transmission);//透传消息类型
+                $template->set_transmissionContent($transmissionContent);//透传内容
                 break;
         }
         if (empty($template)) {
