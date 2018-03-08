@@ -11,6 +11,7 @@ namespace TheFairLib\Mobile\Push\Ext\Getui;
 
 use TheFairLib\Config\Config;
 use TheFairLib\Mobile\Push\Ext\PushInterface;
+use TheFairLib\Utility\Utility;
 use Yaf\Exception;
 
 require_once(dirname(__FILE__) . '/' . 'IGt.Push.php');
@@ -174,6 +175,7 @@ class GeTui implements PushInterface
         $apn->category = "ACTIONABLE";
         $apn->customMsg = ['p' => $link];
         $msg = ['p' => $link, 'title' => $title, 'content' => $message];
+        $msg = Utility::encode($msg);
         if ($platform == 'iphone') {
             $tempType = 'Transmission';
             $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl, 'logo.png', 1, $msg);
@@ -244,12 +246,14 @@ class GeTui implements PushInterface
         $apn->contentAvailable = 1;
         $apn->category = "ACTIONABLE";
         $apn->customMsg = ['p' => $link];
+        $msg = ['p' => $link, 'title' => $title, 'content' => $message];
+        $msg = Utility::encode($msg);
         if ($platform == 'iphone') {
             $tempType = 'Transmission';
-            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl, 'logo.png', 1, $msg);
             $template->set_pushInfo("", $badge, $message, "", "payload", "", "", "");
         } else {
-            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl);
+            $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl, 'logo.png', 1, $msg);
         }
         $template->set_apnInfo($apn);
         //个推信息体
