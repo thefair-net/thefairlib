@@ -17,6 +17,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use TheFairLib\Config\Config;
 use \PhpAmqpLib\Connection\AMQPStreamConnection;
+use TheFairLib\Utility\Utility;
 
 class Rabbitmq
 {
@@ -87,7 +88,7 @@ class Rabbitmq
                 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT
             ];
             if (is_array($messageBody)) {
-                $messageBody = json_encode($messageBody, JSON_UNESCAPED_UNICODE);
+                $messageBody = Utility::encode($messageBody);
                 $header = [
                     'content_type' => 'application/json',
                     'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT
