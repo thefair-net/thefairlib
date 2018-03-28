@@ -20,8 +20,6 @@ use \PhpAmqpLib\Connection\AMQPStreamConnection;
 
 class Rabbitmq
 {
-    static public $server = 'default';
-
     static public $instance;
 
     /**
@@ -37,15 +35,20 @@ class Rabbitmq
 
 
     /**
-     * @return Rabbitmq
+     * Rabbitmq
+     *
+     * @param string $server
+     * @param string $vhost
+     * @return mixed
      */
-    static public function Instance()
+    static public function Instance($server = 'default', $vhost = '')
     {
         $class = get_called_class();
         if (empty(self::$instance)) {
             self::$instance = new $class();
-            $config = Config::get_queue_rabbitmq(self::$server);
-            self::$_conn = new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['pass'], $config['vhost']);
+            $config = Config::get_queue_rabbitmq($server);
+            if (empty($vhost)) $vhost = $config['vhost'];
+            self::$_conn = new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['pass'], $vhost);
             self::$_channel = self::$_conn->channel();
         }
         return self::$instance;
@@ -95,6 +98,8 @@ class Rabbitmq
             return true;
         } catch (\Exception $e) {
             self::closeConnection();
+            throw new \Exception($e->getMessage(), $e->getCode(), $e->getTraceAsString());
+
         }
     }
 
@@ -105,6 +110,7 @@ class Rabbitmq
      * @param $exchange
      * @param $router
      * @param $func
+     * @throws \Exception
      */
     public function consumer($queue, $exchange, $router, $func)
     {
@@ -122,6 +128,7 @@ class Rabbitmq
 
         } catch (\Exception $e) {
             self::closeConnection();
+            throw new \Exception($e->getMessage(), $e->getCode(), $e->getTraceAsString());
         }
     }
 
