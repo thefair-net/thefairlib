@@ -40,12 +40,12 @@ class Rabbitmq
      *
      * @param string $server
      * @param string $vhost
-     * @return mixed
+     * @return Rabbitmq
      */
     static public function Instance($server = 'default', $vhost = '')
     {
         $class = get_called_class();
-        if (empty(self::$instance)) {
+        if (empty(self::$instance) || empty(self::$_channel)) {
             self::$instance = new $class();
             $config = Config::get_queue_rabbitmq($server);
             if (empty($vhost)) $vhost = $config['vhost'];
@@ -62,6 +62,7 @@ class Rabbitmq
             self::$_conn->close();
             self::$_conn = null;
             self::$_channel = null;
+            self::$instance = null;
         }
     }
 
