@@ -41,7 +41,7 @@ class Jpush implements PushInterface
         if (!empty($config['api_url'])) {
             $this->_httpHost = $config['api_url'];
         }
-        $this->_push = new \Jpush($this->_appKey, $this->_masterSecret);
+        $this->_push = new \Jpush($this->_appKey, $this->_masterSecret, null);
         return $this;
     }
 

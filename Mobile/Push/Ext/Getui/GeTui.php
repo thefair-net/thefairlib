@@ -153,9 +153,9 @@ class GeTui implements PushInterface
      * @throws Exception
      * @throws \Exception
      */
-    public function pushMessageToSingle($clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
+    public function pushMessageToSingle($clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl = '')
     {
-        if (empty($clientId) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
+        if (empty($clientId) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android', 'ios'])
             || empty($title) || empty($message)
         ) {
             throw new Exception('error push param' . json_encode([$clientId, $tempType, $platform, $title, $message, $link, $badge, $logoUrl], JSON_UNESCAPED_UNICODE));
@@ -176,7 +176,7 @@ class GeTui implements PushInterface
         $apn->customMsg = ['p' => $link];
         $msg = ['p' => $link, 'title' => $title, 'content' => $message];
         $msg = Utility::encode($msg);
-        if ($platform == 'iphone') {
+        if (in_array($platform, ['iphone', 'ios'])) {
             $tempType = 'Transmission';
             $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl, 'logo.png', 1, $msg);
             $template->set_pushInfo("", $badge, $message, "", "payload", "", "", "");
@@ -223,9 +223,9 @@ class GeTui implements PushInterface
      * @throws Exception
      * @throws \Exception
      */
-    public function pushMessageToList($clientList, $tempType, $platform, $title, $message, $link, $badge = 1, $logoUrl = 'http://resource.bj.taooo.cc/touch/images/logo.png')
+    public function pushMessageToList($clientList, $tempType, $platform, $title, $message, $link, $badge = 1, $logoUrl = '')
     {
-        if (empty($clientList) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android'])
+        if (empty($clientList) || !in_array($tempType, ['Transmission', 'Notification', 'Link']) || !in_array($platform, ['iphone', 'android', 'ios'])
             || empty($title) || strlen($title) >= 40 || empty($message)
         ) {
             throw new Exception('error push param' . json_encode([$tempType, $platform, $title, $message, $link, $badge, $logoUrl], JSON_UNESCAPED_UNICODE));
@@ -248,7 +248,7 @@ class GeTui implements PushInterface
         $apn->customMsg = ['p' => $link];
         $msg = ['p' => $link, 'title' => $title, 'content' => $message];
         $msg = Utility::encode($msg);
-        if ($platform == 'iphone') {
+        if (in_array($platform, ['iphone', 'ios'])) {
             $tempType = 'Transmission';
             $template = $this->_setTemplate($tempType, $title, $message, $link, $logoUrl, 'logo.png', 1, $msg);
             $template->set_pushInfo("", $badge, $message, "", "payload", "", "", "");
