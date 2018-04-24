@@ -33,14 +33,14 @@ class Error extends ErrorBase
                 $e->getMessage(), $e->getExtData(),  $e->getExtCode()
             );
         }else{
-            if(defined('APP_NAME')){
-                Logger::Instance()->error(  date("Y-m-d H:i:s +u")."\n"
-                                            ."请求接口:{$_SERVER['REQUEST_URI']}\n"
-                                            ."请求参数:".Utility::encode($_REQUEST)."\n"
-                                            ."错误信息:".$e->getMessage()."\n"
-                                            ."Trace:".$e->getTraceAsString()."\n\n");
-            }
-            $this->_DealIllegalRequest($e->getMessage());
+//            if(defined('APP_NAME')){
+//                Logger::Instance()->error(  date("Y-m-d H:i:s +u")."\n"
+//                                            ."请求接口:{$_SERVER['REQUEST_URI']}\n"
+//                                            ."请求参数:".Utility::encode($_REQUEST)."\n"
+//                                            ."错误信息:".$e->getMessage()."\n"
+//                                            ."Trace:".$e->getTraceAsString()."\n\n");
+//            }
+            $this->_DealIllegalRequest($e->getMessage(),['trace' => $e->getTraceAsString()]);
         }
 
     }
@@ -61,8 +61,8 @@ class Error extends ErrorBase
         $this->_DealNotfoundRequest();
     }
 
-    protected function _DealIllegalRequest($msg = ''){
-        $this->showError('Illegal Request: '.$msg, [], 40001);
+    protected function _DealIllegalRequest($msg = '',$data = []){
+        $this->showError('Illegal Request: '.$msg, $data, 40001);
     }
 
     protected function _DealNotfoundRequest(){

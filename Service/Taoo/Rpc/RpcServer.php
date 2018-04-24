@@ -6,6 +6,7 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
+
 namespace TheFairLib\Service\Taoo\Rpc;
 
 use TheFairLib\Controller\Service\Error;
@@ -24,14 +25,24 @@ class RpcServer extends BaseServer
     protected $_application = false;
 
     /**
+     * 发送数据到客服端
+     *
      * @param \swoole_server $server
      * @param $clientId
      * @param $fromId
-     * @param $data
+     * @param $requestData
      * @return mixed
      */
     public function onReceive($server, $clientId, $fromId, $requestData)
     {
+        $start = microtime(true);
+        $dateTime = date('Y-m-d H:i:s', time());
+        $eventType = 'receive';
+        $connInfo = $server->connection_info($clientId);
+        $clientIp = $connInfo['remote_ip'];
+        $serverIp = current(swoole_get_local_ip());
+        $url = '';
+        $params = [];
         try {
             ob_start();
             $requestData = $this->_decode($requestData);
@@ -41,6 +52,7 @@ class RpcServer extends BaseServer
             $_SERVER['REQUEST_URI'] = $url;
             $request = new Http($url);
             if (!empty($data['params'])) {
+                $params = $data['params'];
                 foreach ($data['params'] as $key => $param) {
                     $request->setParam($key, $param);
                     $_REQUEST[$key] = $_POST[$key] = $_GET[$key] = $param;
@@ -49,6 +61,21 @@ class RpcServer extends BaseServer
             $this->_application->getDispatcher()->catchException(true)->dispatch($request);
             $result = ob_get_contents();
             ob_end_clean();
+
+            $ret = Utility::decode($result);
+            $code = 0;
+            $msg = '';
+            $logType = 'info';
+            if (isset($ret['code'])) {
+                if ($ret['code'] >= 40000) {
+                    $logType = 'error';
+                    $msg = $result;
+                    $code = $ret['code'];
+                }
+            }
+            $responseTime = microtime(true) - $start;//响应时间
+
+            Logger::Instance()->access($dateTime, $logType, $eventType, $responseTime, $serverIp, $clientIp, $url, $data['params'], $code, $msg);
         } catch (\Exception $e) {
             if ($e instanceof ServiceException) {
                 $ret = [
@@ -57,13 +84,6 @@ class RpcServer extends BaseServer
                     'result' => (object)$e->getExtData(),
                 ];
             } else {
-                if (defined('APP_NAME')) {
-                    Logger::Instance()->error(date("Y-m-d H:i:s +u") . "\n"
-                        . "请求接口:{$_SERVER['REQUEST_URI']}\n"
-                        . "请求参数:" . Utility::encode($_REQUEST) . "\n"
-                        . "错误信息:" . $e->getMessage() . "\n"
-                        . "Trace:" . $e->getTraceAsString() . "\n\n");
-                }
                 $ret = [
                     'code' => 10000,
                     'message' => $e->getMessage(),
@@ -72,9 +92,13 @@ class RpcServer extends BaseServer
             }
 
             $result = Utility::encode($ret);
-        }
 
-        Logger::Instance()->info('onReceive');
+            $msg = "文件名:{$e->getFile()}, 行号:{$e->getLine()}, 错误信息:{$e->getMessage()}, TraceString:{$e->getTraceAsString()}";
+
+            $responseTime = microtime(true) - $start;//响应时间
+
+            Logger::Instance()->access($dateTime, 'error', $eventType, $responseTime, $serverIp, $clientIp, $url, $params, $e->getExtCode(), $msg);
+        }
         return $server->send($clientId, $this->_encode($result));
     }
 
@@ -84,7 +108,7 @@ class RpcServer extends BaseServer
      */
     public function onStart($server, $workerId)
     {
-        if(function_exists('opcache_reset')){
+        if (function_exists('opcache_reset')) {
             opcache_reset();
         }
         //检查需要的常量是否存在
@@ -98,7 +122,6 @@ class RpcServer extends BaseServer
             $this->_application->bootstrap()->run();
             ob_end_clean();
         }
-
         Logger::Instance()->info('onStart');
     }
 
