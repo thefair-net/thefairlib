@@ -33,10 +33,15 @@ class Parser
 
         $dom = new Dom;
         $dom->loadStr($preHtml, []);
-        $root = $dom->root->firstChild()->getChildren()[1];
+        if (empty($dom->root->firstChild()->getChildren()[1])) {
+            $root = $dom->root->firstChild()->getChildren()[0];
+        } else {
+            $root = $dom->root->firstChild()->getChildren()[1];
+        }
+
         $result = $this->getParseHtml($root);
         $result_json = json_encode($result, JSON_UNESCAPED_UNICODE);
-        echo $result_json;
+//        echo $result_json;
         return $result_json;
     }
 

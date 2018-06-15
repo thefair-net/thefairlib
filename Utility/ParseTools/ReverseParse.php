@@ -30,7 +30,7 @@ class ReverseParse{
     {
         $fileObject = json_decode($content);
         $html = $this->_parseBody($fileObject);
-        print $html;
+//        print $html;
         return $html;
     }
 
