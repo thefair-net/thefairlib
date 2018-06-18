@@ -14,16 +14,21 @@ use TheFairLib\Utility\ParseTools\ReverseParse;
 class RamlParser
 {
     private static $instance;
+    private $_needMarkUpText=false;
 
     /**
-     * @return RamlParser
+     * @param bool $needMarkUpText 是否需要给markup加text调试
+     * @return Parser
      */
-    public static function Instance(){
+    static public function Instance($needMarkUpText=false)
+    {
         $class = get_called_class();
-        if(empty(self::$instance[$class])){
-            self::$instance[$class] = new $class();
+        $key = $class . strval($needMarkUpText);
+        if (empty(self::$instance[$key])) {
+            self::$instance[$key] = new $class();
         }
-        return self::$instance[$class];
+        self::$instance[$key]->_needMarkUpText = $needMarkUpText;
+        return self::$instance[$key];
     }
 
     /**
@@ -33,7 +38,7 @@ class RamlParser
      * @return string
      */
     public function parseHtmlToRaml($content){
-        return Parser::Instance()->parseToRAML($content);
+        return Parser::Instance($this->_needMarkUpText)->parseToRAML($content);
     }
 
 

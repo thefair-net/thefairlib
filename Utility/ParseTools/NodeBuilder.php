@@ -9,16 +9,21 @@ namespace TheFairLib\Utility\ParseTools;
 
 class NodeBuilder{
     private static $instance;
+    private $_needMarkUpText=false;
 
     /**
+     * @param bool $needMarkUpText 是否需要给markup加text调试
      * @return NodeBuilder
      */
-    public static function Instance(){
+    static public function Instance($needMarkUpText=false)
+    {
         $class = get_called_class();
-        if(empty(self::$instance[$class])){
-            self::$instance[$class] = new $class();
+        $key = $class . strval($needMarkUpText);
+        if (empty(self::$instance[$key])) {
+            self::$instance[$key] = new $class();
         }
-        return self::$instance[$class];
+        self::$instance[$key]->_needMarkUpText = $needMarkUpText;
+        return self::$instance[$key];
     }
 
     /**
@@ -116,13 +121,17 @@ class NodeBuilder{
         $pos = $this->getStartEnd($item, $baseItem);
 
         if (!empty($text)) {
-            return [
+            $base = [
                 'tag' => 'color',
                 'font-color'=>$color,
-                'text' => $text,
                 'start' => $pos['start'],
                 'end' => $pos['end'],
             ];
+
+            if($this->_needMarkUpText){
+                $base['text'] = $text;
+            }
+            return $base;
         } else {
             return [];
         }
@@ -142,12 +151,15 @@ class NodeBuilder{
         $pos = $this->getStartEnd($item, $baseItem);
 
         if (!empty($text)) {
-            return [
+            $base = [
                 'tag' => 'strong',
-                'text' => $text,
                 'start' => $pos['start'],
                 'end' => $pos['end'],
             ];
+            if($this->_needMarkUpText){
+                $base['text'] = $text;
+            }
+            return $base;
         } else {
             return [];
         }

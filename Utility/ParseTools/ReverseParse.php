@@ -34,7 +34,7 @@ class ReverseParse{
         return $html;
     }
 
-    function _parseBody($sourceRAML)
+    private function _parseBody($sourceRAML)
     {
         $result = '<header><meta http-equiv="Content-Type" content="text/html;charset=utf-8"></header>';
         foreach ($sourceRAML as $pLevelItem) {
