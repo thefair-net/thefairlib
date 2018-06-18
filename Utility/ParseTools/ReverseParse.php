@@ -48,11 +48,14 @@ class ReverseParse{
                     } else {
                         $buildResult = $this->_buildTag($pLevelItem->text->text, 'p', '');
                     }
-                    $style = "";
+                    $attrs = "";
                     if (!empty($pLevelItem->text->align)) {
-                        $style = "style='text-align:{$pLevelItem->text->align}'";
+                        $attrs = "style='text-align:{$pLevelItem->text->align}'";
                     }
-                    $oneSegment = $this->_buildTag($buildResult, 'p', $style);
+                    if(!empty($pLevelItem->id)){
+                        $attrs .= " dataid='{$pLevelItem->id}'";
+                    }
+                    $oneSegment = $this->_buildTag($buildResult, 'p', $attrs);
                 }
 
             } else if ($pLevelItem->type == 1) {
@@ -127,8 +130,11 @@ class ReverseParse{
      */
     private function _buildLi($liItem)
     {
+        if(!empty($liItem->id)){
+            $attrs = " dataid='{$liItem->id}'";
+        }
         return "<ul>" .
-            "<li>" . $liItem->text->text . "</li>" .
+            "<li {$attrs}>" . $liItem->text->text . "</li>" .
             "</ul>";
     }
 
@@ -139,6 +145,9 @@ class ReverseParse{
      */
     private function _buildImg($imgItem)
     {
-        return "<img src='{$imgItem->image->source}'/>";
+        if(!empty($imgItem->id)){
+            $attrs = " dataid='{$imgItem->id}'";
+        }
+        return "<img {$attrs} src='{$imgItem->image->source}'/>";
     }
 }

@@ -101,34 +101,40 @@ class Parser
                         if (!empty($sourceContent)) { // 文字类型的
                             if ($tagName == 'p') {
                                 $align = ParseUtils::Instance()->getCssValueFromItem($item, 'text\-align');
-                                $sourceAml = $this->_getNodeBuilder()->buildTextNode($sourceContent, '', $align);
+                                $id = ParseUtils::Instance()->getDataId($item);
+                                $sourceAml = $this->_getNodeBuilder()->buildTextNode($sourceContent, '', $align, $id);
                                 $this->_parseMarkUps($item, $sourceAml);
                                 $this->_parseSentence($item, $sourceAml);
                                 $ret[] = $sourceAml;
                             } else if (in_array($tagName, self::$hTagNameArray)) {
-                                $sourceAml = $this->_getNodeBuilder()->buildTextNode($sourceContent, $tagName);
+                                $id = ParseUtils::Instance()->getDataId($item);
+                                $sourceAml = $this->_getNodeBuilder()->buildTextNode($sourceContent, $tagName, '', $id);
                                 $this->_parseMarkUps($item, $sourceAml);
                                 $ret[] = $sourceAml;
                             } else if ($tagName == 'ul') {
                                 $lis = $this->_getChildrenByTag($item, 'li');
 
                                 foreach ($lis as $liitem) {
+                                    $id = ParseUtils::Instance()->getDataId($liitem);
                                     $sourceContent = ParseUtils::Instance()->trimContent(strip_tags($liitem->innerHtml()));
-                                    $sourceAml = $this->_getNodeBuilder()->buildLi($sourceContent);
+                                    $sourceAml = $this->_getNodeBuilder()->buildLi($sourceContent, $id);
                                     $this->_parseMarkUps($liitem, $sourceAml);
                                     $ret[] = $sourceAml;
                                 }
                             }
 
                         } else if ($tagName == 'img') { // 图片类型 <img>
-                            $ret[] = $this->_getNodeBuilder()->buildImgNode($item);
+                            $id = ParseUtils::Instance()->getDataId($item);
+                            $ret[] = $this->_getNodeBuilder()->buildImgNode($item, $id);
                         } else if (strpos($item->innerHtml(), 'img') !== false) { // <p><img></img></p>
                             $imgChild = $this->_getFirstChildByTag($item, 'img');
                             if ($imgChild) {
-                                $ret[] = $this->_getNodeBuilder()->buildImgNode($imgChild);
+                                $id = ParseUtils::Instance()->getDataId($item);
+                                $ret[] = $this->_getNodeBuilder()->buildImgNode($imgChild, $id);
                             }
                         } else if ($tagName == 'p') {
-                            $ret[] = $this->_getNodeBuilder()->buildEmptyNode();
+                            $id = ParseUtils::Instance()->getDataId($item);
+                            $ret[] = $this->_getNodeBuilder()->buildEmptyNode($id);
                         }
                     }
                 }

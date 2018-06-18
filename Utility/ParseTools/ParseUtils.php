@@ -129,5 +129,14 @@ class ParseUtils
         return $mValue;
     }
 
+    /**
+     * 获取id
+     * @param HtmlNode $item
+     * @return string
+     */
+    function getDataId($item){
+        return strtolower($item->getAttribute('dataid'));
+    }
+
 
 }

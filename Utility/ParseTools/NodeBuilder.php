@@ -1,4 +1,5 @@
 <?php
+
 namespace TheFairLib\Utility\ParseTools;
 
 /**
@@ -7,15 +8,16 @@ namespace TheFairLib\Utility\ParseTools;
  * Time: 20:28
  */
 
-class NodeBuilder{
+class NodeBuilder
+{
     private static $instance;
-    private $_needMarkUpText=false;
+    private $_needMarkUpText = false;
 
     /**
      * @param bool $needMarkUpText 是否需要给markup加text调试
      * @return NodeBuilder
      */
-    static public function Instance($needMarkUpText=false)
+    static public function Instance($needMarkUpText = false)
     {
         $class = get_called_class();
         $key = $class . strval($needMarkUpText);
@@ -31,12 +33,16 @@ class NodeBuilder{
      * @param $text
      * @param string $lineType
      * @param string $align
+     * @param string $id
      * @return array
      */
-    public function buildTextNode($text, $lineType = '', $align = '')
+    public function buildTextNode($text, $lineType = '', $align = '', $id)
     {
+        if(empty($id)){
+            $id = ParseUtils::Instance()->genHash($text);
+        }
         $ret = [
-            'id' => ParseUtils::Instance()->genHash($text),
+            'id' => $id,
             'type' => 0,
             'text' => [
                 'text' => $text,
@@ -55,12 +61,16 @@ class NodeBuilder{
     /**
      * 构建LI节点
      * @param $text
+     * @param $id
      * @return array
      */
-    public function buildLi($text)
+    public function buildLi($text, $id)
     {
+        if(empty($id)){
+            $id = ParseUtils::Instance()->genHash($text);
+        }
         return [
-            "id" => ParseUtils::Instance()->genHash($text),
+            "id" => $id,
             "type" => 0,
             "text" => [
                 "text" => $text
@@ -77,15 +87,20 @@ class NodeBuilder{
     /**
      * 构建Img节点数据
      * @param \PHPHtmlParser\Dom\HtmlNode $item
+     * @param $id
      * @return array
      */
-    public function buildImgNode($item)
+    public function buildImgNode($item, $id)
     {
+
         $url = $item->getAttribute('src');
         $width = $item->getAttribute('data-width');
         $height = $item->getAttribute('data-height');
+        if(empty($id)){
+            $id = ParseUtils::Instance()->genHash($url);
+        }
         return [
-            "id" => ParseUtils::Instance()->genHash($url),
+            "id" => $id,
             "type" => 1,
             "image" => [
                 "width" => $width,
@@ -97,12 +112,16 @@ class NodeBuilder{
 
     /**
      * 构建空节点
+     * @param $id
      * @return array
      */
-    public function buildEmptyNode()
+    public function buildEmptyNode($id)
     {
+        if(empty($id)){
+            $id = ParseUtils::Instance()->genHash($this->_createGuid());
+        }
         return [
-            'id' => ParseUtils::Instance()->genHash(''),
+            'id' => $id,
             'type' => 10,
         ];
     }
@@ -123,12 +142,12 @@ class NodeBuilder{
         if (!empty($text)) {
             $base = [
                 'tag' => 'color',
-                'font-color'=>$color,
+                'font-color' => $color,
                 'start' => $pos['start'],
                 'end' => $pos['end'],
             ];
 
-            if($this->_needMarkUpText){
+            if ($this->_needMarkUpText) {
                 $base['text'] = $text;
             }
             return $base;
@@ -156,7 +175,7 @@ class NodeBuilder{
                 'start' => $pos['start'],
                 'end' => $pos['end'],
             ];
-            if($this->_needMarkUpText){
+            if ($this->_needMarkUpText) {
                 $base['text'] = $text;
             }
             return $base;
@@ -165,7 +184,8 @@ class NodeBuilder{
         }
     }
 
-    function buildSentence($text, $start, $end){
+    function buildSentence($text, $start, $end)
+    {
         return [
             'tag' => 'sentence',
             'text' => $text,
@@ -196,5 +216,20 @@ class NodeBuilder{
             'start' => $start,
             'end' => $end
         ];
+    }
+
+
+
+    private function _createGuid() {
+        $charid = strtoupper(md5(uniqid(mt_rand(), true)));
+        $hyphen = chr(45);// "-"
+        $uuid = chr(123)// "{"
+            .substr($charid, 0, 8).$hyphen
+            .substr($charid, 8, 4).$hyphen
+            .substr($charid,12, 4).$hyphen
+            .substr($charid,16, 4).$hyphen
+            .substr($charid,20,12)
+            .chr(125);// "}"
+        return $uuid;
     }
 }

@@ -37,7 +37,9 @@ class PreParser{
      */
     function addIdToHtml(&$inItem){
         foreach($inItem->find('*') as $e){
-            $e->dataId=self::$counter++;
+            if(empty($e->dataId)){
+                $e->predataId=self::$counter++;
+            }
             $this->addIdToHtml($e);
         }
     }
