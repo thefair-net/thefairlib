@@ -39,7 +39,7 @@ class NodeBuilder
     public function buildTextNode($text, $lineType = '', $align = '', $id)
     {
         if(empty($id)){
-            $id = ParseUtils::Instance()->genHash($text);
+            $id = ParseUtils::Instance()->genHash($text . $this->_createGuid());
         }
         $ret = [
             'id' => $id,
@@ -67,7 +67,7 @@ class NodeBuilder
     public function buildLi($text, $id)
     {
         if(empty($id)){
-            $id = ParseUtils::Instance()->genHash($text);
+            $id = ParseUtils::Instance()->genHash($text . $this->_createGuid());
         }
         return [
             "id" => $id,
@@ -97,7 +97,7 @@ class NodeBuilder
         $width = $item->getAttribute('data-width');
         $height = $item->getAttribute('data-height');
         if(empty($id)){
-            $id = ParseUtils::Instance()->genHash($url);
+            $id = ParseUtils::Instance()->genHash($url . $this->_createGuid());
         }
         return [
             "id" => $id,
