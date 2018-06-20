@@ -141,8 +141,8 @@ class NodeBuilder
 
         if (!empty($text)) {
             $base = [
-                'tag' => 'color',
-                'font-color' => $color,
+                'tag' => 'fontcolor',
+                'value' => $color,
                 'start' => $pos['start'],
                 'end' => $pos['end'],
             ];
