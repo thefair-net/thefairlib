@@ -18,7 +18,7 @@ class RamlParser
 
     /**
      * @param bool $needMarkUpText 是否需要给markup加text调试
-     * @return Parser
+     * @return RamlParser
      */
     static public function Instance($needMarkUpText=false)
     {
@@ -34,7 +34,6 @@ class RamlParser
     /**
      * 将html转为raml
      * @param $content
-     * @throws \PHPHtmlParser\Exceptions\UnknownChildTypeException
      * @return string
      */
     public function parseHtmlToRaml($content){
