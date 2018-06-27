@@ -184,14 +184,28 @@ class NodeBuilder
         }
     }
 
+    /**
+     * build句子节点
+     * @param $text
+     * @param $start
+     * @param $end
+     * @return array
+     */
     function buildSentence($text, $start, $end)
     {
-        return [
-            'tag' => 'sentence',
-            'text' => $text,
-            'start' => $start,
-            'end' => $end,
-        ];
+        if(!empty($text)){
+            $base = [
+                'tag' => 'sentence',
+                'start' => $start,
+                'end' => $end,
+            ];
+            if($this->_needMarkUpText){
+                $base['text'] = $text;
+            }
+            return $base;
+        } else {
+            return [];
+        }
     }
 
 
