@@ -243,7 +243,7 @@ class Parser
         for ($index = 0; $index < sizeof($result) - 1; $index++) {
             $len = $result[$index] - $start + 1;
             $text = ParseUtils::Instance()->s_subStr($content, $start, $len);
-            $sourceAml['text']['markups'][] = $this->_getNodeBuilder()->buildSentence($text, $start, $len);
+            $sourceAml['text']['markups'][] = $this->_getNodeBuilder()->buildSentence($text, $start, $start+$len);
             $start = $result[$index] + 1;
         }
     }
