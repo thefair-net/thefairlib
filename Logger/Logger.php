@@ -69,7 +69,7 @@ class Logger
         if (!in_array($logType, ['error', 'info'])) {
             return false;
         }
-        $this->_type = 'access';
+        $this->_type = $logType;
         $param = Utility::encode($param);
         $responseTime = round($responseTime, 4);
         $msg = empty($msg) ? 'null' : str_replace("\n", "<br/>", $msg);
