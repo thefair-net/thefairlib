@@ -107,8 +107,9 @@ class Parser
                                 $this->_parseSentence($item, $sourceAml);
                                 $ret[] = $sourceAml;
                             } else if (in_array($tagName, self::$hTagNameArray)) {
+                                $align = ParseUtils::Instance()->getCssValueFromItem($item, 'text\-align');
                                 $id = ParseUtils::Instance()->getDataId($item);
-                                $sourceAml = $this->_getNodeBuilder()->buildTextNode($sourceContent, $tagName, '', $id);
+                                $sourceAml = $this->_getNodeBuilder()->buildTextNode($sourceContent, $tagName, $align, $id);
                                 $this->_parseMarkUps($item, $sourceAml);
                                 $ret[] = $sourceAml;
                             } else if ($tagName == 'ul') {
@@ -133,8 +134,8 @@ class Parser
                                 $ret[] = $this->_getNodeBuilder()->buildImgNode($imgChild, $id);
                             }
                         } else if ($tagName == 'p') {
-                            $id = ParseUtils::Instance()->getDataId($item);
-                            $ret[] = $this->_getNodeBuilder()->buildEmptyNode($id);
+//                            $id = ParseUtils::Instance()->getDataId($item);
+//                            $ret[] = $this->_getNodeBuilder()->buildEmptyNode($id);
                         }
                     }
                 }
