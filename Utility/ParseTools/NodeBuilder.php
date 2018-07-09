@@ -99,15 +99,23 @@ class NodeBuilder
         if(empty($id)){
             $id = ParseUtils::Instance()->genHash($url . $this->_createGuid());
         }
-        return [
+        $ret = [
             "id" => $id,
             "type" => 1,
             "image" => [
-                "width" => $width,
-                "height" => $height,
                 "source" => $url,
             ]
         ];
+
+        if(!empty($width)){
+            $ret['image']['width'] = $width;
+        }
+
+        if(!empty($height)){
+            $ret['image']['height'] = $height;
+        }
+
+        return $ret;
     }
 
     /**
@@ -245,5 +253,12 @@ class NodeBuilder
             .substr($charid,20,12)
             .chr(125);// "}"
         return $uuid;
+    }
+
+    private function _nullToDefault($nullable, $default=''){
+        if(empty($nullable)){
+            return $default;
+        }
+        return $nullable;
     }
 }
