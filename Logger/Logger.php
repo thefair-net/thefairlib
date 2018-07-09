@@ -58,7 +58,7 @@ class Logger
             return '';
         }
         $log = [];
-        $riskFields = DingxingClient::$riskFileds;
+        $riskFields = DingxingClient::$riskFields;
         foreach ($riskFields as $field) {
             if (!empty($message[$field])) {
                 $log[$field] = $message[$field];

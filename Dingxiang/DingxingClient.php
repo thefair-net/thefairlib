@@ -21,7 +21,7 @@ class DingxingClient
 
     protected $client;
 
-    static $riskFileds = array
+    static $riskFields = array
     (
         'token',       // 顶相token
         'device_id',   // 设备ID
