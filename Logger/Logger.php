@@ -10,6 +10,7 @@
 namespace TheFairLib\Logger;
 
 use TheFairLib\Utility\Utility;
+use TheFairLib\Dingxiang\DingxingClient;
 
 class Logger
 {
@@ -48,6 +49,36 @@ class Logger
         $date = date("Y-m-d H:i:s +u");
         $this->output("{$date}: [ERROR]\t$s\n");
     }
+
+
+    // 记录风控日志
+    public function risk(array $message)
+    {
+        if (empty($message['token'])) {
+            return '';
+        }
+        $log = [];
+        $riskFields = DingxingClient::$riskFields;
+        foreach ($riskFields as $field) {
+            if (!empty($message[$field])) {
+                $log[$field] = $message[$field];
+            } else {
+                $log[$field] = '--';
+            }
+        }
+        if (!empty($log)) {
+            $this->_type = 'risk';
+            $log['create_time'] = microtime(true);
+            if ($log['act_time'] == '--') {
+                $log['act_time'] = $log['create_time'];
+            } else {
+                $log['act_time'] = is_numeric($log['act_time']) ? $log['act_time'] : strtotime($log['act_time']);
+            }
+            $s = Utility::encode($log);
+            $this->output("[THEFAIR_RISK]$s\n");
+        }
+    }
+
 
     private function output($s)
     {
