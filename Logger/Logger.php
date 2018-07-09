@@ -51,11 +51,13 @@ class Logger
     }
 
 
-    // 风控日志
+    // 记录风控日志
     public function risk(array $message)
     {
+        if (empty($message['token'])) {
+            return '';
+        }
         $log = [];
-        $this->_type = 'risk';
         $riskFields = DingxingClient::$riskFileds;
         foreach ($riskFields as $field) {
             if (!empty($message[$field])) {
@@ -65,7 +67,15 @@ class Logger
             }
         }
         if (!empty($log)) {
-            $this->output("[THEFAIR_RISK]Utility::encode($log)\n");
+            $this->_type = 'risk';
+            $log['create_time'] = microtime(true);
+            if ($log['act_time'] == '--') {
+                $log['act_time'] = $log['create_time'];
+            } else {
+                $log['act_time'] = is_numeric($log['act_time']) ? $log['act_time'] : strtotime($log['act_time']);
+            }
+            $s = Utility::encode($log);
+            $this->output("[THEFAIR_RISK]$s\n");
         }
     }
 

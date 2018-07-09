@@ -36,7 +36,7 @@ class DingxingClient
         'server_ip',   // 服务端IP地址
         'req_domain',  // 请求域名
         'req_params',  // 请求参数
-        'mac',         // 手机MAC地址（顶相）
+        'mac',         // 手机MAC地址（顶相)
         'app_id',      // 产品标识
         'source',      // 渠道标识
         'sid',         // 会话ID
