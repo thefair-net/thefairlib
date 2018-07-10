@@ -51,7 +51,11 @@ class Logger
     }
 
 
-    // 记录风控日志
+    /**
+     * 记录风控日志
+     *
+     * @param array $message
+     */
     public function risk(array $message)
     {
         $log = [];
