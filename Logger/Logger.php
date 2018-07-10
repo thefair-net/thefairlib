@@ -122,8 +122,8 @@ class Logger
         $this->_type = $logType;
         $param = Utility::encode($param);
         $responseTime = round($responseTime, 4);
-        $logType = strtoupper($logType);
-        $log = "{$dateTime}||[{$logType}]||{$eventType}||{$responseTime}||{$code}||{$clientIp}||{$url}||{$param}||{$serverIp}||{$msg}";
+        $logType = '[' . strtoupper($logType) . ']';
+        $log = "{$dateTime}||{$logType}||{$eventType}||{$responseTime}||{$code}||{$clientIp}||{$url}||{$param}||{$serverIp}||{$msg}";
         $this->output($this->format($log));
     }
 }
