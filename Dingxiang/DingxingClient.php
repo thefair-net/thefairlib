@@ -23,6 +23,8 @@ class DingxingClient
 
     static $riskFields = array
     (
+        'create_time', // 创建时间
+        'log_type',    // 日志类型
         'token',       // 顶相token
         'device_id',   // 设备ID
         'platform',    // 手机平台
@@ -43,7 +45,7 @@ class DingxingClient
         'uid',         // 用户ID
         'openid',      // 微信账号
         'category',    // 行为分类 user.login
-        'act_time'     // 行为发生时间
+        'act_time',    // 行为发生时间
     );
 
     public function __construct($appId, $appSecret, $timeOut = self::CONN_TIME_OUT)

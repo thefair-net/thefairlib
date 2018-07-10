@@ -71,9 +71,9 @@ class Logger
             } else {
                 $log['act_time'] = is_numeric($log['act_time']) ? $log['act_time'] : strtotime($log['act_time']);
             }
+            $log['log_type'] =  '[' . strtoupper($this->_type) . ']';
             $log = implode('||', $log);
-            $log = $this->format($log);
-            $this->output("[THEFAIR_RISK]$log\n");
+            $this->output($this->format($log));
         }
     }
 
@@ -90,10 +90,24 @@ class Logger
 
     private function format($s)
     {
-        return str_replace(["\n", "\t", '"', "'", '“', '”'], "", $s);
+        return str_replace(["\n", "\t", '"', "'", '“', '”'], "", $s) . "\n";
     }
 
 
+    /**
+     * 请求时间||数据类型||事件类型||响应时间||出错码||客户端IP||请求URI||请求参数||服务端IP||数据信息
+     * @param $dateTime
+     * @param $logType
+     * @param $eventType
+     * @param int $responseTime
+     * @param string $serverIp
+     * @param string $clientIp
+     * @param string $url
+     * @param array $param
+     * @param int $code
+     * @param string $msg
+     * @return bool
+     */
     public function access($dateTime, $logType, $eventType, $responseTime = 0, $serverIp = '127.0.0.1', $clientIp = '127.0.0.1', $url = 'null', array $param = [], $code = 0, $msg = '')
     {
         if (empty($msg)) {
@@ -105,12 +119,11 @@ class Logger
         if (!in_array($logType, ['error', 'info'])) {
             return false;
         }
+        $this->_type = $logType;
         $param = Utility::encode($param);
         $responseTime = round($responseTime, 4);
-        $this->_type = $logType;
-        // 请求时间||数据类型||事件类型||响应时间||出错码||客户端IP||请求URI||请求参数||服务端IP||数据信息
-        $log = "{$dateTime}||{$logType}||{$eventType}||{$responseTime}||{$code}||{$clientIp}||{$url}||{$param}||{$serverIp}||{$msg}";
-        $log = $this->format($log);
-        $this->output($log . "\n");
+        $logType = strtoupper($logType);
+        $log = "{$dateTime}||[{$logType}]||{$eventType}||{$responseTime}||{$code}||{$clientIp}||{$url}||{$param}||{$serverIp}||{$msg}";
+        $this->output($this->format($log));
     }
 }
