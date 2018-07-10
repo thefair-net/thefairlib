@@ -29,14 +29,14 @@ class DingxingClient
         'platform_v',  // 手机系统版本号
         'client_v',    // 客户端版本号
         'model',       // 手机型号
-        'imei',        // 手机imei号
+        'sign',        // 手机imei/idfv号
         'network',     // 网络环境
         'client_ip',   // 客户端IP地址
         'client_uri',  // 客户端URI
+        'referer',     // 访问来源
         'server_ip',   // 服务端IP地址
-        'req_domain',  // 请求域名
-        'req_params',  // 请求参数
         'mac',         // 手机MAC地址（顶相)
+        'app_name',    // 项目名称
         'app_id',      // 产品标识
         'source',      // 渠道标识
         'sid',         // 会话ID

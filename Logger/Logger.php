@@ -54,10 +54,8 @@ class Logger
     // 记录风控日志
     public function risk(array $message)
     {
-        if (empty($message['token'])) {
-            return '';
-        }
         $log = [];
+        $this->_type = 'risk';
         $riskFields = DingxingClient::$riskFields;
         foreach ($riskFields as $field) {
             if (!empty($message[$field])) {
@@ -67,15 +65,15 @@ class Logger
             }
         }
         if (!empty($log)) {
-            $this->_type = 'risk';
             $log['create_time'] = microtime(true);
             if ($log['act_time'] == '--') {
                 $log['act_time'] = $log['create_time'];
             } else {
                 $log['act_time'] = is_numeric($log['act_time']) ? $log['act_time'] : strtotime($log['act_time']);
             }
-            $s = Utility::encode($log);
-            $this->output("[THEFAIR_RISK]$s\n");
+            $log = implode('||', $log);
+            $log = $this->format($log);
+            $this->output("[THEFAIR_RISK]$log\n");
         }
     }
 
@@ -86,8 +84,13 @@ class Logger
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
-
         file_put_contents($dir . '/' . date("Y-m-d") . '_' . $this->_type . '.log', $s, FILE_APPEND | LOCK_EX);
+    }
+
+
+    private function format($s)
+    {
+        return str_replace(["\n", "\t", '"', "'", '“', '”'], "", $s);
     }
 
 
@@ -103,10 +106,9 @@ class Logger
         $this->_type = $logType;
         $param = Utility::encode($param);
         $responseTime = round($responseTime, 4);
-        $msg = empty($msg) ? 'null' : str_replace("\n", "<br/>", $msg);
-        //请求时间||数据类型||事件类型||响应时间||出错码||客户端IP||请求URI||请求参数||服务端IP||数据信息
+        $msg = empty($msg) ? 'null' : $this->format($msg);
+        // 请求时间||数据类型||事件类型||响应时间||出错码||客户端IP||请求URI||请求参数||服务端IP||数据信息
         $log = "{$dateTime}||{$logType}||{$eventType}||{$responseTime}||{$code}||{$clientIp}||{$url}||{$param}||{$serverIp}||{$msg}\n";
-
         $this->output($log);
     }
 }
