@@ -111,6 +111,7 @@ class Page extends Response
                 $this->setCookie($cookie);
             }
         }
+        $this->setHeader('Cache-Control','no-cache, private');
         $this->setHeader('location', $url);
         $this->setBody('');
         return parent::send();
