@@ -15,6 +15,7 @@ namespace TheFairLib\Queue\Rabbitmq;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 use TheFairLib\Config\Config;
 use \PhpAmqpLib\Connection\AMQPStreamConnection;
 use TheFairLib\Utility\Utility;
@@ -102,6 +103,50 @@ class Rabbitmq
             self::closeConnection();
             throw new \Exception($e->getMessage(), $e->getCode(), $e->getTraceAsString());
 
+        }
+    }
+
+    /**
+     * 生产者,如果不传msg就返回对象
+     * 延迟消息，延迟消息需要注意：需要现在服务器上注册一个exchange 和queue否则不能用
+     * 延迟消息队列只能fix x-delayed-message 没有其他type
+     *
+     * @param $queue //队列名称
+     * @param $messageBody //内容
+     * @param $delay
+     * @param string $exchange //交换器
+     * @param $router //router
+     * @return bool
+     * @throws \Exception
+     */
+    public function publishDelay($queue, $messageBody, $delay, $exchange, $router)
+    {
+        try {
+            $args = new AMQPTable([]);
+            self::$_channel->exchange_declare($exchange, 'x-delayed-message', false, true, false, false, false, $args);
+            $args = new AMQPTable([]);
+            self::$_channel->queue_declare($queue, false, true, false, false, false, $args);
+            self::$_channel->queue_bind($queue, $exchange, $router);
+
+            $header = [
+                'content_type' => 'text/plain',
+                'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
+                'application_headers' => new AMQPTable([
+                    'x-delay' => $delay
+                ])
+            ];
+            if (is_array($messageBody)) {
+                $messageBody = Utility::encode($messageBody);
+                $header['content_type'] = 'application/json';
+            }
+
+            $message = new AMQPMessage($messageBody, $header);
+
+            self::$_channel->basic_publish($message, $exchange, $router);
+            return true;
+        } catch (\Exception $e) {
+            self::closeConnection();
+            throw new \Exception($e->getMessage(), $e->getCode(), $e->getTraceAsString());
         }
     }
 
