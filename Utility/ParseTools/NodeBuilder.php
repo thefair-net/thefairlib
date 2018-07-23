@@ -151,8 +151,8 @@ class NodeBuilder
             $base = [
                 'tag' => 'fontcolor',
                 'value' => $color,
-                'start' => $pos['start'],
-                'end' => $pos['end'],
+                'start' => $pos['start'] . '',
+                'end' => $pos['end'] . '',
             ];
 
             if ($this->_needMarkUpText) {
@@ -180,8 +180,8 @@ class NodeBuilder
         if (!empty($text)) {
             $base = [
                 'tag' => 'strong',
-                'start' => $pos['start'],
-                'end' => $pos['end'],
+                'start' => $pos['start'] . '',
+                'end' => $pos['end'] . '',
             ];
             if ($this->_needMarkUpText) {
                 $base['text'] = $text;
@@ -204,8 +204,8 @@ class NodeBuilder
         if(!empty($text)){
             $base = [
                 'tag' => 'sentence',
-                'start' => $start,
-                'end' => $end,
+                'start' => $start . '',
+                'end' => $end . '',
             ];
             if($this->_needMarkUpText){
                 $base['text'] = $text;
@@ -235,8 +235,8 @@ class NodeBuilder
 
         $end = (int)ParseUtils::Instance()->s_strlen(ParseUtils::Instance()->trimContent(strip_tags($itemOut))) + $start;
         return [
-            'start' => $start,
-            'end' => $end
+            'start' => $start . '',
+            'end' => $end . '',
         ];
     }
 
