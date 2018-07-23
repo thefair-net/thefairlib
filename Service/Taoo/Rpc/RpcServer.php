@@ -103,6 +103,8 @@ class RpcServer extends BaseServer
     }
 
     /**
+     * 服务启动
+     *
      * @param \swoole_server $server
      * @param $workerId
      */
