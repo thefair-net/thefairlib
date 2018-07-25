@@ -128,6 +128,8 @@ class RpcServer extends BaseServer
     }
 
     /**
+     * 服务关闭事件
+     *
      * @param \swoole_server $server
      * @param $workerId
      */
