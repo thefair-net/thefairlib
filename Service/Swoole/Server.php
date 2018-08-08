@@ -135,7 +135,7 @@ abstract class Server implements Server\Driver
         $this->sw->on('Receive', array($this, 'onReceive'));
         $this->sw->on('Close', array($this, 'onClose'));
         $this->sw->on('WorkerStop', array($this, 'onWorkerStop'));
-        $this->sw->on('timer', array($this, 'onTimer'));
+//        $this->sw->on('timer', array($this, 'onTimer'));
         if ($this->enableHttp) {
             $this->sw->on('Request', array($this, 'onRequest'));
         }

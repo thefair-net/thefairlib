@@ -87,6 +87,14 @@ class Client
         return self::$client;
     }
 
+    static public function closeConnection()
+    {
+        if (!empty(self::$instance) && !empty(self::$client)) {
+            self::$client = null;
+            self::$instance = null;
+        }
+    }
+
     /**
      * 添加或更新索引文档
      *
