@@ -117,12 +117,15 @@ class ParseUtils
     {
         $styleStr = strtolower($item->getAttribute('style'));
         $styleName = strtolower($styleName);
+        $cssArray = explode(";", $styleStr);
 
         $mValue = '';
-        if (!empty($styleStr) && strpos($styleStr, $styleName) >= 0) {
-             preg_match("/{$styleName}:\s*(\S+?);/", $styleStr, $re);
-            if(!empty($re) && sizeof($re)>0){
-                $mValue = $re[1];
+        foreach ($cssArray as $cssItem) {
+            $cssItemArray = explode(":", $cssItem);
+            if (sizeof($cssItemArray) > 1) {
+                if (strtolower($cssItemArray[0]) == $styleName) {
+                    $mValue = trim($cssItemArray[1]);
+                }
             }
         }
 
