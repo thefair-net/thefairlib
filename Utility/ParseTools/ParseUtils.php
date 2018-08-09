@@ -1,13 +1,14 @@
 <?php
+
 namespace TheFairLib\Utility\ParseTools;
 use PHPHtmlParser\Dom\HtmlNode;
+use TheFairLib\Utility\Utility;
 
 /**
  * Created by xiangc
  * Date: 2018/6/13
  * Time: 20:26
  */
-
 class ParseUtils
 {
     private static $instance;
@@ -94,8 +95,8 @@ class ParseUtils
         $lastPos = 0;
         $positions = array();
 
-        while (($lastPos = $this->s_strpos($str, $searchStr, $lastPos))!== false) {
-            if($lastPos> $this->s_strlen($str)){
+        while (($lastPos = $this->s_strpos($str, $searchStr, $lastPos)) !== false) {
+            if ($lastPos > $this->s_strlen($str)) {
                 break;
             }
             $positions[] = $lastPos;
@@ -117,13 +118,19 @@ class ParseUtils
     {
         $styleStr = strtolower($item->getAttribute('style'));
         $styleName = strtolower($styleName);
+        $cssArray = explode(";", $styleStr);
 
         $mValue = '';
-        if (!empty($styleStr) && strpos($styleStr, $styleName) >= 0) {
-             preg_match("/{$styleName}:\s*(\S+?);/", $styleStr, $re);
-            if(!empty($re) && sizeof($re)>0){
-                $mValue = $re[1];
+        foreach ($cssArray as $cssItem) {
+            $cssItemArray = explode(":", $cssItem);
+            if (sizeof($cssItemArray) > 1) {
+                if (strtolower($cssItemArray[0]) == $styleName) {
+                    $mValue = trim($cssItemArray[1]);
+                }
             }
+        }
+        if ($mValue == 'null' || empty($mValue)) {//兼容null值，第一次知道还有null值
+            $mValue = $this->getDefaultAttributeValue($styleName);
         }
 
         return $mValue;
@@ -134,8 +141,32 @@ class ParseUtils
      * @param HtmlNode $item
      * @return string
      */
-    function getDataId($item){
+    function getDataId($item)
+    {
         return strtolower($item->getAttribute('dataid'));
+    }
+
+    private $_defaultAttributes = [
+        'color' => '#333',
+        'text-align' => 'left',
+    ];
+
+    /**
+     * 设置默认属性
+     * @param array $attrs
+     */
+    public function setDefaultAttributeValues($attrs)
+    {
+        $this->_defaultAttributes = $attrs;
+    }
+
+    /**
+     * 获取默认值
+     * @param $key
+     * @return string
+     */
+    public function getDefaultAttributeValue($key){
+        return Utility::arrayGet($this->_defaultAttributes, $key, '');
     }
 
 
