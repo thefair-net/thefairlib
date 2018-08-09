@@ -129,7 +129,7 @@ class ParseUtils
             }
         }
         if($mValue=='null'){//兼容null值，第一次知道还有null值
-            return '';
+            return $mValue = '';
         }
 
         return $mValue;
