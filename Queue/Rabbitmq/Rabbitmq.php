@@ -59,8 +59,10 @@ class Rabbitmq
     static public function closeConnection()
     {
         if (!empty(self::$instance) && !empty(self::$_conn)) {
-            self::$_channel->close();
-            self::$_conn->close();
+            if(self::$_conn->isConnected()) {
+                self::$_channel->close();
+                self::$_conn->close();
+            }
             self::$_conn = null;
             self::$_channel = null;
             self::$instance = null;
