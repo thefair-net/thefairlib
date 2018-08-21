@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.eco.mycar.parking.cardbarcode.create request
  *
  * @author auto create
- * @since 1.0, 2016-06-14 15:08:57
+ * @since 1.0, 2017-08-25 17:10:39
  */
 class AlipayEcoMycarParkingCardbarcodeCreateRequest
 {

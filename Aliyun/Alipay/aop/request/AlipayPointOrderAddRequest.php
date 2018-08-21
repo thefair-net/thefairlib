@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.point.order.add request
  *
  * @author auto create
- * @since 1.0, 2014-06-12 17:16:00
+ * @since 1.0, 2017-07-11 11:00:47
  */
 class AlipayPointOrderAddRequest
 {

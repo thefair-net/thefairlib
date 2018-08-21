@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.open.public.life.msg.recall request
  *
  * @author auto create
- * @since 1.0, 2016-12-08 12:05:51
+ * @since 1.0, 2017-08-28 17:30:50
  */
 class AlipayOpenPublicLifeMsgRecallRequest
 {

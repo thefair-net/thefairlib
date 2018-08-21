@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.data.dataservice.chinaremodel.query request
  *
  * @author auto create
- * @since 1.0, 2016-06-02 14:27:15
+ * @since 1.0, 2018-01-22 10:27:48
  */
 class AlipayDataDataserviceChinaremodelQueryRequest
 {

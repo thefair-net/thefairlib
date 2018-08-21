@@ -3,7 +3,7 @@
  * ALIPAY API: koubei.marketing.data.trade.habbit.query request
  *
  * @author auto create
- * @since 1.0, 2016-11-25 10:43:58
+ * @since 1.0, 2018-04-25 17:35:38
  */
 class KoubeiMarketingDataTradeHabbitQueryRequest
 {

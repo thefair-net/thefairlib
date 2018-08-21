@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.open.public.life.msg.send request
  *
  * @author auto create
- * @since 1.0, 2016-12-08 12:08:17
+ * @since 1.0, 2018-04-17 14:24:09
  */
 class AlipayOpenPublicLifeMsgSendRequest
 {
@@ -77,6 +77,11 @@ deadline（int）：文章的失效时间，单位秒
 	 * 视频资源来源id（视频类消息必填），取值限定youku, miaopai, taobao, sina中的一个
 	 **/
 	private $videoSource;
+	
+	/** 
+	 * 视频的临时链接（优酷来源的视频消息，该字段不能为空）
+	 **/
+	private $videoTemporaryUrl;
 	
 	/** 
 	 * 生活号视频类消息视频id或url（视频类消息必填，根据来源区分）
@@ -223,6 +228,17 @@ deadline（int）：文章的失效时间，单位秒
 	public function getVideoSource()
 	{
 		return $this->videoSource;
+	}
+
+	public function setVideoTemporaryUrl($videoTemporaryUrl)
+	{
+		$this->videoTemporaryUrl = $videoTemporaryUrl;
+		$this->apiParas["video_temporary_url"] = $videoTemporaryUrl;
+	}
+
+	public function getVideoTemporaryUrl()
+	{
+		return $this->videoTemporaryUrl;
 	}
 
 	public function setVideoUrl($videoUrl)

@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.zdataservice.unidata.query request
  *
  * @author auto create
- * @since 1.0, 2016-03-03 17:49:34
+ * @since 1.0, 2017-04-26 16:20:03
  */
 class AlipayZdataserviceUnidataQueryRequest
 {

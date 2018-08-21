@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.mobile.std.public.express.user.query request
  *
  * @author auto create
- * @since 1.0, 2016-03-31 21:06:14
+ * @since 1.0, 2017-04-14 20:18:49
  */
 class AlipayMobileStdPublicExpressUserQueryRequest
 {

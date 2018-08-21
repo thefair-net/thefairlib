@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.acquire.query request
  *
  * @author auto create
- * @since 1.0, 2014-05-28 11:58:01
+ * @since 1.0, 2018-04-18 17:54:57
  */
 class AlipayAcquireQueryRequest
 {
