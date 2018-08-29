@@ -147,7 +147,7 @@ class ParseUtils
     }
 
     private $_defaultAttributes = [
-        'color' => '#333',
+        'color' => '#333333',
         'text-align' => 'left',
     ];
 
