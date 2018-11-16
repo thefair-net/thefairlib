@@ -57,7 +57,7 @@ class SSOClient
             if (!empty($config[$confKey])) {
                 self::${$key} = $config[$confKey];
             } else {
-                throw new Exception('config error:' . $confKey);
+                throw new \Exception('config error:' . $confKey);
             }
         }
     }
@@ -92,7 +92,7 @@ class SSOClient
         $token = $this->_getToken();
         $ttl = $this->_getCookieTtl($keepLoginStatus);
         $uid = $userInfo['uid'];
-        $account = $this->_getEncryptAccount($uid, $userInfo['mobile'], $userInfo['nick'], $userInfo['password'], $userInfo['state'], $token);
+        $account = $this->_getEncryptAccount($uid, (!empty($userInfo['mobile']) ? $userInfo['mobile'] : ''), $userInfo['nick'], $userInfo['password'], $userInfo['state'], $token);
         $cookies = [
             [self::$_tokenCookieKey, $token, $ttl],
             [self::$_accountCookieKey, $account, $ttl],
