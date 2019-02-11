@@ -67,7 +67,7 @@ class KafkaLogger
         }
         $send_params['database'] = $database;
         $send_params['table'] = $table;
-        $send_params['primary'] = $primary;
+        $send_params['primary'] = \TheFairLib\Utility\Utility::encode($primary);
         $curl = \TheFairLib\Http\Curl();
         return $curl->post($request_action,$send_params);
     }
