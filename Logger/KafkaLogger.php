@@ -89,12 +89,12 @@ class KafkaLogger
         if (empty($database) || empty($table) || empty($primary) || !is_array($primary)) {
             return false;
         }
-        $config = \TheFairLib\Config\Config::get_queue_kafka(self::KAFKA_GROUP_SERVER);
         $message['database'] = $database;
         $message['table'] = $table;
         $message['primary'] = $primary;
         $message = \TheFairLib\Utility\Utility::encode($message);
         $topicName = self::KAFKA_NAME_START.implode('',array_map('ucfirst',explode('_',$database)));
+        $config = \TheFairLib\Config\Config::get_queue_kafka(self::KAFKA_GROUP_SERVER);
         $produce = Produce::getInstance($config['zookeeper'],$config['timeout'],$config['host']);
         $produce->getAvailablePartitions($topicName);
         $produce->setRequireAck(-1);
