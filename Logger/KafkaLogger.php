@@ -17,7 +17,7 @@ class KafkaLogger
     private static $instance = null;
 
     const KAFKA_NAME_START = 'db';
-    const KAFKA_GROUP_SERVER = 'log';
+    const KAFKA_LOG_SERVER = 'log';
 
 
     /**
@@ -94,7 +94,7 @@ class KafkaLogger
         $message['primary'] = $primary;
         $message = \TheFairLib\Utility\Utility::encode($message);
         $topicName = self::KAFKA_NAME_START.implode('',array_map('ucfirst',explode('_',$database)));
-        $config = \TheFairLib\Config\Config::get_queue_kafka(self::KAFKA_GROUP_SERVER);
+        $config = \TheFairLib\Config\Config::get_queue_kafka(self::KAFKA_LOG_SERVER);
         $produce = Produce::getInstance($config['zookeeper'],$config['timeout'],$config['host']);
         $produce->getAvailablePartitions($topicName);
         $produce->setRequireAck(-1);
