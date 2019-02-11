@@ -8,18 +8,22 @@
 
 namespace TheFairLib\Logger;
 
+use Kafka\Produce;
+use TheFairLib\Queue\Inter;
+
 
 class KafkaLogger
 {
     private static $instance = null;
 
     const KAFKA_NAME_START = 'db';
+    const KAFKA_GROUP_SERVER = 'log';
 
 
     /**
      * @return null|KafkaLogger
      */
-    static public function Instance()
+    public static function Instance()
     {
         if (empty(self::$instance)) {
             self::$instance = new self();
@@ -49,14 +53,14 @@ class KafkaLogger
 
 
     /**
-     * 发送队列消息
+     * 发送队列消息@代理请求
      *
      * @param $database
      * @param $table
      * @param $primary
      * @return bool
      */
-    public function sendMessage($database,$table,$primary)
+    public function proxyMessage($database,$table,$primary)
     {
         if (empty($database) || empty($table) || empty($primary) || !is_array($primary)) {
             return false;
@@ -65,9 +69,36 @@ class KafkaLogger
         if (empty($request_action)) {
             return false;
         }
-        $send_params['database'] = $database;
-        $send_params['table'] = $table;
-        $send_params['primary'] = \TheFairLib\Utility\Utility::encode($primary);
-        return \TheFairLib\Http\Curl()->post($request_action,$send_params);
+        $message['database'] = $database;
+        $message['table'] = $table;
+        $message['primary'] = \TheFairLib\Utility\Utility::encode($primary);
+        return \TheFairLib\Http\Curl()->post($request_action,$message);
+    }
+
+
+    /**
+     * 发送队列消息@直接入队列
+     *
+     * @param $database
+     * @param $table
+     * @param $primary
+     * @return bool
+     */
+    public function derectMessage($database,$table,$primary)
+    {
+        if (empty($database) || empty($table) || empty($primary) || !is_array($primary)) {
+            return false;
+        }
+        $config = \TheFairLib\Config\Config::get_queue_kafka(self::KAFKA_GROUP_SERVER);
+        $message['database'] = $database;
+        $message['table'] = $table;
+        $message['primary'] = $primary;
+        $message = \TheFairLib\Utility\Utility::encode($message);
+        $topicName = self::KAFKA_NAME_START.implode('',array_map('ucfirst',explode('_',$database)));
+        $produce = Produce::getInstance($config['zookeeper'],$config['timeout'],$config['host']);
+        $produce->getAvailablePartitions($topicName);
+        $produce->setRequireAck(-1);
+        $produce->setMessages($topicName,0,[$message]);
+        return $produce->send();
     }
 }
