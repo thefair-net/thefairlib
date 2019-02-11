@@ -56,9 +56,9 @@ class KafkaLogger
      * @param $primary
      * @return bool
      */
-    public function send($database,$table,$primary)
+    public function sendMessage($database,$table,$primary)
     {
-        if (empty($database) || empty($table) || empty($primary)) {
+        if (empty($database) || empty($table) || empty($primary) || !is_array($primary)) {
             return false;
         }
         $request_action = $this->getRouteAction($database);
