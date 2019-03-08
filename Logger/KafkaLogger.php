@@ -119,9 +119,9 @@ class KafkaLogger
         if (empty($database) || empty($table) || empty($primary) || !is_array($primary)) {
             return false;
         }
-        $message['database'] = $database;
-        $message['table']    = $table;
-        $message['primary']  = \TheFairLib\Utility\Utility::encode($primary);
+        $message[] = $database;
+        $message[] = $table;
+        $message[] = \TheFairLib\Utility\Utility::encode($primary);
         $topicName = self::KAFKA_NAME_START.implode('',array_map('ucfirst',explode('_',$database)));
         return $this->sendDerectMessage($topicName,$message);
     }
