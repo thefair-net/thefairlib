@@ -88,13 +88,15 @@ class KafkaLogger
     }
 
 
+
     /**
      * 发送普通队列消息
      *
-     * @param $topic_name
+     * @param $topicName
      * @param $message
+     * @return bool
      */
-    public function sendDerectMessage($topic_name,$message)
+    public function sendDerectMessage($topicName,$message)
     {
         $config = \TheFairLib\Config\Config::get_queue_kafka(self::KAFKA_LOG_SERVER);
         $produce = Produce::getInstance($config['zookeeper'],$config['timeout'],$config['host']);
@@ -123,6 +125,6 @@ class KafkaLogger
         $message['primary']  = $primary;
         $message = \TheFairLib\Utility\Utility::encode($message);
         $topicName = self::KAFKA_NAME_START.implode('',array_map('ucfirst',explode('_',$database)));
-        return $this->sendDerectMessage($topic_name,$message);
+        return $this->sendDerectMessage($topicName,$message);
     }
 }
