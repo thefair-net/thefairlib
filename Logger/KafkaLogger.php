@@ -75,8 +75,8 @@ class KafkaLogger
     /**
      * 发送代理队列消息
      *
-     * @param $route_name
-     * @param $message
+     * @param string $route_name
+     * @param array $message
      */
     public function sendProxyMessage($route_name,$message)
     {
@@ -92,8 +92,8 @@ class KafkaLogger
     /**
      * 发送普通队列消息
      *
-     * @param $topicName
-     * @param $message
+     * @param string $topicName
+     * @param array  $message
      * @return bool
      */
     public function sendDerectMessage($topicName,$message)
@@ -102,7 +102,7 @@ class KafkaLogger
         $produce = Produce::getInstance($config['zookeeper'],$config['timeout'],$config['host']);
         $produce->getAvailablePartitions($topicName);
         $produce->setRequireAck(-1);
-        $produce->setMessages($topicName,0,[$message]);
+        $produce->setMessages($topicName,0,$message);
         return $produce->send();
     }
 
