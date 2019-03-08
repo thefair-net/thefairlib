@@ -16,8 +16,7 @@ class KafkaLogger
 {
     private static $instance = null;
 
-    const KAFKA_NAME_START = 'click';
-    const KAFKA_LOG_SERVER = 'log';
+    const KAFKA_NAME_START = 'log';
 
 
     /**
@@ -95,9 +94,9 @@ class KafkaLogger
      * @param array  $message
      * @return bool
      */
-    public function sendDerectMessage($topicName,$message)
+    public function sendDerectMessage($topicName,$message,$group_name=self::KAFKA_NAME_START)
     {
-        $config = \TheFairLib\Config\Config::get_queue_kafka(self::KAFKA_LOG_SERVER);
+        $config = \TheFairLib\Config\Config::get_queue_kafka($group_name);
         $produce = Produce::getInstance($config['zookeeper'],$config['timeout'],$config['host']);
         $produce->getAvailablePartitions($topicName);
         $produce->setRequireAck(-1);
