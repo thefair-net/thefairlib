@@ -88,7 +88,6 @@ class KafkaLogger
     }
 
 
-
     /**
      * 发送普通队列消息
      *
@@ -122,8 +121,7 @@ class KafkaLogger
         }
         $message['database'] = $database;
         $message['table']    = $table;
-        $message['primary']  = $primary;
-        $message = \TheFairLib\Utility\Utility::encode($message);
+        $message['primary']  = \TheFairLib\Utility\Utility::encode($primary);
         $topicName = self::KAFKA_NAME_START.implode('',array_map('ucfirst',explode('_',$database)));
         return $this->sendDerectMessage($topicName,$message);
     }
