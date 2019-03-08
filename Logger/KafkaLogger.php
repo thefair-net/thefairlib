@@ -16,7 +16,7 @@ class KafkaLogger
 {
     private static $instance = null;
 
-    const KAFKA_NAME_START = 'db';
+    const KAFKA_NAME_START = 'click';
     const KAFKA_LOG_SERVER = 'log';
 
 
