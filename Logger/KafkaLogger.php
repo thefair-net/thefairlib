@@ -27,7 +27,7 @@ class KafkaLogger
         if (empty(self::$instance)) {
             self::$instance = new self();
         }
-        return self::Instance;
+        return self::$instance;
     }
 
 
