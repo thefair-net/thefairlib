@@ -46,7 +46,7 @@ class Rabbitmq
     static public function Instance($server = 'default', $vhost = '')
     {
         $class = get_called_class();
-        if (empty(self::$instance) || empty(self::$_channel)) {
+        if (empty(self::$instance) || empty(self::$_channel) || (!empty(self::$_conn) && !self::$_conn->isConnected())) {
             self::$instance = new $class();
             $config = Config::get_queue_rabbitmq($server);
             if (empty($vhost)) $vhost = $config['vhost'];
