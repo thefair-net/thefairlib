@@ -51,7 +51,7 @@ class KafkaLogger
         $config->setIsAsyn(false);
         $config->setProduceInterval(500);
         $producer = new Producer();
-        $producer->send(array(
+        return $producer->send(array(
             array(
                 'topic' => $topicName,
                 'value' => $message,
