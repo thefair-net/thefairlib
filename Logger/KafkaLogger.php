@@ -47,7 +47,7 @@ class KafkaLogger
         $config = ProducerConfig::getInstance();
         $config->setMetadataRefreshIntervalMs(10000);
         $config->setMetadataBrokerList($kafkaConf['host']);
-        $config->setBrokerVersion('0.9.0.1');
+        $config->setBrokerVersion('1.0.0');
         $config->setRequiredAck(0);
         $config->setIsAsyn(false);
         $config->setProduceInterval(500);
