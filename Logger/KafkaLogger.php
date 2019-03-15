@@ -39,6 +39,8 @@ class KafkaLogger
      * @param $topicName
      * @param $message
      * @param string $groupName
+     *
+     * @return array
      */
     public function sendDirectMessage($topicName, $message, $groupName = self::KAFKA_NAME_START)
     {
@@ -48,17 +50,19 @@ class KafkaLogger
         $config->setMetadataRefreshIntervalMs(10000);
         $config->setMetadataBrokerList($kafkaConf['host']);
         $config->setBrokerVersion('1.0.0');
-        $config->setRequiredAck(0);
+        $config->setRequiredAck(1);
         $config->setIsAsyn(false);
         $config->setProduceInterval(500);
         $producer = new Producer();
-        return $producer->send(array(
-            array(
+
+        $data = [
+            [
                 'topic' => $topicName,
                 'value' => $message,
-                'key' => '',
-            )
-        ));
+            ]
+        ];
+
+        return $producer->send($data);
     }
 
     /**
