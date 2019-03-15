@@ -188,4 +188,3 @@ TheFairLib\Verify\Mobile::Instance()->sendMessage('18888888888','您的验证码
     }
 }
 ```
-
