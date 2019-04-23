@@ -59,7 +59,7 @@ class Rabbitmq
     static public function closeConnection()
     {
         if (!empty(self::$instance) && !empty(self::$_conn)) {
-            if(self::$_conn->isConnected()) {
+            if (self::$_conn->isConnected()) {
                 self::$_channel->close();
                 self::$_conn->close();
             }
@@ -67,6 +67,23 @@ class Rabbitmq
             self::$_channel = null;
             self::$instance = null;
         }
+    }
+
+    /**
+     * 创建队列
+     *
+     * @param $queue
+     * @param $exchange
+     * @param $type
+     * @param $router
+     * @return bool
+     */
+    public function createQueue($queue, $exchange, $type, $router)
+    {
+        self::$_channel->queue_declare($queue, false, true, false, false);
+        self::$_channel->exchange_declare($exchange, $type, false, true, false);
+        self::$_channel->queue_bind($queue, $exchange, $router);
+        return true;
     }
 
     /**
@@ -83,9 +100,7 @@ class Rabbitmq
     public function publish($queue, $messageBody, $exchange, $type, $router)
     {
         try {
-            self::$_channel->queue_declare($queue, false, true, false, false);
-            self::$_channel->exchange_declare($exchange, $type, false, true, false);
-            self::$_channel->queue_bind($queue, $exchange, $router);
+            // @todo 请先手动创建队列
 
             $header = [
                 'content_type' => 'text/plain',
@@ -170,6 +185,29 @@ class Rabbitmq
             self::$_channel->basic_consume($queue, '', false, false, false, false, $func);
 
             self::$_channel->queue_bind($queue, $exchange, $router);
+
+            while (count(self::$_channel->callbacks)) {
+                self::$_channel->wait();
+            }
+
+        } catch (\Exception $e) {
+            self::closeConnection();
+            throw new \Exception($e->getMessage(), $e->getCode(), $e->getTraceAsString());
+        }
+    }
+
+    /**
+     * 消费者
+     *
+     * @param $queue
+     * @param $func
+     * @throws \Exception
+     */
+    public function consumerV1($queue, $func)
+    {
+        try {
+
+            self::$_channel->basic_consume($queue, '', false, false, false, false, $func);
 
             while (count(self::$_channel->callbacks)) {
                 self::$_channel->wait();
