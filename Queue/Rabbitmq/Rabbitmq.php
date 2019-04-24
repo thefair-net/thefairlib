@@ -124,6 +124,23 @@ class Rabbitmq
     }
 
     /**
+     * 延迟消息
+     *
+     * @param $queue
+     * @param $exchange
+     * @param $router
+     * @return bool
+     */
+    public function createDelayQueue($queue, $exchange, $router) {
+        $args = new AMQPTable([]);
+        self::$_channel->exchange_declare($exchange, 'x-delayed-message', false, true, false, false, false, $args);
+        $args = new AMQPTable([]);
+        self::$_channel->queue_declare($queue, false, true, false, false, false, $args);
+        self::$_channel->queue_bind($queue, $exchange, $router);
+        return true;
+    }
+
+    /**
      * 生产者,如果不传msg就返回对象
      * 延迟消息，延迟消息需要注意：需要现在服务器上注册一个exchange 和queue否则不能用
      * 延迟消息队列只能fix x-delayed-message 没有其他type
@@ -139,11 +156,6 @@ class Rabbitmq
     public function publishDelay($queue, $messageBody, $delay, $exchange, $router)
     {
         try {
-            $args = new AMQPTable([]);
-            self::$_channel->exchange_declare($exchange, 'x-delayed-message', false, true, false, false, false, $args);
-            $args = new AMQPTable([]);
-            self::$_channel->queue_declare($queue, false, true, false, false, false, $args);
-            self::$_channel->queue_bind($queue, $exchange, $router);
 
             $header = [
                 'content_type' => 'text/plain',
@@ -180,11 +192,7 @@ class Rabbitmq
     {
         try {
 
-            self::$_channel->queue_declare($queue, false, true, false, false);
-
             self::$_channel->basic_consume($queue, '', false, false, false, false, $func);
-
-            self::$_channel->queue_bind($queue, $exchange, $router);
 
             while (count(self::$_channel->callbacks)) {
                 self::$_channel->wait();
