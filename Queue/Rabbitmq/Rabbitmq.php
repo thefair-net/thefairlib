@@ -131,7 +131,8 @@ class Rabbitmq
      * @param $router
      * @return bool
      */
-    public function createDelayQueue($queue, $exchange, $router) {
+    public function createDelayQueue($queue, $exchange, $router)
+    {
         $args = new AMQPTable([]);
         self::$_channel->exchange_declare($exchange, 'x-delayed-message', false, true, false, false, false, $args);
         $args = new AMQPTable([]);
@@ -186,11 +187,20 @@ class Rabbitmq
      * @param $exchange
      * @param $router
      * @param $func
+     * @param $qos // prefetch_count：预读取消息的数量  a_global false 单独应用于信道上的每个新消费者
      * @throws \Exception
      */
-    public function consumer($queue, $exchange, $router, $func)
+    public function consumer($queue, $exchange, $router, $func, array $qos = [])
     {
         try {
+            if (empty($qos)) {
+                $qos = [
+                    'prefetch_size' => 0,
+                    'prefetch_count' => 30,
+                    'a_global' => false
+                ];
+            }
+            self::$_channel->basic_qos($qos['prefetch_size'], $qos['prefetch_count'], $qos['a_global']);
 
             self::$_channel->basic_consume($queue, '', false, false, false, false, $func);
 
