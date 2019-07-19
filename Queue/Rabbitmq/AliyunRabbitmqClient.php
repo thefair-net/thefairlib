@@ -216,7 +216,7 @@ class AliyunRabbitmqClient
     }
 
     /**
-     * 创建队列
+     * 需要去阿里云创建 $queue, $exchange
      *
      * @param $queue
      * @param $exchange
