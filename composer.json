@@ -20,6 +20,7 @@
     "nmred/kafka-php": "*",
     "endroid/qrcode": "<2.0",
     "php-amqplib/php-amqplib": ">=2.8.1",
+    "elasticsearch/elasticsearch": "~2.0",
     "aliyuncs/oss-sdk-php": "~2.0",
     "paquettg/php-html-parser": "^1.7"
   },
