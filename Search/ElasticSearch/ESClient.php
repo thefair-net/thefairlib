@@ -16,6 +16,7 @@ namespace TheFairLib\Search\ElasticSearch;
 
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use Exception;
 use TheFairLib\Config\Config;
 use TheFairLib\Utility\Utility;
 
@@ -123,8 +124,8 @@ class ESClient
     /**
      * 添加或更新索引文档
      *
-     * @param ESDocument $document
-     * @return void //[status] => 0 [QTime] => 11
+     * @param $document
+     * @return array
      * @throws Exception
      */
     public function saveIndexDocument($document)
@@ -250,7 +251,7 @@ class ESClient
         $params = array_merge($this->getBaseParam(), ['id' => $id]);
         try {
             return $this->client()->get($params);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [];
         }
     }
