@@ -11,6 +11,8 @@
  *
  **/
 
+namespace TheFairLib\Queue\Rabbitmq;
+
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
@@ -22,12 +24,10 @@ class AliyunRabbitmqClient
 {
     static public $instance;
 
-    private $host;
-    private $port;
-    private $virtualHost;
     private static $accessKey;
     private static $accessSecret;
     private static $resourceOwnerId;
+    private static $server;
 
     /**
      * @var AMQPStreamConnection
@@ -63,17 +63,6 @@ class AliyunRabbitmqClient
         return base64_encode(utf8_encode($sig . ':' . $ts));
     }
 
-    public function getConnection()
-    {
-        $username = $this->getUser();
-        $password = $this->getPassword();
-
-        return new AMQPStreamConnection($this->host, $this->port,
-            $username, $password,
-            $this->virtualHost, false);
-    }
-
-
     /**
      * Rabbitmq
      *
@@ -84,21 +73,24 @@ class AliyunRabbitmqClient
     static public function Instance($server = 'default', $vhost = '')
     {
         $class = get_called_class();
-        if (empty(self::$instance) || empty(self::$_channel)) {
+        if (empty(self::$instance[$server]) || empty(self::$_channel[$server])) {
+            self::$server = $server;
             $config = Config::get_queue_rabbitmq($server);
             if (empty($vhost)) $vhost = $config['vhost'];
-            self::$instance = new $class($config['user'], $config['pass'], $config['resource_owner_id']);
-            self::$_conn = new AMQPStreamConnection($config['host'], $config['port'], self::getUser(), self::getPassword(), $vhost);
-            self::$_channel = self::$_conn->channel();
+            self::$instance[$server] = new $class($config['user'], $config['pass'], $config['resource_owner_id']);
+            self::$_conn[$server] = new AMQPStreamConnection($config['host'], $config['port'], self::getUser(), self::getPassword(), $vhost);
+            self::$_channel[$server] = self::$_conn[$server]->channel();
         }
-        return self::$instance;
+        return self::$instance[$server];
     }
 
     static public function closeConnection()
     {
         if (!empty(self::$instance) && !empty(self::$_conn)) {
-            self::$_channel->close();
-            self::$_conn->close();
+            foreach (self::$instance as $key => $v) {
+                self::$_channel[$key]->close();
+                self::$_conn[$key]->close();
+            }
             self::$_conn = null;
             self::$_channel = null;
             self::$instance = null;
@@ -133,11 +125,11 @@ class AliyunRabbitmqClient
                 ];
             }
             $message = new AMQPMessage($messageBody, $header);
-            self::$_channel->basic_publish($message, $exchange, $router);
+            self::$_channel[self::$server]->basic_publish($message, $exchange, $router);
             return true;
         } catch (Exception $e) {
             self::closeConnection();
-            throw new Exception($e->getMessage(), $e->getCode(), $e->getTraceAsString());
+            throw new Exception($e->getMessage());
 
         }
     }
@@ -173,11 +165,11 @@ class AliyunRabbitmqClient
 
             $message = new AMQPMessage($messageBody, $header);
 
-            self::$_channel->basic_publish($message, $exchange, $router);
+            self::$_channel[self::$server]->basic_publish($message, $exchange, $router);
             return true;
         } catch (Exception $e) {
             self::closeConnection();
-            throw new Exception($e->getMessage(), $e->getCode(), $e->getTraceAsString());
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -201,31 +193,35 @@ class AliyunRabbitmqClient
                     'a_global' => false
                 ];
             }
-            self::$_channel->basic_qos($qos['prefetch_size'], $qos['prefetch_count'], $qos['a_global']);
 
-            self::$_channel->basic_consume($queue, '', false, false, false, false, $func);
+            $channel = self::$_channel[self::$server];
 
-            while (count(self::$_channel->callbacks)) {
-                self::$_channel->wait();
+            $channel->basic_qos($qos['prefetch_size'], $qos['prefetch_count'], $qos['a_global']);
+
+            $channel->basic_consume($queue, '', false, false, false, false, $func);
+
+            while (count($channel->callbacks)) {
+                $channel->wait();
             }
 
         } catch (Exception $e) {
             self::closeConnection();
-            throw new Exception($e->getMessage(), $e->getCode(), $e->getTraceAsString());
+            throw new Exception($e->getMessage());
         }
     }
 
     /**
-     * 需要去阿里云创建 $queue, $exchange
+     * 创建队列
      *
      * @param $queue
      * @param $exchange
      * @param $router
      * @return bool
      */
-    public function queueBindRouter($queue, $exchange, $router)
+    public function queueBind($queue, $exchange, $router)
     {
-        self::$_channel->queue_bind($queue, $exchange, $router);
+        self::$_channel[self::$server]->queue_declare($queue, false, true, false, false);
+        self::$_channel[self::$server]->queue_bind($queue, $exchange, $router);
         return true;
     }
 
