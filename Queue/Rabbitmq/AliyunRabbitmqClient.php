@@ -87,10 +87,11 @@ class AliyunRabbitmqClient
     static public function closeConnection()
     {
         if (!empty(self::$instance) && !empty(self::$_conn)) {
-            foreach (self::$instance as $key => $v) {
-                self::$_channel[$key]->close();
-                self::$_conn[$key]->close();
+            if (!empty(self::$_channel[self::$server]->is_open())) {
+                self::$_channel[self::$server]->close();
+                self::$_conn[self::$server]->close();
             }
+            self::$server = null;
             self::$_conn = null;
             self::$_channel = null;
             self::$instance = null;

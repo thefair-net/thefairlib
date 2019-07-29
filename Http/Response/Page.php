@@ -85,7 +85,7 @@ class Page extends Response
         return 'application/json;charset=utf-8';
     }
 
-    public function send(){
+    public function send($dealHeader = true){
         $cookies = Utility::getResponseCookie();
         if(!empty($cookies)){
             foreach($cookies as $cookie){
@@ -93,7 +93,7 @@ class Page extends Response
             }
         }
         $this->setBody($this->_buildApiBody());
-        return parent::send();
+        return parent::send($dealHeader);
     }
 
     private function _buildApiBody(){
