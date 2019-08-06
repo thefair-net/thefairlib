@@ -76,7 +76,7 @@ class RabbitmqProducerClient
     public function closeConnection()
     {
         try {
-            if ($this->_conn->isConnected()) {
+            if (!empty($this->_conn) && $this->_conn->isConnected()) {
                 $this->_conn->close();
             }
         } catch (Exception $e) {
