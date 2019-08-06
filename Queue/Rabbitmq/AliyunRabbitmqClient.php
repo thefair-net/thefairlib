@@ -13,51 +13,40 @@
 
 namespace TheFairLib\Queue\Rabbitmq;
 
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Message\AMQPMessage;
-use PhpAmqpLib\Wire\AMQPTable;
 use TheFairLib\Config\Config;
 use \PhpAmqpLib\Connection\AMQPStreamConnection;
-use TheFairLib\Utility\Utility;
 
 class AliyunRabbitmqClient
 {
+    /**
+     * @var $this
+     */
     static public $instance;
 
-    private static $accessKey;
-    private static $accessSecret;
-    private static $resourceOwnerId;
-    private static $server;
-
-    /**
-     * @var AMQPStreamConnection
-     */
-    static private $_conn = null;
+    private $accessKey;
+    private $accessSecret;
+    private $resourceOwnerId;
+    private $config;
 
 
-    /**
-     * @var AMQPChannel
-     */
-    static private $_channel = null;
-
-
-    public function __construct($accessKey, $accessSecret, $resourceOwnerId = '')
+    public function __construct($server)
     {
-        self::$accessKey = $accessKey;
-        self::$accessSecret = $accessSecret;
-        self::$resourceOwnerId = $resourceOwnerId;
+        $this->config = Config::get_queue_rabbitmq($server);
+        $this->accessKey = $this->config['user'];
+        $this->accessSecret = $this->config['pass'];
+        $this->resourceOwnerId = $this->config['resource_owner_id'];
     }
 
-    static private function getUser()
+    private function getUser()
     {
-        $t = '0:' . self::$resourceOwnerId . ':' . self::$accessKey;
+        $t = '0:' . $this->resourceOwnerId . ':' . $this->accessKey;
         return base64_encode($t);
     }
 
-    static private function getPassword()
+    private function getPassword()
     {
         $ts = (int)(microtime(true) * 1000);
-        $value = utf8_encode(self::$accessSecret);
+        $value = utf8_encode($this->accessSecret);
         $key = utf8_encode((string)$ts);
         $sig = strtoupper(hash_hmac('sha1', $value, $key, FALSE));
         return base64_encode(utf8_encode($sig . ':' . $ts));
@@ -67,163 +56,33 @@ class AliyunRabbitmqClient
      * Rabbitmq
      *
      * @param string $server
-     * @param string $vhost
      * @return AliyunRabbitmqClient
      */
-    static public function Instance($server = 'default', $vhost = '')
+    static public function Instance($server = 'default')
     {
-        $class = get_called_class();
-        if (empty(self::$instance[$server]) || empty(self::$_channel[$server])) {
-            self::$server = $server;
-            $config = Config::get_queue_rabbitmq($server);
-            if (empty($vhost)) $vhost = $config['vhost'];
-            self::$instance[$server] = new $class($config['user'], $config['pass'], $config['resource_owner_id']);
-            self::$_conn[$server] = new AMQPStreamConnection($config['host'], $config['port'], self::getUser(), self::getPassword(), $vhost);
-            self::$_channel[$server] = self::$_conn[$server]->channel();
+        if (empty(self::$instance[$server])) {
+            self::$instance[$server] = new self($server);
         }
         return self::$instance[$server];
     }
 
-    static public function closeConnection()
-    {
-        if (!empty(self::$instance) && !empty(self::$_conn)) {
-            if (!empty(self::$_channel[self::$server]->is_open())) {
-                self::$_channel[self::$server]->close();
-                self::$_conn[self::$server]->close();
-            }
-            self::$server = null;
-            self::$_conn = null;
-            self::$_channel = null;
-            self::$instance = null;
-        }
-    }
-
     /**
-     * 生产者,如果不传msg就返回对象
+     * AMQPStreamConnection
      *
-     * @param $queue //队列名称
-     * @param $messageBody //内容
-     * @param string $exchange //交换器
-     * @param string //$type
-     * @param $router //router
-     * @return bool
-     * @throws Exception
+     * @return AMQPStreamConnection
      */
-    public function publish($queue, $messageBody, $exchange, $type, $router)
+    public function getConnection()
     {
-        try {
-            // @todo 请先手动创建队列
-
-            $header = [
-                'content_type' => 'text/plain',
-                'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT
-            ];
-            if (is_array($messageBody)) {
-                $messageBody = Utility::encode($messageBody);
-                $header = [
-                    'content_type' => 'application/json',
-                    'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT
-                ];
-            }
-            $message = new AMQPMessage($messageBody, $header);
-            self::$_channel[self::$server]->basic_publish($message, $exchange, $router);
-            return true;
-        } catch (Exception $e) {
-            self::closeConnection();
-            throw new Exception($e->getMessage());
-
-        }
-    }
-
-    /**
-     * 生产者,如果不传msg就返回对象
-     * 延迟消息，延迟消息需要注意：需要现在服务器上注册一个exchange 和queue否则不能用
-     * 延迟消息队列只能fix x-delayed-message 没有其他type
-     *
-     * @param $queue //队列名称
-     * @param $messageBody //内容
-     * @param $delay
-     * @param string $exchange //交换器
-     * @param $router //router
-     * @return bool
-     * @throws Exception
-     */
-    public function publishDelay($queue, $messageBody, $delay, $exchange, $router)
-    {
-
-        try {
-            $header = [
-                'content_type' => 'text/plain',
-                'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
-                'application_headers' => new AMQPTable([
-                    'delay' => strval($delay),
-                ])
-            ];
-            if (is_array($messageBody)) {
-                $messageBody = Utility::encode($messageBody);
-                $header['content_type'] = 'application/json';
-            }
-
-            $message = new AMQPMessage($messageBody, $header);
-
-            self::$_channel[self::$server]->basic_publish($message, $exchange, $router);
-            return true;
-        } catch (Exception $e) {
-            self::closeConnection();
-            throw new Exception($e->getMessage());
-        }
-    }
-
-    /**
-     * 消费者
-     *
-     * @param $queue
-     * @param $exchange
-     * @param $router
-     * @param $func
-     * @param $qos // prefetch_count：预读取消息的数量  a_global false 单独应用于信道上的每个新消费者
-     * @throws Exception
-     */
-    public function consumer($queue, $exchange, $router, $func, array $qos = [])
-    {
-        try {
-            if (empty($qos)) {
-                $qos = [
-                    'prefetch_size' => 0,
-                    'prefetch_count' => 30,
-                    'a_global' => false
-                ];
-            }
-
-            $channel = self::$_channel[self::$server];
-
-            $channel->basic_qos($qos['prefetch_size'], $qos['prefetch_count'], $qos['a_global']);
-
-            $channel->basic_consume($queue, '', false, false, false, false, $func);
-
-            while (count($channel->callbacks)) {
-                $channel->wait();
-            }
-
-        } catch (Exception $e) {
-            self::closeConnection();
-            throw new Exception($e->getMessage());
-        }
-    }
-
-    /**
-     * 创建队列
-     *
-     * @param $queue
-     * @param $exchange
-     * @param $router
-     * @return bool
-     */
-    public function queueBind($queue, $exchange, $router)
-    {
-        self::$_channel[self::$server]->queue_declare($queue, false, true, false, false);
-        self::$_channel[self::$server]->queue_bind($queue, $exchange, $router);
-        return true;
+        return (new AMQPStreamConnection($this->config['host'], $this->config['port'], $this->getUser(), $this->getPassword(), $this->config['vhost'], $insist = false,
+            $login_method = 'AMQPLAIN',
+            $login_response = null,
+            $locale = 'en_US',
+            $connection_timeout = 30,
+            $read_write_timeout = 130.0,
+            $context = null,
+            $keepalive = true,
+            $heartbeat = 60,
+            $channel_rpc_timeout = 3));
     }
 
 }
