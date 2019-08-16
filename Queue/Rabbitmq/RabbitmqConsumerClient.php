@@ -16,7 +16,6 @@ namespace TheFairLib\Queue\Rabbitmq;
 use Exception;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
-use PhpAmqpLib\Wire\AMQPTable;
 use \PhpAmqpLib\Connection\AMQPStreamConnection;
 use TheFairLib\Logger\Logger;
 use TheFairLib\Utility\Utility;
@@ -97,7 +96,6 @@ class RabbitmqConsumerClient
     {
         try {
             if (!$this->_conn->isConnected() || empty($this->_channel)) {
-                Logger::Instance()->error('error isConnected');
                 $this->_conn = AliyunRabbitmqClient::Instance($this->server)->getConnection();
                 $this->_channel = $this->_conn->channel();
             }
@@ -134,7 +132,10 @@ class RabbitmqConsumerClient
 
             $channel->basic_qos($qos['prefetch_size'], $qos['prefetch_count'], $qos['a_global']);
 
-            $channel->basic_consume($queue, '', false, false, false, false, $func);
+            $channel->basic_consume($queue, '', false, false, false, false, function (AMQPMessage $message) use ($func) {
+                $func($message);
+                RabbitmqProducerClient::allCloseConnection();
+            });
 
             while (count($channel->callbacks)) {
                 $channel->wait();

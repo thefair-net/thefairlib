@@ -27,7 +27,7 @@ class AliyunRabbitmqClient
     private $accessSecret;
     private $resourceOwnerId;
     private $config;
-
+    private $type;
 
     public function __construct($server)
     {
@@ -35,21 +35,32 @@ class AliyunRabbitmqClient
         $this->accessKey = $this->config['user'];
         $this->accessSecret = $this->config['pass'];
         $this->resourceOwnerId = $this->config['resource_owner_id'];
+        $this->type = isset($this->config['type']) ? $this->config['type'] : '';
     }
 
     private function getUser()
     {
-        $t = '0:' . $this->resourceOwnerId . ':' . $this->accessKey;
-        return base64_encode($t);
+        switch ($this->type) {
+            case 'rabbitmq':
+                return $this->accessKey;
+            default:
+                $t = '0:' . $this->resourceOwnerId . ':' . $this->accessKey;
+                return base64_encode($t);
+        }
     }
 
     private function getPassword()
     {
-        $ts = (int)(microtime(true) * 1000);
-        $value = utf8_encode($this->accessSecret);
-        $key = utf8_encode((string)$ts);
-        $sig = strtoupper(hash_hmac('sha1', $value, $key, FALSE));
-        return base64_encode(utf8_encode($sig . ':' . $ts));
+        switch ($this->type) {
+            case 'rabbitmq':
+                return $this->accessKey;
+            default:
+                $ts = (int)(microtime(true) * 1000);
+                $value = utf8_encode($this->accessSecret);
+                $key = utf8_encode((string)$ts);
+                $sig = strtoupper(hash_hmac('sha1', $value, $key, FALSE));
+                return base64_encode(utf8_encode($sig . ':' . $ts));
+        }
     }
 
     /**
