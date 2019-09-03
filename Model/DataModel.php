@@ -507,7 +507,7 @@ abstract class DataModel
         //redis关闭
         Storage::closeConnection();
         Cache::closeConnection();
-        RabbitmqProducerClient::Instance()->closeConnection();//关闭MQ
+        RabbitmqProducerClient::allCloseConnection();//关闭MQ
         Client::closeConnection();//solr
     }
 
