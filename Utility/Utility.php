@@ -9,6 +9,11 @@
 
 namespace TheFairLib\Utility;
 
+use Endroid\QrCode\Exceptions\DataDoesntExistsException;
+use Endroid\QrCode\Exceptions\ImageFunctionFailedException;
+use Endroid\QrCode\Exceptions\ImageFunctionUnknownException;
+use Endroid\QrCode\Exceptions\ImageTypeInvalidException;
+use Phpanalysis\Phpanalysis;
 use TheFairLib\Config\Config;
 use TheFairLib\Http\Cookie;
 use Endroid\QrCode\QrCode;
@@ -128,46 +133,36 @@ class Utility
 
     /**
      * 加密
-     * @static
+     *
      * @param $data
+     * @param $key
+     * @param string $iv //为了向下兼容给一个默认的iv # CBC 需要 iv 初始化向量 https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    public static function Encrypt($data, $key)
+    public static function Encrypt($data, $key, $iv = 'D5lzhxEOfNu5qPGk8dRk9w==')
     {
-        $cipher = MCRYPT_TRIPLEDES;
-        $modes = MCRYPT_MODE_ECB;
+        $aesIV = base64_decode($iv);
 
-        # Add PKCS7 padding.
-        $block = mcrypt_get_block_size($cipher, $modes);
-        $pad = $block - (strlen($data) % $block);
-        $data .= str_repeat(chr($pad), $pad);
+        $result = openssl_encrypt($data, "AES-128-CBC", $key, 1, $aesIV);
 
-        $iv = mcrypt_create_iv(mcrypt_get_iv_size($cipher, $modes), MCRYPT_RAND);
-        $encrypted = @mcrypt_encrypt($cipher, $key, $data, $modes, $iv);
-
-        return base64_encode($encrypted);
+        return base64_encode($result);
     }
 
     /**
      * 解密
-     * @static
+     *
      * @param $data
+     * @param $key
+     * @param string $iv # CBC 需要 iv 初始化向量 https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    public static function Decrypt($data, $key)
+    public static function Decrypt($data, $key, $iv = 'D5lzhxEOfNu5qPGk8dRk9w==')
     {
-        $cipher = MCRYPT_TRIPLEDES;
-        $modes = MCRYPT_MODE_ECB;
+        $aesIV = base64_decode($iv);
 
-        $iv = mcrypt_create_iv(mcrypt_get_iv_size($cipher, $modes), MCRYPT_RAND);
-        $data = @mcrypt_decrypt($cipher, $key, base64_decode($data), $modes, $iv);
+        $aesCipher = base64_decode($data);
 
-        # Strip padding out.
-        $block = mcrypt_get_block_size($cipher, $modes);
-        $pad = ord($data[($len = strlen($data)) - 1]);
-        $decrypted = substr($data, 0, strlen($data) - $pad);
-
-        return $decrypted;
+        return openssl_decrypt($aesCipher, "AES-128-CBC", $key, 1, $aesIV);
     }
 
     /**
@@ -659,8 +654,8 @@ class Utility
      */
     public static function participle($str)
     {
-        \Phpanalysis\Phpanalysis::$loadInit = false;
-        $pa = new \Phpanalysis\Phpanalysis('utf-8', 'utf-8', true);
+        Phpanalysis::$loadInit = false;
+        $pa = new Phpanalysis('utf-8', 'utf-8', true);
         //载入词典
         $pa->LoadDict();
         //执行分词
@@ -687,6 +682,10 @@ class Utility
      * @param array $foregroundColor
      * @param array $backgroundColor
      * @return string
+     * @throws DataDoesntExistsException
+     * @throws ImageFunctionFailedException
+     * @throws ImageFunctionUnknownException
+     * @throws ImageTypeInvalidException
      */
     public static function qrCode($content, $setSize = 300, $padding = 0, $base64 = false, $logoPath = '', $foregroundColor = [], $backgroundColor = [])
     {

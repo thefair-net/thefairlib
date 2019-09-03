@@ -10,6 +10,7 @@
 namespace TheFairLib\Model;
 
 use Illuminate\Database\Capsule\Manager;
+use Illuminate\Database\Connection;
 use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
 use TheFairLib\DB\Redis\Storage;
@@ -109,7 +110,7 @@ abstract class DataModel
 
     /**
      * @param $dbName
-     * @return \Illuminate\Database\Connection
+     * @return Connection
      * @throws Exception
      */
     protected function db($dbName = '')
@@ -172,7 +173,7 @@ abstract class DataModel
         $ret = $this->db('default')->select('select uuid_short() as uuid');
         $uuid = $ret[0]['uuid'];
         if (!empty($uuid)) {
-            return $uuid;
+            return intval(substr("{$uuid}", -19));
         } else {
             throw new Exception('uuid error', [], 50000);
         }

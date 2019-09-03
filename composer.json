@@ -14,7 +14,7 @@
     }
   ],
   "require": {
-    "php": ">=5.4.1",
+    "php": ">=7.2",
     "predis/predis": "1.0.3",
     "illuminate/database": "<4.2",
     "nmred/kafka-php": "*",
@@ -22,7 +22,8 @@
     "php-amqplib/php-amqplib": ">=2.8.1",
     "elasticsearch/elasticsearch": "~2.0",
     "aliyuncs/oss-sdk-php": "~2.0",
-    "paquettg/php-html-parser": "^1.7"
+    "paquettg/php-html-parser": "^1.7",
+    "ext-openssl": "*"
   },
   "require-dev": {
   },

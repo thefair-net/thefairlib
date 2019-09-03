@@ -1,5 +1,10 @@
 ### 阿里云OSS上传
 
+从 v3.0.1 开始，php 版本必须大于 7.2，Swoole PHP 扩展 >= 4.3.1
+
+Swoole 4.3 已经不支持 php 7.0 版本
+
+
 **config目录下新建AliYun.php文件，不能使用其他名称**
 
 ```
