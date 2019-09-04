@@ -1,11 +1,15 @@
 <?php
 namespace TheFairLib\Service\Swoole;
 
+use swoole_server;
 use TheFairLib\Logger\Logger;
 use TheFairLib\Service\Swoole\Server\Protocol;
 
 abstract class Server implements Server\Driver
 {
+    /**
+     * @var swoole_server
+     */
     protected $sw;
     protected $processName = 'swooleServ';
     protected $host = '0.0.0.0';
@@ -257,6 +261,12 @@ abstract class Server implements Server\Driver
         $this->protocol->onRequest($request, $response);
     }
 
+    /**
+     * @param $server swoole_server
+     * @param $fd
+     * @param $fromId
+     * @param $data
+     */
     public function onReceive($server, $fd, $fromId, $data)
     {
         if ($data == $this->preSysCmd . "reload") {
@@ -275,6 +285,10 @@ abstract class Server implements Server\Driver
         }
     }
 
+    /**
+     * @param $protocol Protocol
+     * @throws \Exception
+     */
     public function setProtocol($protocol)
     {
         if (!($protocol instanceof Protocol)) {
