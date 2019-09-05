@@ -142,7 +142,7 @@ class Utility
      */
     public static function Encrypt($data, $key, $method = 'AES-128-ECB', $iv = '')
     {
-        $aesIV = base64_decode($iv);
+        $aesIV = !empty($iv) ? base64_decode($iv) : '';
 
         $result = openssl_encrypt($data, $method, $key, OPENSSL_RAW_DATA, $aesIV);
 
@@ -160,7 +160,8 @@ class Utility
      */
     public static function Decrypt($data, $key, $method = 'AES-128-ECB', $iv = '')
     {
-        $aesIV = base64_decode($iv);
+
+        $aesIV = !empty($iv) ? base64_decode($iv) : '';
 
         $aesCipher = base64_decode($data);
 
