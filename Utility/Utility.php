@@ -136,14 +136,15 @@ class Utility
      *
      * @param $data
      * @param $key
+     * @param $method // 默认为 ECB
      * @param string $iv //为了向下兼容给一个默认的iv # CBC 需要 iv 初始化向量 https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    public static function Encrypt($data, $key, $iv = 'D5lzhxEOfNu5qPGk8dRk9w==')
+    public static function Encrypt($data, $key, $method = 'AES-128-ECB', $iv = '')
     {
         $aesIV = base64_decode($iv);
 
-        $result = openssl_encrypt($data, "AES-128-CBC", $key, 1, $aesIV);
+        $result = openssl_encrypt($data, $method, $key, OPENSSL_RAW_DATA, $aesIV);
 
         return base64_encode($result);
     }
@@ -152,17 +153,18 @@ class Utility
      * 解密
      *
      * @param $data
+     * @param $method // 默认为 ECB
      * @param $key
      * @param string $iv # CBC 需要 iv 初始化向量 https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    public static function Decrypt($data, $key, $iv = 'D5lzhxEOfNu5qPGk8dRk9w==')
+    public static function Decrypt($data, $key, $method = 'AES-128-ECB', $iv = '')
     {
         $aesIV = base64_decode($iv);
 
         $aesCipher = base64_decode($data);
 
-        return openssl_decrypt($aesCipher, "AES-128-CBC", $key, 1, $aesIV);
+        return openssl_decrypt($aesCipher, $method, $key, OPENSSL_RAW_DATA, $aesIV);
     }
 
     /**
