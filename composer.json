@@ -17,13 +17,15 @@
     "php": ">=7.2",
     "predis/predis": "~1.1.1",
     "illuminate/database": "~6.0.0",
+    "illuminate/events": "~6.0.0",
     "nmred/kafka-php": "*",
     "endroid/qrcode": "<2.0",
     "php-amqplib/php-amqplib": ">=2.8.1",
     "elasticsearch/elasticsearch": "~2.0",
     "aliyuncs/oss-sdk-php": "~2.0",
     "paquettg/php-html-parser": "^1.7",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-pdo": "*"
   },
   "require-dev": {
     "eaglewu/swoole-ide-helper": "dev-master"
