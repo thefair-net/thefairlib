@@ -18,7 +18,6 @@ use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
 use TheFairLib\DB\Redis\Storage;
 use TheFairLib\Queue\Rabbitmq\RabbitmqProducerClient;
-use TheFairLib\Search\Solr\Client;
 use TheFairLib\Utility\Utility;
 
 abstract class DataModel
@@ -240,7 +239,7 @@ abstract class DataModel
             if (!empty($order)) {
                 $sqlObj = $sqlObj->orderByRaw($order);
             }
-            $ret = $sqlObj->limit($itemPerPage)->offset(($page - 1) * $itemPerPage)->get($fields);
+            $ret = $sqlObj->limit($itemPerPage)->offset(($page - 1) * $itemPerPage)->get($fields)->toArray();
         } else {
             $ret = [];
         }
@@ -459,7 +458,7 @@ abstract class DataModel
                 if (!empty($order)) {
                     $tmpSqlObj = $tmpSqlObj->orderByRaw($order);
                 }
-                $tmpRet = $tmpSqlObj->get($fields);
+                $tmpRet = $tmpSqlObj->get($fields)->toArray();
                 if (!empty($tmpRet)) {
                     if ($useShardingKeyMerge === true) {
                         foreach ($tmpRet as $tmpItem) {
@@ -521,7 +520,6 @@ abstract class DataModel
         Storage::closeConnection();
         Cache::closeConnection();
         RabbitmqProducerClient::allCloseConnection();//关闭MQ
-        Client::closeConnection();//solr
     }
 
     public static function clearSessionCache()
