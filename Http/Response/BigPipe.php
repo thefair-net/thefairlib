@@ -98,7 +98,7 @@ class BigPipe extends Response
         return $this->_pageRenderType;
     }
 
-    public function send(){
+    public function send($dealHeader = true){
         $cookies = Utility::getResponseCookie();
         if(!empty($cookies)){
             foreach($cookies as $cookie){
