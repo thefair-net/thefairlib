@@ -21,7 +21,12 @@ abstract class RpcAcsRequest extends AcsRequest
 {
 	private $dateTimeFormat = 'Y-m-d\TH:i:s\Z'; 
 	private $domainParameters = array();
-	
+    private $timezone = 'PRC';// 阿里云 debug
+
+    public function setTimezone($timezone) {
+        $this->timezone = $timezone;
+    }
+
 	function  __construct($product, $version, $actionName)
 	{
 		parent::__construct($product, $version, $actionName);
@@ -65,6 +70,7 @@ abstract class RpcAcsRequest extends AcsRequest
 		$apiParams["Action"] = $this->getActionName();
 		$apiParams["Version"] = $this->getVersion();
 		$apiParams["Signature"] = $this->computeSignature($apiParams, $credential->getAccessSecret(), $iSigner);
+        date_default_timezone_set($this->timezone);
 		if(parent::getMethod() == "POST") {
 			
 			$requestUrl = $this->getProtocol()."://". $domain . "/";			

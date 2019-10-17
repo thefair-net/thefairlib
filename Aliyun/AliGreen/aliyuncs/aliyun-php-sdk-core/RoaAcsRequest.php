@@ -24,9 +24,15 @@ abstract class RoaAcsRequest extends AcsRequest
 	private $domainParameters = array();
 	private $dateTimeFormat ="D, d M Y H:i:s \G\M\T";
 	private static $headerSeparator = "\n";
-	private static $querySeprator = "&"; 
-	
-	function  __construct($product, $version, $actionName)
+	private static $querySeprator = "&";
+
+    private $timezone = 'PRC';// 阿里云 debug
+
+    public function setTimezone($timezone) {
+        $this->timezone = $timezone;
+    }
+
+    function  __construct($product, $version, $actionName)
 	{
 		parent::__construct($product, $version, $actionName);
 		$this->setVersion($version);
@@ -94,6 +100,7 @@ abstract class RoaAcsRequest extends AcsRequest
           $this->headers["Content-MD5"] = base64_encode(md5(json_encode($content),true));
         }
 		$this->headers["Content-Type"] = "application/octet-stream;charset=utf-8";
+        date_default_timezone_set($this->timezone);
 	}
 	
 	private function replaceOccupiedParameters()
