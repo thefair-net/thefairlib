@@ -17,12 +17,24 @@ class Logger
     private $_name = null;
     private static $instance = null;
     private $_type = null;
+    private $_path = '/home/thefair/logs/www/';
 
     public function __construct($appName)
     {
         if (!empty($appName)) {
             $this->_name = $appName;
         }
+    }
+
+    public function setPath($path)
+    {
+        $this->_path = $path;
+        return $this;
+    }
+
+    public function getPath()
+    {
+        return $this->_path;
     }
 
     static public function Instance($appName = '')
@@ -75,7 +87,7 @@ class Logger
             } else {
                 $log['act_time'] = is_numeric($log['act_time']) ? $log['act_time'] : strtotime($log['act_time']);
             }
-            $log['log_type'] =  '[' . strtoupper($this->_type) . ']';
+            $log['log_type'] = '[' . strtoupper($this->_type) . ']';
             $log = implode('||', $log);
             $this->output($this->format($log));
         }
@@ -84,7 +96,7 @@ class Logger
 
     private function output($s)
     {
-        $dir = '/home/thefair/logs/www/' . str_replace('.', '/', strtolower($this->_name));
+        $dir = $this->getPath() . str_replace('.', '/', strtolower($this->_name));
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
