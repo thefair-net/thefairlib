@@ -1,30 +1,37 @@
 {
-  "name": "thefair/thefairlib",
-  "type": "library",
-  "description": "The PHP library for TheFair",
-  "keywords": [
-    "thefair"
-  ],
-  "homepage": "https://github.com/thefair-net/thefairlib",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Zhang Han",
-      "email": "zhanghan@thefair.net.cn"
+    "name": "thefair/thefairlib",
+    "type": "library",
+    "description": "The PHP library for TheFair",
+    "keywords": [
+        "thefair"
+    ],
+    "homepage": "https://github.com/thefair-net/thefairlib",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Zhang Han",
+            "email": "zhanghan@thefair.net.cn"
+        },
+        {
+            "name": "Liu mingzhi",
+            "email": "liumingzhi@thefair.net.cn"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "predis/predis": "~1.1.1",
+        "illuminate/database": "~6.0.0",
+        "illuminate/events": "~6.0.0"
+    },
+    "require-dev": {
+        "eaglewu/swoole-ide-helper": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "TheFairLib\\": "src/"
+        }
+    },
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix $1"
     }
-  ],
-  "require": {
-    "php": ">=7.2",
-    "predis/predis": "~1.1.1",
-    "illuminate/database": "~6.0.0",
-    "illuminate/events": "~6.0.0"
-  },
-  "require-dev": {
-    "eaglewu/swoole-ide-helper": "dev-master"
-  },
-  "autoload": {
-    "psr-4": {
-      "TheFairLib\\": "src/"
-    }
-  }
 }
