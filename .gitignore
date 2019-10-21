@@ -3,6 +3,6 @@
 .idea
 ide/*
 Ide/*
-vendor
+src/vendor
 composer.lock
 .php_cs.cache
