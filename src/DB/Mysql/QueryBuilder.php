@@ -24,4 +24,28 @@ class QueryBuilder extends \Illuminate\Database\Query\Builder
         return parent::get($columns)->toArray();
     }
 
+    public function getObject($columns = ['*'])
+    {
+        return parent::get($columns);
+    }
+
+    /**
+     * Execute an aggregate function on the database.
+     *
+     * @param string $function
+     * @param array $columns
+     * @return mixed
+     */
+    public function aggregate($function, $columns = ['*'])
+    {
+        $results = $this->cloneWithout($this->unions ? [] : ['columns'])
+            ->cloneWithoutBindings($this->unions ? [] : ['select'])
+            ->setAggregate($function, $columns)
+            ->getObject($columns)->toBase();
+
+        if (!$results->isEmpty()) {
+            return array_change_key_case((array)$results[0])['aggregate'];
+        }
+    }
+
 }
