@@ -122,7 +122,7 @@ abstract class DataModel
         }
 
         if (empty(self::$capsule)) {
-            self::$capsule = new Manager();
+            self::$capsule = new \TheFairLib\DB\Mysql\Manager();
             self::$capsule->setAsGlobal();
         }
 
