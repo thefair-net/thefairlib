@@ -239,7 +239,7 @@ abstract class DataModel
             if (!empty($order)) {
                 $sqlObj = $sqlObj->orderByRaw($order);
             }
-            $ret = $sqlObj->limit($itemPerPage)->offset(($page - 1) * $itemPerPage)->get($fields)->toArray();
+            $ret = $sqlObj->limit($itemPerPage)->offset(($page - 1) * $itemPerPage)->get($fields);
         } else {
             $ret = [];
         }
