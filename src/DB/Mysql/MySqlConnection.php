@@ -13,9 +13,13 @@
 
 namespace TheFairLib\DB\Mysql;
 
+use Illuminate\Database\Query\Builder;
+
 class MySqlConnection extends \Illuminate\Database\MySqlConnection
 {
-    
+    /**
+     * @return Builder|QueryBuilder
+     */
     public function query()
     {
         return new QueryBuilder(
