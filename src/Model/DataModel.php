@@ -146,9 +146,7 @@ abstract class DataModel
             self::$db[] = $dbName;
         }
         $tmp = self::$capsule;
-        $conn = $tmp::connection($dbName);
-        $conn->disableQueryLog();;
-        return $conn;
+        return $tmp::connection($dbName);
     }
 
     /**
@@ -247,11 +245,11 @@ abstract class DataModel
         }
 
         return [
-            'item_list'     => $ret,
-            'item_count'    => $total,
+            'item_list' => $ret,
+            'item_count' => $total,
             'item_per_page' => $itemPerPage,
-            'page'          => $page,
-            'page_count'    => $pageCount,
+            'page' => $page,
+            'page_count' => $pageCount,
         ];
     }
 
@@ -296,10 +294,10 @@ abstract class DataModel
         }
 
         $result = [
-            'item_list'     => $list,
-            'item_count'    => $total,
+            'item_list' => $list,
+            'item_count' => $total,
             'item_per_page' => $itemPerPage,
-            'page_count'    => $pageCount,
+            'page_count' => $pageCount,
         ];
 
         $lastPos = $this->_getItemRankFromCache($listCacheKey, $lastItemId, $order);
@@ -344,7 +342,7 @@ abstract class DataModel
             }
 
             $options = [
-                'withscores' => $withScores, 'limit' => [$offset, $itemPerPage],
+                'withscores' => $withScores, 'limit' => [$offset, $itemPerPage]
             ];
             $list = $this->Storage()->$funcName($listCacheKey, $rangeMin, $rangeMax, $options);
             if (!empty($list)) {
@@ -356,10 +354,10 @@ abstract class DataModel
         }
 
         $result = [
-            'item_list'     => $list,
-            'item_count'    => $total,
+            'item_list' => $list,
+            'item_count' => $total,
             'item_per_page' => $itemPerPage,
-            'page_count'    => $pageCount,
+            'page_count' => $pageCount,
         ];
 
         $lastPos = $this->_getItemRankFromCache($listCacheKey, $lastItemId, $order);
@@ -400,10 +398,10 @@ abstract class DataModel
         }
 
         return [
-            'item_list'     => $list,
-            'item_count'    => $total,
+            'item_list' => $list,
+            'item_count' => $total,
             'item_per_page' => $itemPerPage,
-            'page_count'    => $pageCount,
+            'page_count' => $pageCount,
         ];
     }
 
