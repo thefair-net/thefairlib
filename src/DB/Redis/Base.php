@@ -6,7 +6,10 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
+
 namespace TheFairLib\DB\Redis;
+
+use RedisClusterException;
 
 abstract class Base
 {
@@ -23,28 +26,32 @@ abstract class Base
     /*
      * config
      */
-    public $config = array();
+    public $config = [];
 
+    /**
+     * @param $name
+     * @return RedisCluster
+     * @throws RedisClusterException
+     */
     final protected function getRedisInstance($name)
     {
         $this->_init();
         $parameters = $this->config($name);
 
-        return new \TheFairLib\DB\Redis\RedisCluster($parameters);
-
-        // $options = array('cluster' => 'redis');
-        // return new \Predis\Client($parameters, $options);
+        return new RedisCluster($parameters);
     }
 
     abstract protected function _init();
 
     abstract public function config($name);
 
-    public static function _getConfigPath(){
+    public static function _getConfigPath()
+    {
         return self::$_redisConfPath;
     }
 
-    public static function _setConfigPath($path){
+    public static function _setConfigPath($path)
+    {
         return self::$_redisConfPath = $path;
     }
 
@@ -52,7 +59,8 @@ abstract class Base
      * @param string $name
      * @return \Redis
      */
-    public static function getInstance($name = 'default'){
+    public static function getInstance($name = 'default')
+    {
         if (!isset(self::$instance[$name])) {
             $class = get_called_class();
             $base = new $class();
@@ -66,12 +74,16 @@ abstract class Base
      * 关闭redis连接
      * 用于service处理结束后手动关闭数据服务的连接
      */
-    public static function closeConnection(){
-        if(!empty(self::$instance)){
-            foreach(self::$instance as $name => $redis){
-                if($redis->isConnected()){
+    public static function closeConnection()
+    {
+        if (!empty(self::$instance)) {
+            try {
+                foreach (self::$instance as $name => $redis) {
                     $redis->disconnect();
                 }
+            } catch (\Throwable $e) {
+            } catch (\Exception $e) {
+            } catch (\Error $e) {
             }
         }
     }

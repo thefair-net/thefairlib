@@ -23,7 +23,8 @@
         "illuminate/events": "~6.0.0",
         "phpunit/phpunit": "^7.0.0",
         "friendsofphp/php-cs-fixer": "^2.9",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-redis": "*"
     },
     "require-dev": {
         "eaglewu/swoole-ide-helper": "dev-master"
