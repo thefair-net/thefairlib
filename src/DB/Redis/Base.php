@@ -25,12 +25,15 @@ abstract class Base
      */
     public $config = array();
 
-    final protected function getRedisInstance($name){
+    final protected function getRedisInstance($name)
+    {
         $this->_init();
         $parameters = $this->config($name);
-        $options = array('cluster' => 'redis');
-        return new \Predis\Client($parameters, $options);
 
+        return new \TheFairLib\DB\Redis\RedisCluster($parameters);
+
+        // $options = array('cluster' => 'redis');
+        // return new \Predis\Client($parameters, $options);
     }
 
     abstract protected function _init();

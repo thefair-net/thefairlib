@@ -10,6 +10,17 @@ namespace TheFairLib\DB\Redis;
 
 class RedisCluster extends \RedisCluster
 {
+    public function __construct($parameters)
+    {
+        // RedisCluster 只需要 "host:port"
+        foreach ($parameters as &$url) {
+            $config = parse_url($url);
+            $url = $config['host'] . ':' . $config['port'];
+        }
+
+        parent::__construct(NULL, $parameters);
+    }
+
     /**
      * 兼容predis zRange($key, $start, $end, 'withscores')
      *
