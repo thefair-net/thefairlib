@@ -1,18 +1,28 @@
 <?php
 
 /**
- * File: Redis.php
- * File Created: Wednesday, 11th December 2019 2:48:32 pm
+ * File: RedisClient.php
+ * File Created: Friday, 13th December 2019 7:39:31 pm
  * Author: Yin
  */
 
 namespace TheFairLib\DB\Redis;
 
-class RedisCluster extends \RedisCluster
+class RedisClient extends \Redis
 {
     public function __construct($config)
     {
-        parent::__construct($config['cluster']['name'], $config['cluster']['seeds'], $config['timeout'], $config['read_timeout'], false, $config['auth']);
+        $this->connect($config['host'], $config['port'], $config['timeout'], null, 0, $config['read_timeout']);
+
+        // switch db
+        if (isset($config['db'])) {
+            $this->select($config['db']);
+        }
+
+        // use password
+        if (isset($config['auth'])) {
+            $this->auth($config['auth']);
+        }
     }
 
     /**

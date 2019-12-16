@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base.php
  *
@@ -10,6 +11,7 @@
 namespace TheFairLib\DB\Redis;
 
 use RedisClusterException;
+use TheFairLib\Db\Exception;
 
 abstract class Base
 {
@@ -38,7 +40,22 @@ abstract class Base
         $this->_init();
         $parameters = $this->config($name);
 
-        return new RedisCluster($parameters);
+        if (empty($parameters)) {
+            throw new Exception("DB config not found: {$name}");
+        }
+
+        // todo add memcache
+        switch ($parameters['driver']) {
+            case 'redis':
+                $instance = $parameters['cluster']['enable'] ? new RedisCluster($parameters) : new RedisClient($parameters);
+                break;
+
+            default:
+                throw new Exception("Unknown DB driver: {$name}/{$parameters['driver']}");
+                break;
+        }
+
+        return $instance;
     }
 
     abstract protected function _init();
