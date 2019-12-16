@@ -97,6 +97,7 @@ abstract class Base
             try {
                 foreach (self::$instance as $name => $redis) {
                     $redis->disconnect();
+                    unset(self::$instance[$name]);
                 }
             } catch (\Throwable $e) {
             } catch (\Exception $e) {
