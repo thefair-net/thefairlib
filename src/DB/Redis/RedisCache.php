@@ -100,7 +100,7 @@ class RedisCache extends CacheProvider
      */
     protected function doSave($id, $data, $lifeTime = 0)
     {
-        $data = unserialize($data);
+        $data = serialize($data);
         if ($lifeTime > 0) {
             return $this->redis->setex($id, $lifeTime, $data);
         }
