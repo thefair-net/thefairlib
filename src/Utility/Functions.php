@@ -12,7 +12,7 @@
  **/
 
 
-if (! function_exists('env')) {
+if (!function_exists('env')) {
     /**
      * Gets the value of an environment variable.
      *
@@ -24,7 +24,7 @@ if (! function_exists('env')) {
     {
         $value = getenv($key);
         if ($value === false) {
-            return $value instanceof \Closure ? $value() : $value;
+            return $default instanceof \Closure ? $default() : $default;
         }
         switch (strtolower($value)) {
             case 'true':
