@@ -24,7 +24,8 @@
         "phpunit/phpunit": "^7.0.0",
         "friendsofphp/php-cs-fixer": "^2.9",
         "ext-pdo": "*",
-        "ext-redis": "*"
+        "ext-redis": "*",
+        "vlucas/phpdotenv": "^3.1"
     },
     "require-dev": {
         "eaglewu/swoole-ide-helper": "dev-master"
@@ -32,7 +33,10 @@
     "autoload": {
         "psr-4": {
             "TheFairLib\\": "src/"
-        }
+        },
+        "files": [
+            "./Utility/Functions.php"
+        ]
     },
     "scripts": {
         "cs-fix": "php-cs-fixer fix $1"
