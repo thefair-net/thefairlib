@@ -21,12 +21,13 @@ class YunPian implements Sms
     const BATCH_SEND_URL = 'https://sms.yunpian.com/v2/sms/multi_send.json';
     const BATCH_SEND_URL_TPL = 'https://sms.yunpian.com/v2/sms/tpl_batch_send.json';
     const VOICE_MSG_URL = 'https://voice.yunpian.com/v2/voice/send.json';
+    const SHORTEN_URL = 'https://sms.yunpian.com/v2/short_url/shorten.json';
 
     private $_appKey;
 
     public function __construct($config = [])
     {
-        if(empty($config)){
+        if (empty($config)) {
             $config = Config::get_verify();
         }
 
@@ -36,7 +37,8 @@ class YunPian implements Sms
         $this->_appKey = $config['appKey']['YunPian']['key'];
     }
 
-    protected function _sendPostRequest($url, $postData = []){
+    protected function _sendPostRequest($url, $postData = [])
+    {
         $postData['apikey'] = $this->_appKey;
         $curl = new Curl();
         $curl->post($url, $postData);
@@ -53,10 +55,10 @@ class YunPian implements Sms
      */
     public function sendMessage($mobile, $msg)
     {
-        $data = array(
+        $data = [
             'mobile' => $mobile,
             'text' => $msg,
-        );
+        ];
         return $this->_sendPostRequest(self::SEND_URL, $data);
     }
 
@@ -71,11 +73,11 @@ class YunPian implements Sms
      */
     public function sendTplMessage($tpl, $mobile, $msg)
     {
-        $data = array(
+        $data = [
             'mobile' => $mobile,
             'tpl_id' => $tpl,
             'tpl_value' => $msg,
-        );
+        ];
         return $this->_sendPostRequest(self::SEND_URL_TPL, $data);
     }
 
@@ -88,58 +90,70 @@ class YunPian implements Sms
      */
     public function sendMessageList($mobileAndMsgList)
     {
-        if(empty($mobileAndMsgList) || !is_array($mobileAndMsgList)){
+        if (empty($mobileAndMsgList) || !is_array($mobileAndMsgList)) {
             throw new Exception('mobileAndMsgList error');
         }
-        if(count($mobileAndMsgList) > 1000){
+        if (count($mobileAndMsgList) > 1000) {
             throw new Exception('mobileAndMsgList is too many');
         }
         $mobileList = $msgList = [];
-        foreach($mobileAndMsgList as $item){
+        foreach ($mobileAndMsgList as $item) {
             $mobileList[] = $item['mobile'];
             $msgList[] = urlencode($item['msg']);
         }
 
-        $data = array(
+        $data = [
             'mobile' => implode(',', $mobileList),
             'text' => implode(',', $msgList),
-        );
+        ];
         return $this->_sendPostRequest(self::BATCH_SEND_URL, $data);
     }
 
-    public function sendTplMessageList($tpl, $mobileList, $msg){
-        if(empty($mobileList) || !is_array($mobileList)){
+    public function sendTplMessageList($tpl, $mobileList, $msg)
+    {
+        if (empty($mobileList) || !is_array($mobileList)) {
             throw new Exception('mobileAndMsgList error');
         }
-        if(count($mobileList) > 1000){
+        if (count($mobileList) > 1000) {
             throw new Exception('mobileAndMsgList is too many');
         }
         $mobile = implode(',', $mobileList);
-        $data = array(
+        $data = [
             'mobile' => $mobile,
             'tpl_id' => $tpl,
             'tpl_value' => $msg,
-        );
+        ];
         return $this->_sendPostRequest(self::BATCH_SEND_URL_TPL, $data);
     }
 
-    public function sendVoiceVerifyCode($mobile, $code){
-        $data = array(
+    public function sendVoiceVerifyCode($mobile, $code)
+    {
+        $data = [
             'mobile' => $mobile,
             'code' => $code,
-        );
+        ];
         return $this->_sendPostRequest(self::VOICE_MSG_URL, $data);
     }
 
-    public function sendVerifyCode($mobile, $code, $company){
+    public function sendVerifyCode($mobile, $code, $company)
+    {
         //触发语音短信的code
         $needSendVoiceSmsCodeList = ['10'];
 
-        $result = $this->sendTplMessage(1, $mobile, '#code#='.$code.'&#company#='.$company);
-        if(!empty($result['code']) && in_array($result['code'], $needSendVoiceSmsCodeList)){
+        $result = $this->sendTplMessage(1, $mobile, '#code#=' . $code . '&#company#=' . $company);
+        if (!empty($result['code']) && in_array($result['code'], $needSendVoiceSmsCodeList)) {
             $this->sendVoiceVerifyCode($mobile, $code);
         }
 
         return $result;
+    }
+
+    public function shortLen($http)
+    {
+        $data = [
+            'long_url' => $http,
+            'stat_duration' => 30,
+        ];
+        return $this->_sendPostRequest(self::SHORTEN_URL, $data);
     }
 }
