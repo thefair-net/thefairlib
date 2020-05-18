@@ -134,7 +134,7 @@ class Utility
     /**
      * 加密 说明文档 https://qydev.weixin.qq.com/wiki/index.php?title=%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%96%B9%E6%A1%88%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E
      *
-     * 不填充，需要手动填充
+     *
      * @param $data
      * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
@@ -153,7 +153,7 @@ class Utility
      * 解密 说明文档 https://qydev.weixin.qq.com/wiki/index.php?title=%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%96%B9%E6%A1%88%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E
      * https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Message_encryption_and_decryption_instructions.html
      *
-     * 不填充，需要手动填充
+     * 
      * @param $data
      * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
