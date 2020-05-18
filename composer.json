@@ -25,7 +25,8 @@
         "friendsofphp/php-cs-fixer": "^2.9",
         "ext-pdo": "*",
         "ext-redis": "*",
-        "vlucas/phpdotenv": "^3.1"
+        "vlucas/phpdotenv": "^3.1",
+        "ext-openssl": "*"
     },
     "require-dev": {
         "eaglewu/swoole-ide-helper": "dev-master"

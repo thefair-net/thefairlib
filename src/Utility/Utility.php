@@ -40,7 +40,7 @@ class Utility
         array_shift($funcAry);
         $key = implode('_', $funcAry);
 
-        if (!in_array($type, array('set', 'get')) || $key == '') {
+        if (!in_array($type, ['set', 'get']) || $key == '') {
             return false;
         }
 
@@ -106,7 +106,7 @@ class Utility
             $key = array_shift($keys);
 
             if (!isset($array[$key]) || !is_array($array[$key])) {
-                $array[$key] = array();
+                $array[$key] = [];
             }
 
             $array =& $array[$key];
@@ -132,40 +132,41 @@ class Utility
     }
 
     /**
-     * 加密
+     * 加密 说明文档 https://qydev.weixin.qq.com/wiki/index.php?title=%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%96%B9%E6%A1%88%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E
      *
+     * 不填充，需要手动填充
      * @param $data
-     * @param $key
-     * @param $method // 默认为 ECB
-     * @param string $iv //为了向下兼容给一个默认的iv # CBC 需要 iv 初始化向量 https://www.php.net/manual/zh/function.openssl-decrypt.php
+     * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    public static function Encrypt($data, $key, $method = 'AES-128-ECB', $iv = '')
+    public static function Encrypt($data, $aesKey)
     {
-        $aesIV = !empty($iv) ? base64_decode($iv) : '';
-
-        $result = openssl_encrypt($data, $method, $key, OPENSSL_RAW_DATA, $aesIV);
-
-        return base64_encode($result);
+        $aesKey = base64_decode($aesKey . '=', true);
+        return base64_encode(AES::encrypt(
+            $data,
+            $aesKey,
+            substr($aesKey, 0, 16),
+            OPENSSL_NO_PADDING
+        ));
     }
 
     /**
-     * 解密
+     * 解密 说明文档 https://qydev.weixin.qq.com/wiki/index.php?title=%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%96%B9%E6%A1%88%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E
      *
+     * 不填充，需要手动填充
      * @param $data
-     * @param $method // 默认为 ECB
-     * @param $key
-     * @param string $iv # CBC 需要 iv 初始化向量 https://www.php.net/manual/zh/function.openssl-decrypt.php
+     * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    public static function Decrypt($data, $key, $method = 'AES-128-ECB', $iv = '')
+    public static function Decrypt($data, $aesKey)
     {
-
-        $aesIV = !empty($iv) ? base64_decode($iv) : '';
-
-        $aesCipher = base64_decode($data);
-
-        return openssl_decrypt($aesCipher, $method, $key, OPENSSL_RAW_DATA, $aesIV);
+        $aesKey = base64_decode($aesKey . '=', true);
+        return AES::decrypt(
+            base64_decode($data, true),
+            $aesKey,
+            substr($aesKey, 0, 16),
+            OPENSSL_NO_PADDING
+        );
     }
 
     /**
@@ -211,7 +212,7 @@ class Utility
                 $value = isset($super[$var]) ? sprintf('%.0f', $super[$var]) : 0;
                 break;
             case 'array':
-                $value = isset($super[$var]) ? self::dfsArray($super[$var]) : array();
+                $value = isset($super[$var]) ? self::dfsArray($super[$var]) : [];
                 break;
             case 'original':
                 $value = isset($super[$var]) ? $super[$var] : '';
@@ -234,7 +235,7 @@ class Utility
      */
     public static function dfsArray($arr)
     {
-        $ret = array();
+        $ret = [];
         if (!empty($arr) && is_array($arr)) {
             foreach ($arr as $k => $v) {
                 if (is_array($v)) {
@@ -340,15 +341,15 @@ class Utility
      */
     public static function getResolution($key = '')
     {
-        $resolution = array();
+        $resolution = [];
         $cookie = self::getGpc('resolution', 'C');
         if (!empty($cookie)) {
             $tmpResolution = explode("*", $cookie);
-            $resolution = array(
+            $resolution = [
                 'resolution' => $cookie,
                 'width' => $tmpResolution[0],
                 'height' => $tmpResolution[1],
-            );
+            ];
         }
 
         return !empty($key) ? (!empty($resolution[$key]) ? $resolution[$key] : null) : $resolution;
@@ -368,9 +369,9 @@ class Utility
         $strlen = strlen($input);
         if ($strlen <= $length) return $input;
 
-        $selfclosing = array('br', 'img', 'hr', 'base', 'meta', 'area', 'input'); // 不考虑注释<!--
+        $selfclosing = ['br', 'img', 'hr', 'base', 'meta', 'area', 'input']; // 不考虑注释<!--
         $pos = $width = 0;
-        $tag_stack = array();
+        $tag_stack = [];
         while ($pos < $strlen && $width < $length - 0.5) {
             $prechar = ord($input{$pos});
             if ($prechar < 128) { //单字节
@@ -523,8 +524,8 @@ class Utility
      */
     public static function trim($str)
     {
-        $search = array(" ", "　", "\n", "\r", "\t");
-        $replace = array("", "", "", "", "");
+        $search = [" ", "　", "\n", "\r", "\t"];
+        $replace = ["", "", "", "", ""];
         return str_replace($search, $replace, $str);
     }
 
