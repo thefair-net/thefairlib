@@ -1,0 +1,96 @@
+{
+    "name": "thefair/thefairlib",
+    "type": "library",
+    "description": "The PHP library for TheFair",
+    "keywords": [
+        "thefair"
+    ],
+    "homepage": "https://github.com/thefair-net/thefairlib",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Zhang Han",
+            "email": "zhanghan@thefair.net.cn"
+        },
+        {
+            "name": "Liu mingzhi",
+            "email": "liumingzhi@thefair.net.cn"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "ext-swoole": ">=4.4",
+        "ext-redis": "*",
+        "yurunsoft/phpmailer-swoole": "~1.0",
+        "hyperf/cache": "^1.1",
+        "hyperf/command": "~1.1.0",
+        "hyperf/config": "~1.1.0",
+        "hyperf/contract": "~1.1.0",
+        "hyperf/database": "~1.1.0",
+        "hyperf/db-connection": "~1.1.0",
+        "hyperf/devtool": "~1.1.0",
+        "hyperf/di": "~1.1.0",
+        "hyperf/dispatcher": "~1.1.0",
+        "hyperf/event": "^1.1",
+        "hyperf/exception-handler": "~1.1.0",
+        "hyperf/framework": "~1.1.0",
+        "hyperf/guzzle": "~1.1.0",
+        "hyperf/http-server": "~1.1.0",
+        "hyperf/logger": "~1.1.0",
+        "hyperf/memory": "~1.1.0",
+        "hyperf/paginator": "^1.1",
+        "hyperf/pool": "~1.1.0",
+        "hyperf/process": "~1.1.0",
+        "hyperf/redis": "~1.1.0",
+        "hyperf/utils": "~1.1.0",
+        "hyperf/json-rpc": "~1.1.0",
+        "hyperf/rpc": "~1.1.0",
+        "hyperf/rpc-client": "~1.1.0",
+        "hyperf/rpc-server": "~1.1.0",
+        "hyperf/constants": "~1.1.0",
+        "hyperf/async-queue": "^1.1",
+        "hyperf/model-cache": "^1.1",
+        "lmz/hyperf-config": "~1.2",
+        "hyperf/task": "^1.1",
+        "hyperf/translation": "^1.1",
+        "hyperf/validation": "^1.1",
+        "ext-json": "*",
+        "hyperf/rate-limit": "^1.1",
+        "hyperf/retry": "^1.1",
+        "ext-redis": "*",
+        "hyperf/crontab": "^1.1"
+    },
+    "require-dev": {
+        "swoft/swoole-ide-helper": "^4.2",
+        "phpmd/phpmd": "^2.6",
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "mockery/mockery": "^1.0",
+        "doctrine/common": "^2.9",
+        "phpstan/phpstan": "^0.11.2",
+        "hyperf/testing": "~1.1.0",
+        "hyperf/swagger": "^1.1",
+        "hyperf/snowflake": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "TheFairLib\\": "src/"
+        },
+        "files": [
+            "src/Library/Utils/Utility.php"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.1-dev"
+        },
+        "hyperf": {
+            "config": "TheFairLib\\ConfigProvider"
+        }
+    },
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix $1",
+        "post-autoload-dump": [
+            "php bin/hyperf.php vendor:publish lmz/hyperf-lib"
+        ]
+    }
+}
