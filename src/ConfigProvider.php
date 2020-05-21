@@ -119,10 +119,10 @@ class ConfigProvider
                     'destination' => BASE_PATH . '/.env.example',
                 ],
                 [
-                    'id' => 'watch',
+                    'id' => 'dev_start',
                     'description' => 'The message bag for watch.',
-                    'source' => __DIR__ . '/../publish/bin/watch.php',
-                    'destination' => BASE_PATH . '/watch.php',
+                    'source' => __DIR__ . '/../publish/bin/dev_start.php',
+                    'destination' => BASE_PATH . '/dev_start.php',
                 ],
             ],
         ];

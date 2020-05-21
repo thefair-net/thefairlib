@@ -86,11 +86,5 @@
         "hyperf": {
             "config": "TheFairLib\\ConfigProvider"
         }
-    },
-    "scripts": {
-        "cs-fix": "php-cs-fixer fix $1",
-        "post-autoload-dump": [
-            "php bin/hyperf.php vendor:publish lmz/hyperf-lib"
-        ]
     }
 }
