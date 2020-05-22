@@ -42,7 +42,7 @@ class DbQuery
         if ($this->getStatus($name)) {//同一个请求中，如果已经验证一次之后，就跳过
             return;
         }
-        if (empty($bindings) && preg_match('/^(select|delete|update)/i', $sql)) {
+        if (empty($bindings) && preg_match('/^(select|delete|update|insert)/i', $sql)) {
             Logger::get()->warning(sprintf('【系统预警】风险 sql: %s, connection: %s,', $sql, $connectionName));
             $this->setStatus($name);
         }

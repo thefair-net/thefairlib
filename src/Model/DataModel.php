@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace TheFairLib\Model;
 
+use Hyperf\Database\Model\Builder;
 use TheFairLib\Contract\LockInterface;
 use TheFairLib\Exception\EmptyException;
 use TheFairLib\Exception\ServiceException;
@@ -24,6 +25,15 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Redis;
 use Throwable;
 
+/**
+ * Class DataModel
+ * @package TheFairLib\Model
+ *
+ * @method static Builder create(array $attributes)
+ * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
+ * @method static Builder firstOrCreate(array $attributes, array $values = [])
+ * @method static Builder find($id, $columns = ['*'])
+ */
 abstract class DataModel extends Model
 {
     const SERVER_NAME = 'default';
@@ -41,6 +51,13 @@ abstract class DataModel extends Model
     protected $lock;
 
     /**
+     * 是否自动维护时间戳
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+    /**
      * 触发事件.
      *
      * @Inject
@@ -48,15 +65,15 @@ abstract class DataModel extends Model
      */
     protected $eventDispatcher;
 
-    public function setTable($table)
-    {
-        return Context::set(__CLASS__ . ':table_name', $table);
-    }
-
-    public function getTable()
-    {
-        return Context::get(__CLASS__ . ':table_name');
-    }
+//    public function setTable($table)
+//    {
+//        return Context::set(__CLASS__ . ':table_name', $table);
+//    }
+//
+//    public function getTable()
+//    {
+//        return Context::get(__CLASS__ . ':table_name');
+//    }
 
     /**
      * 获取数据库uuid.
