@@ -23,7 +23,7 @@
         "ext-redis": "*",
         "yurunsoft/phpmailer-swoole": "~1.0",
         "hyperf/cache": "^1.1",
-        "hyperf/command": "~1.1.0",
+        "hyperf/command": "^1.1",
         "hyperf/config": "~1.1.0",
         "hyperf/contract": "~1.1.0",
         "hyperf/database": "~1.1.0",
