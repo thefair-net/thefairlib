@@ -79,6 +79,11 @@ class ModelOption
     protected $shardingNum = 0;
 
     /**
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
+    /**
      * @var int
      */
     protected $propertyCase = self::PROPERTY_SNAKE_CASE;
@@ -228,5 +233,16 @@ class ModelOption
     public function getShardingNum(): int
     {
         return $this->shardingNum;
+    }
+
+    public function setKeyName(string $primaryKey): self
+    {
+        $this->primaryKey = $primaryKey;
+        return $this;
+    }
+
+    public function getKeyName(): string
+    {
+        return $this->primaryKey;
     }
 }

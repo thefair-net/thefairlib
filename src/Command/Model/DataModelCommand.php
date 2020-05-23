@@ -96,8 +96,8 @@ class DataModelCommand extends Command
     {
         $table = $this->input->getArgument('table');
         $pool = $this->input->getOption('pool');
-        $shardingNum = (int)$this->input->getOption('sharding-num');
-
+        $shardingNum = (int)$this->output->ask("sharding number",0);
+        $primaryKey = $this->output->ask("primary key",'id');
         $option = new ModelOption();
         $option->setPool($pool)
             ->setPath($this->getOption('path', 'commands.gen:model.path', $pool, 'app/Model'))
@@ -111,7 +111,8 @@ class DataModelCommand extends Command
             ->setWithComments($this->getOption('with-comments', 'commands.gen:model.with_comments', $pool, false))
             ->setVisitors($this->getOption('visitors', 'commands.gen:model.visitors', $pool, []))
             ->setPropertyCase($this->getOption('property-case', 'commands.gen:model.property_case', $pool))
-            ->setShardingNum($shardingNum ?? 0);
+            ->setShardingNum($shardingNum ?? 0)
+            ->setKeyName($primaryKey ?? 'id');
 
         if ($table) {
             $this->createModel($table, $option);
@@ -135,7 +136,8 @@ class DataModelCommand extends Command
         $this->addOption('with-comments', null, InputOption::VALUE_NONE, 'Whether generate the property comments for model.');
         $this->addOption('visitors', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Custom visitors for ast traverser.');
         $this->addOption('property-case', null, InputOption::VALUE_OPTIONAL, 'Which property case you want use, 0: snake case, 1: camel case.');
-        $this->addOption('sharding-num', null, InputOption::VALUE_OPTIONAL, ' table sharding num : user_info_10');
+//        $this->addOption('sharding-num', null, InputOption::VALUE_OPTIONAL, ' table sharding num : user_info_10');
+//        $this->addOption('primary-key', 'PK', InputOption::VALUE_OPTIONAL, ' primary key for the model', 'id');
     }
 
     protected function getSchemaBuilder(string $poolName): MySqlBuilder
@@ -179,7 +181,6 @@ class DataModelCommand extends Command
             $tmpTable = sprintf("%s_0", $table);
         }
         $columns = $this->formatColumns($builder->getColumnTypeListing($tmpTable));
-
         $project = new Project();
         $class = $option->getTableMapping()[$table] ?? Str::studly(Str::singular($table));
         $class = $project->namespace($option->getPath()) . $class;
@@ -282,6 +283,7 @@ class DataModelCommand extends Command
             ->replaceUses($stub, $option->getUses())
             ->replaceClass($stub, $name)
             ->replaceShardingNum($stub, $option->getShardingNum())
+            ->replacePrimaryKey($stub, $option->getKeyName())
             ->replaceTable($stub, $table);
     }
 
@@ -339,6 +341,17 @@ class DataModelCommand extends Command
         $stub = str_replace(
             ['%SHARDING_NUM%'],
             [$shardingNum],
+            $stub
+        );
+
+        return $this;
+    }
+
+    protected function replacePrimaryKey(string &$stub, string $primaryKey): self
+    {
+        $stub = str_replace(
+            ['%PRIMARY_KEY%'],
+            [$primaryKey],
             $stub
         );
 

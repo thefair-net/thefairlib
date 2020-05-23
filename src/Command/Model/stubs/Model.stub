@@ -30,6 +30,13 @@ class %CLASS% extends %INHERITANCE%
     protected $shardingNum = %SHARDING_NUM%;
 
     /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
+    protected $primaryKey = '%PRIMARY_KEY%';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
