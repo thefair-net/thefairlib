@@ -32,6 +32,7 @@ use Throwable;
  * @method static Builder create(array $attributes)
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static Builder firstOrCreate(array $attributes, array $values = [])
+ * @method static Builder updateOrCreate(array $attributes, array $values = [])
  * @method static Builder find($id, $columns = ['*'])
  */
 abstract class DataModel extends Model
@@ -41,6 +42,8 @@ abstract class DataModel extends Model
     protected $connection = 'default';
 
     protected $shardingNum = 0;
+
+    protected $shardingKey = '';
 
     /**
      * 锁，目前是使用 redis 现实.
@@ -65,15 +68,33 @@ abstract class DataModel extends Model
      */
     protected $eventDispatcher;
 
-//    public function setTable($table)
-//    {
-//        return Context::set(__CLASS__ . ':table_name', $table);
-//    }
-//
-//    public function getTable()
-//    {
-//        return Context::get(__CLASS__ . ':table_name');
-//    }
+    public function setTable($table)
+    {
+        $this->table = $table;
+        if ($this->shardingNum > 0) {
+            $this->table = Context::set(__CLASS__ . ':table_name', $table);
+        }
+    }
+
+    public function getTable()
+    {
+        $table = $this->table;
+        if ($this->shardingNum > 0) {
+            $table = Context::get(__CLASS__ . ':table_name');
+        }
+        return $table;
+    }
+
+    /**
+     * sharding
+     *
+     * @param string|int
+     * @return int
+     */
+    protected function getShardingId($shardingKey): int
+    {
+        return intval(crc32(md5($shardingKey)));
+    }
 
     /**
      * 获取数据库uuid.
@@ -124,8 +145,8 @@ abstract class DataModel extends Model
     protected function getPrefix($type, $dataType)
     {
         $productPrefix = '';
-        if (defined('PRODUCT_NAME')) {
-            $productPrefix = PRODUCT_NAME . '#';
+        if (env('PRODUCT_NAME')) {
+            $productPrefix = env('PRODUCT_NAME') . '#';
         }
         if (!in_array($type, ['Cache', 'Storage']) || !in_array($dataType, ['key', 'hash', 'set', 'zset', 'list', 'string', 'geo'])) {
             throw new ServiceException('Redis cache prefix config error!');
@@ -133,8 +154,11 @@ abstract class DataModel extends Model
         return $productPrefix . $type . '#' . env('PHASE', 'prod') . '#' . $dataType . '#';
     }
 
-    private function getShardingTableNum($shardingKey)
+    private function getShardingTableNum($shardingKey): int
     {
+        if (!is_int($shardingKey)) {
+            $shardingKey = $this->getShardingId($shardingKey);
+        }
         return (int)$shardingKey % $this->shardingNum;
     }
 
