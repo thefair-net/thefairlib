@@ -198,7 +198,9 @@ if (!function_exists('rd_debug')) {
      */
     function rd_debug($data)
     {
-        print_r(['data' => $data]);
+        if (env('PHASE', 'rd') == 'rd') {
+            print_r(['data' => $data]);
+        }
     }
 }
 

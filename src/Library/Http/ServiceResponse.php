@@ -44,7 +44,7 @@ class ServiceResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function showResult($result, $msg = '', $code = 0, $action = 'toast')
+    final public function showResult(array $result, $msg = '', $code = 0, $action = 'toast')
     {
         $this->result = $result;
         $this->msg = $msg;
@@ -77,7 +77,7 @@ class ServiceResponse implements ResponseInterface
                 'text' => $this->msg,
                 'action' => $this->action,
             ],
-            'result' => $this->result,
+            'result' => (object)$this->result,
         ];
     }
 }

@@ -25,7 +25,7 @@ interface ResponseInterface
      * @param string $action
      * @return mixed
      */
-    public function showResult($result, string $msg = '', int $code = 0, $action = 'toast');
+    public function showResult(array $result, string $msg = '', int $code = 0, $action = 'toast');
 
     /**
      * 失败返回.
