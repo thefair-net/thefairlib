@@ -25,6 +25,8 @@ class PrimaryKeyBuilder
 
     protected $parameters;
 
+    protected $class;
+
     protected $methods = [
         'find' => [
             'primaryKey' => 'string',
@@ -38,13 +40,17 @@ class PrimaryKeyBuilder
         'firstOrCreate' => [
             'primaryKey' => 'array',
         ],
+        'destroy' => [
+            'primaryKey' => 'string',
+        ],
     ];
 
-    public function __construct($method, $parameters, $primaryKey)
+    public function __construct($method, $parameters, $primaryKey, $class = null)
     {
         $this->method = $method;
         $this->parameters = $parameters;
         $this->primaryKey = $primaryKey;
+        $this->class = $class;
     }
 
     protected function find($id, $columns = ['*'])
@@ -79,6 +85,11 @@ class PrimaryKeyBuilder
             throw new ServiceException('目前不支持批量删除');
         }
         return $id;
+    }
+
+    public function save(array $options = [])
+    {
+        return $this->class->{$this->primaryKey} ?? null;
     }
 
     public function __call($method, $parameters)

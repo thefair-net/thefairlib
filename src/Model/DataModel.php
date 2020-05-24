@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace TheFairLib\Model;
 
-use Hyperf\Database\Exception\QueryException;
 use Hyperf\Database\Model\Builder;
 use TheFairLib\Contract\LockInterface;
 use TheFairLib\Exception\EmptyException;
@@ -243,23 +242,7 @@ abstract class DataModel extends Model
     {
         rd_debug([$method, $parameters]);
         try {
-            if ($this->isShardingNum()) {
-                /**
-                 * 通过主键重写 sharding key
-                 *
-                 * @var PrimaryKeyBuilder $primaryKeyBuilder
-                 */
-                $primaryKeyBuilder = make(PrimaryKeyBuilder::class, [$method, $parameters, $this->primaryKey]);
-                if ($primaryKeyBuilder->isMethod()) {//判断是否重写了对应的方法
-                    $id = $primaryKeyBuilder->getId();
-                    if (empty($id)) {//主键不能为空，为 0 也不行
-                        throw new QueryException('sharding key error');
-                    }
-                    $this->table = $this->getTableName($id);
-                    $this->setTable($this->table);
-                    $this->setKeyName($this->primaryKey);
-                }
-            }
+            $this->rewriteTableName($method, $parameters);
             return parent::__call($method, $parameters);
         } catch (\Throwable $e) {
             throw $e;
@@ -268,7 +251,8 @@ abstract class DataModel extends Model
 
     public static function __callStatic($method, $parameters)
     {
-        if ($class = (new static()) && $class->isShardingNum()) {
+        $class = new static();
+        if ($class->isShardingNum()) {
             /**
              * 通过主键重写 sharding key
              *
@@ -284,14 +268,41 @@ abstract class DataModel extends Model
 
     public static function destroy($id)
     {
-        if ($class = (new static()) && $class->isShardingNum()) {
-            if (is_array($id)) {
-                throw new ServiceException('目前不支持批量删除');
-            }
-            $class->table = $class->getTableName($id);
-            $class->setTable($class->table);
-            $class->setKeyName($class->primaryKey);
-        }
+        (new static())->rewriteTableName('destroy', [$id]);
         return parent::destroy($id);
+    }
+
+    public function save(array $options = []): bool
+    {
+        $id = $this->{$this->primaryKey} ?? null;
+        if (empty($id)) {//主键不能为空，为 0 也不行
+            throw new ServiceException('sharding key error', ['class_nane' => get_class($this)]);
+        }
+        $this->table = $this->getTableName($id);
+        $this->setTable($this->table);
+        $this->setKeyName($this->primaryKey);
+        return parent::save($options);
+    }
+
+    private function rewriteTableName($method, $parameters)
+    {
+        rd_debug([get_class($this), $this->{$this->primaryKey}, __FUNCTION__, $method, $parameters]);
+        if ($this->isShardingNum()) {
+            /**
+             * 通过主键重写 sharding key
+             *
+             * @var PrimaryKeyBuilder $primaryKeyBuilder
+             */
+            $primaryKeyBuilder = make(PrimaryKeyBuilder::class, [$method, $parameters, $this->primaryKey]);
+            if ($primaryKeyBuilder->isMethod()) {//判断是否重写了对应的方法
+                $id = $primaryKeyBuilder->getId();
+                if (empty($id)) {//主键不能为空，为 0 也不行
+                    throw new ServiceException('sharding key error', ['class_nane' => get_class($this)]);
+                }
+                $this->table = $this->getTableName($id);
+                $this->setTable($this->table);
+                $this->setKeyName($this->primaryKey);
+            }
+        }
     }
 }
