@@ -20,7 +20,7 @@ class Controller extends Base
      * @var Page
      */
     protected static $_responseObj = false;
-    protected function init(){
+    public function init(){
         if(self::$_responseObj === false){
             self::$_responseObj = new Page(new \stdClass());
         }

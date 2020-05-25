@@ -18,7 +18,7 @@ class Controller extends Base
      * @var Api
      */
     protected static $_responseObj = false;
-    protected function init(){
+    public function init(){
         if(self::$_responseObj === false){
             self::$_responseObj = new Api(new \stdClass());
         }

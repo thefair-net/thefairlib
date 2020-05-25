@@ -14,7 +14,7 @@ abstract class ErrorBase extends Base
     /**
      * 继承base中的初始化处理
      */
-    protected function init(){
+    public function init(){
         //@todo
     }
 
