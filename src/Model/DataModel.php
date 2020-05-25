@@ -97,6 +97,17 @@ abstract class DataModel extends Model
         return $table;
     }
 
+    protected function originalTableName($tableName)
+    {
+        $name = __CLASS__ . ':original_table_name';
+        if (Context::has($name)) {
+            $tableName = Context::get($name);
+        } else {
+            Context::set($name, $tableName);
+        }
+        return $tableName;
+    }
+
     /**
      * 底层方法重写
      *
@@ -162,7 +173,7 @@ abstract class DataModel extends Model
      */
     protected function getTableName($shardingKey = null, $tableName = '')
     {
-        $tableName = !empty($tableName) ?: $this->table;
+        $tableName = $this->originalTableName($tableName ?: $this->table);
         if (empty($tableName) || ($shardingKey !== null && empty($this->shardingNum))) {
             throw new EmptyException('M Conf Err');
         }
@@ -272,15 +283,23 @@ abstract class DataModel extends Model
         return parent::destroy($id);
     }
 
+    /**
+     * 分表时，保存对象必须使用主键
+     *
+     * @param array $options
+     * @return bool
+     */
     public function save(array $options = []): bool
     {
-        $id = $this->{$this->primaryKey} ?? null;
-        if (empty($id)) {//主键不能为空，为 0 也不行
-            throw new ServiceException('sharding key error', ['class_nane' => get_class($this) . '::save']);
+        if ($this->isShardingNum()) {
+            $id = $this->{$this->primaryKey} ?? null;
+            if (empty($id)) {//主键不能为空，为 0 也不行
+                throw new ServiceException('sharding key error', ['class_nane' => get_class($this) . '::save']);
+            }
+            $this->table = $this->getTableName($id);
+            $this->setTable($this->table);
+            $this->setKeyName($this->primaryKey);
         }
-        $this->table = $this->getTableName($id);
-        $this->setTable($this->table);
-        $this->setKeyName($this->primaryKey);
         return parent::save($options);
     }
 
@@ -299,8 +318,7 @@ abstract class DataModel extends Model
                 if (empty($id)) {//主键不能为空，为 0 也不行
                     throw new ServiceException('sharding key error', ['class_nane' => get_class($this) . '::' . $method]);
                 }
-                $this->table = $this->getTableName($id);
-                $this->setTable($this->table);
+                $this->setTable($this->getTableName($id));
                 $this->setKeyName($this->primaryKey);
             }
         }

@@ -124,6 +124,18 @@ class ConfigProvider
                     'source' => __DIR__ . '/../publish/bin/dev_start.php',
                     'destination' => BASE_PATH . '/dev_start.php',
                 ],
+                [
+                    'id' => 'doc_test',
+                    'description' => 'The message bag for test.',
+                    'source' => __DIR__ . '/../publish/test/Cases/DocTest.php',
+                    'destination' => BASE_PATH . '/test/Cases/DocTest.php',
+                ],
+                [
+                    'id' => 'index_test',
+                    'description' => 'The message bag for test.',
+                    'source' => __DIR__ . '/../publish/test/Cases/ExampleTest.php',
+                    'destination' => BASE_PATH . '/test/Cases/ExampleTest.php',
+                ],
             ],
         ];
     }
