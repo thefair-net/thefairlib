@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TheFairLib\Service\Swoole\JsonRpc\RpcClient;
+namespace TheFairLib\Service\JsonRpc\RpcClient;
 
 use TheFairLib\Exception\Service\ServiceException;
 use TheFairLib\Service\Swoole\Client\TCP;
-use TheFairLib\Service\Swoole\JsonRpc\DataFormatter;
-use TheFairLib\Service\Swoole\JsonRpc\JsonLengthPacker;
+use TheFairLib\Service\JsonRpc\DataFormatter;
+use TheFairLib\Service\JsonRpc\JsonLengthPacker;
 use Throwable;
 
 class Client extends TCP
@@ -23,13 +23,18 @@ class Client extends TCP
      */
     public function call($url, $params = [], callable $callback = NULL)
     {
+
         try {
+            if (isset($params['auth'])) {
+                throw new ServiceException('auth 关键字已经被使用');
+            }
             $requestData = array_merge_recursive($params, [
                 'auth' => [
                     'app_key' => $this->_config['app_key'],
                     'app_secret' => $this->_config['app_secret'],
                 ],
             ]);
+
             $dataFormatter = DataFormatter::instance();
             $data = $dataFormatter->formatRequest([
                 $url,
@@ -38,7 +43,6 @@ class Client extends TCP
             ]);
             $packer = JsonLengthPacker::instance();
             $response = $packer->unpack((string)$this->send($packer->pack($data)));
-
             if (array_key_exists('result', $response)) {
                 return $response['result'];
             }
@@ -54,5 +58,10 @@ class Client extends TCP
         } catch (Throwable $e) {
             throw new ServiceException($e->getMessage(), $e->getTraceAsString(), $e->getCode());
         }
+    }
+
+    protected function _getClientType()
+    {
+        return 'rpc';
     }
 }

@@ -7,7 +7,7 @@ class TCP extends Base
 {
     public function send($data, callable $callback = NULL)
     {
-        $client = new \swoole_client(SWOOLE_SOCK_TCP, $this->_getSyncType($this->_syncType));
+        $client = new \Swoole\Client(SWOOLE_SOCK_TCP, $this->_getSyncType($this->_syncType));
         $client->set([
             'open_length_check' => true,
             'package_length_type' => 'N',

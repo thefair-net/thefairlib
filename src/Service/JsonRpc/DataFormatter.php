@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-namespace TheFairLib\Service\Swoole\JsonRpc;
+namespace TheFairLib\Service\JsonRpc;
 
 
 use Throwable;
