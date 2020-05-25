@@ -276,7 +276,7 @@ abstract class DataModel extends Model
     {
         $id = $this->{$this->primaryKey} ?? null;
         if (empty($id)) {//主键不能为空，为 0 也不行
-            throw new ServiceException('sharding key error', ['class_nane' => get_class($this)]);
+            throw new ServiceException('sharding key error', ['class_nane' => get_class($this) . '::save']);
         }
         $this->table = $this->getTableName($id);
         $this->setTable($this->table);
@@ -297,7 +297,7 @@ abstract class DataModel extends Model
             if ($primaryKeyBuilder->isMethod()) {//判断是否重写了对应的方法
                 $id = $primaryKeyBuilder->getId();
                 if (empty($id)) {//主键不能为空，为 0 也不行
-                    throw new ServiceException('sharding key error', ['class_nane' => get_class($this)]);
+                    throw new ServiceException('sharding key error', ['class_nane' => get_class($this) . '::' . $method]);
                 }
                 $this->table = $this->getTableName($id);
                 $this->setTable($this->table);

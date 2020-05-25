@@ -96,8 +96,12 @@ class DataModelCommand extends Command
     {
         $table = $this->input->getArgument('table');
         $pool = $this->input->getOption('pool');
-        $shardingNum = (int)$this->output->ask("sharding number",0);
-        $primaryKey = $this->output->ask("primary key",'id');
+        $shardingNum = (int)$this->output->ask("sharding number", 0);
+        $primaryKey = $this->output->ask("primary key", 'id');
+        if ($pool == 'default') {
+            $poolName = $this->config->get('databases');
+            $pool = $this->output->choice('pool name', array_keys($poolName));
+        }
         $option = new ModelOption();
         $option->setPool($pool)
             ->setPath($this->getOption('path', 'commands.gen:model.path', $pool, 'app/Model'))
