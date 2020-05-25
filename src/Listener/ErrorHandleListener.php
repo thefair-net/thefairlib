@@ -48,6 +48,7 @@ class ErrorHandleListener implements ListenerInterface
                 Logger::get()->debug("mac: " . $message);
             }
             if (error_reporting() & $level) {
+                Logger::get()->error(encode($errors));
                 throw new ErrorException($message, 0, $level, $file, $line);
             }
         });
@@ -62,7 +63,7 @@ class ErrorHandleListener implements ListenerInterface
             ];
             rd_debug([$errors, __CLASS__, posix_getpid()]);
 
-            Logger::get()->error(implode(" | ", $errors));
+            Logger::get()->error(encode($errors));
             throw $e;
         });
         register_shutdown_function(function () {
@@ -88,6 +89,7 @@ class ErrorHandleListener implements ListenerInterface
                         'cid' => Coroutine::id(),
                         'c_pid' => Coroutine::parentId(),
                     ];
+                    Logger::get()->error(encode($error));
                     $response->withStatus(ServerCode::SERVER_ERROR)->withBody(new SwooleStream($error['message']))->send(true);
                     break;
             }

@@ -94,7 +94,6 @@ class DocTest extends HttpTestCase
     private function methodTest($className, $method)
     {
         $keyName = "{$className}::{$method}";
-        printf("Test Method '%s::%s' started.\n", $className, $method);
         if (isset(self::$doc[$keyName]) || in_array($method, [
                 'showSuccess',
                 'showError',
@@ -104,6 +103,7 @@ class DocTest extends HttpTestCase
             ])) {
             return;
         }
+        printf("Test Method '%s::%s' started.\n", $className, $method);
         $classDoc = AnnotationCollector::getClassMethodAnnotation($className, $method);
 
 //        if (isset($classDoc[Doc::class]) && $classDoc[Doc::class] instanceof Doc) {
