@@ -16,7 +16,6 @@ use HyperfTest\HttpTestCase;
 
 /**
  * @internal
- * @coversNothing
  */
 class ExampleTest extends HttpTestCase
 {

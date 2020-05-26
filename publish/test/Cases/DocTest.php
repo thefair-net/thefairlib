@@ -14,7 +14,6 @@ use TheFairLib\Annotation\Doc;
 
 /**
  * @internal
- * @coversNothing
  */
 class DocTest extends HttpTestCase
 {
