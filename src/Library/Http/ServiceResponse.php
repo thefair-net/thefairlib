@@ -77,7 +77,7 @@ class ServiceResponse implements ResponseInterface
                 'text' => $this->msg,
                 'action' => $this->action,
             ],
-            'result' => (object)$this->result,
+            'result' => $this->result,
         ];
     }
 }
