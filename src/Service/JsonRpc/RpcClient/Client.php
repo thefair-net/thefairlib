@@ -44,6 +44,10 @@ class Client extends TCP
             $packer = JsonLengthPacker::instance();
             $response = $packer->unpack((string)$this->send($packer->pack($data)));
             if (array_key_exists('result', $response)) {
+                $result = $response['result'];
+                if (!empty($result['code'])) {
+                    throw new ServiceException($result['message']['text'] ?? '', $result['result'] ?? [], $result['code']);
+                }
                 return $response['result'];
             }
 
