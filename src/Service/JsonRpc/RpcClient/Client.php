@@ -49,14 +49,14 @@ class Client extends TCP
 
             if ($code = $response['error']['code'] ?? null) {
                 $error = $response['error'];
-                throw new ServiceException($error['message'] ?? '', $error['data'] ?? [], $code);
+                throw new ServiceException($error['message'] ?? '', $error['data'] ?? [], $error['data']['code'] ?? $code);
             }
 
             throw new ServiceException('Invalid response.');
         } catch (ServiceException $e) {
-            throw new ServiceException($e->getMessage(), $e->getExtData(), $e->getCode());
+            throw new ServiceException($e->getMessage(), $e->getExtData(), $e->getExtCode());
         } catch (Throwable $e) {
-            throw new ServiceException($e->getMessage(), $e->getTraceAsString(), $e->getCode());
+            throw new ServiceException($e->getMessage(), $e->getTraceAsString(), $e->getExtCode());
         }
     }
 
