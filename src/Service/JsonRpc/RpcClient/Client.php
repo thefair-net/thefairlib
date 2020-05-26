@@ -60,7 +60,7 @@ class Client extends TCP
         } catch (ServiceException $e) {
             throw new ServiceException($e->getMessage(), $e->getExtData(), $e->getExtCode());
         } catch (Throwable $e) {
-            throw new ServiceException($e->getMessage(), $e->getTraceAsString(), $e->getExtCode());
+            throw new ServiceException($e->getMessage(), [], $e->getCode());
         }
     }
 
