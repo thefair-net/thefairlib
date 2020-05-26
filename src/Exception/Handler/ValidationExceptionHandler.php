@@ -36,7 +36,10 @@ class ValidationExceptionHandler extends \Hyperf\Validation\ValidationExceptionH
          * @var ValidationException $throwable
          */
         $body = $throwable->validator->errors()->first();
-        $result = $this->serviceResponse->showError($body, ['data' => $throwable->validator->errors()->all()]);
+        $result = $this->serviceResponse->showError($body, [
+            'exception' => get_class($throwable),
+            'errors' => $throwable->validator->errors(),
+        ]);
         return $response->withBody(new SwooleStream(encode($result)));
     }
 

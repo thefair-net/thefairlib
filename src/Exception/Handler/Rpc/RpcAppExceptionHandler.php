@@ -12,9 +12,13 @@ declare(strict_types=1);
 
 namespace TheFairLib\Exception\Handler\Rpc;
 
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
+use Hyperf\Utils\Context;
+use Psr\Http\Message\ServerRequestInterface;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
+use TheFairLib\Contract\ResponseBuilderInterface;
 use TheFairLib\Exception\Handler\ExceptionHandler;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpMessage\Stream\SwooleStream;
@@ -27,6 +31,12 @@ class RpcAppExceptionHandler extends ExceptionHandler
      * @var StdoutLoggerInterface
      */
     protected $logger;
+
+    /**
+     * @Inject
+     * @var ResponseBuilderInterface
+     */
+    protected $responseBuilder;
 
     /**
      * @var FormatterInterface
@@ -46,18 +56,27 @@ class RpcAppExceptionHandler extends ExceptionHandler
      */
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
-
-        $this->logger->error(sprintf('%s in %s code %s[%s]', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile(), $throwable->getCode()));
+        $this->logger->error(
+            sprintf(
+                '%s in %s code %s[%s]',
+                $throwable->getMessage(),
+                $throwable->getLine(),
+                $throwable->getFile(),
+                $throwable->getCode()
+            )
+        );
         $this->logger->error($throwable->getTraceAsString());
 
-        $result = $this->serviceResponse->showError($throwable->getMessage(), ['data' => $response->getBody(), 'exception' => get_class($throwable)], $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR);
-        rd_debug([$result, __FILE__, __LINE__, get_class($response)]);
-        $this->logger->warning($this->formatter->format($throwable));
+        $result = $this->serviceResponse->showError(
+            $throwable->getMessage(),
+            ['data' => $response->getBody(), 'exception' => get_class($throwable)],
+            $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR
+        );
 
-
-        return $response->withStatus(ServerCode::OK)
-            ->withAddedHeader('content-type', 'application/json')
-            ->withAddedHeader('charset', 'utf-8');
+        return $this->responseBuilder->buildResponse(
+            Context::get(ServerRequestInterface::class),
+            $result
+        );
     }
 
     public function isValid(Throwable $throwable): bool

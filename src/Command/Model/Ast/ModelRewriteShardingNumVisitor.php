@@ -43,7 +43,6 @@ class ModelRewriteShardingNumVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node)
     {
-
         switch ($node) {
             case $node instanceof Node\Stmt\Property:
                 if ($node->props[0]->name->toString() === 'shardingNum') {
@@ -100,7 +99,6 @@ class ModelRewriteShardingNumVisitor extends NodeVisitorAbstract
      */
     protected function shouldRemovedConnection(): bool
     {
-
         $ref = new ReflectionClass($this->class);
 
         if (!$ref->getParentClass()) {

@@ -13,12 +13,10 @@
 
 namespace TheFairLib\Model\Builder;
 
-
 use TheFairLib\Exception\ServiceException;
 
 class PrimaryKeyBuilder
 {
-
     protected $primaryKey = 'id';
 
     protected $method;
@@ -106,5 +104,4 @@ class PrimaryKeyBuilder
     {
         return isset($this->methods[$this->method]);
     }
-
 }

@@ -12,7 +12,9 @@ use Hyperf\HttpServer\CoreMiddleware;
 use Hyperf\TfConfig\ConfigFactory;
 use Hyperf\Utils\Serializer\SimpleNormalizer;
 use TheFairLib\Contract\LockInterface;
+use TheFairLib\Contract\ResponseBuilderInterface;
 use TheFairLib\Contract\ResponseInterface;
+use TheFairLib\Library\Http\ResponseBuilderFactory;
 use TheFairLib\Library\Http\ServiceResponse;
 use TheFairLib\Library\Lock\RedisLockFactory;
 use TheFairLib\Library\Logger\StdoutLoggerFactory;
@@ -37,6 +39,7 @@ class ConfigProvider
                 StdoutLoggerInterface::class => StdoutLoggerFactory::class,
                 LockInterface::class => RedisLockFactory::class,
                 NormalizerInterface::class => SimpleNormalizer::class,
+                ResponseBuilderInterface::class => ResponseBuilderFactory::class,
             ],
             'listeners' => [
                 ErrorHandleListener::class,

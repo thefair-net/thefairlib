@@ -1,12 +1,15 @@
 <?php
 
 
-namespace TheFairLib\Exception\Handler;
+namespace TheFairLib\Exception\Handler\Rpc;
 
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\RateLimit\Exception\RateLimitException;
+use Hyperf\Utils\Context;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use TheFairLib\Contract\ResponseBuilderInterface;
+use TheFairLib\Exception\Handler\ExceptionHandler;
 use Throwable;
 
 /**
@@ -15,8 +18,14 @@ use Throwable;
  * Class RateLimitExceptionHandler
  * @package TheFairLib\Exception\Handler
  */
-class RateLimitExceptionHandler extends ExceptionHandler
+class RpcRateLimitExceptionHandler extends ExceptionHandler
 {
+
+    /**
+     * @Inject
+     * @var ResponseBuilderInterface
+     */
+    protected $responseBuilder;
 
     /**
      * @Inject()
@@ -37,15 +46,15 @@ class RateLimitExceptionHandler extends ExceptionHandler
          */
         $body = $throwable->getMessage();
         $result = $this->serviceResponse->showError(
-            __('message.rate_limit_error', [
-                'host' => getServerLocalIp(),
-            ]),
+            __('message.rate_limit_error', ['host' => getServerLocalIp()]),
             [
                 'error' => $body,
-                'exception' => get_class($throwable),
             ]
         );
-        return $response->withBody(new SwooleStream(encode($result)));
+        return $this->responseBuilder->buildResponse(
+            Context::get(ServerRequestInterface::class),
+            $result
+        );
     }
 
     public function isValid(Throwable $throwable): bool
