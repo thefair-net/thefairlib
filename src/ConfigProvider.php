@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace TheFairLib;
 
 use Hyperf\Contract\ConfigInterface;
+use Hyperf\Contract\NormalizerInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Devtool\VendorPublishCommand;
 use Hyperf\HttpServer\CoreMiddleware;
 use Hyperf\TfConfig\ConfigFactory;
+use Hyperf\Utils\Serializer\SimpleNormalizer;
 use TheFairLib\Contract\LockInterface;
 use TheFairLib\Contract\ResponseInterface;
 use TheFairLib\Library\Http\ServiceResponse;
@@ -34,6 +36,7 @@ class ConfigProvider
                 ResponseInterface::class => ServiceResponse::class,
                 StdoutLoggerInterface::class => StdoutLoggerFactory::class,
                 LockInterface::class => RedisLockFactory::class,
+                NormalizerInterface::class => SimpleNormalizer::class,
             ],
             'listeners' => [
                 ErrorHandleListener::class,

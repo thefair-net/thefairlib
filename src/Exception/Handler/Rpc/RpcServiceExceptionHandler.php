@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace TheFairLib\Exception\Handler\Rpc;
 
+use Hyperf\HttpMessage\Stream\SwooleStream;
 use TheFairLib\Constants\ServerCode;
 use TheFairLib\Exception\BusinessException;
 use TheFairLib\Exception\EmptyException;
@@ -30,7 +31,8 @@ class RpcServiceExceptionHandler extends ExceptionHandler
         $data = $throwable->getData();
 
         $result = $this->serviceResponse->showError($throwable->getMessage(), array_merge($data, ['exception' => get_class($throwable)]), $throwable->getCode());
-        return $response->withStatus(ServerCode::OK);
+        return $response->withStatus(ServerCode::OK)
+            ->withBody(new SwooleStream(encode($result)));
     }
 
     public function isValid(Throwable $throwable): bool

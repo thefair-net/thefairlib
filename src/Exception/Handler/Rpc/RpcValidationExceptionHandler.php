@@ -3,6 +3,7 @@
 
 namespace TheFairLib\Exception\Handler\Rpc;
 
+use Hyperf\JsonRpc\Packer\JsonLengthPacker;
 use TheFairLib\Exception\ServiceException;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Stream\SwooleStream;
@@ -44,7 +45,7 @@ class RpcValidationExceptionHandler extends \Hyperf\Validation\ValidationExcepti
         $container = ApplicationContext::getContainer();
         $responseBuilder = make(ResponseBuilder::class, [
             'dataFormatter' => $container->get(DataFormatter::class),
-            'packer' => $container->get(JsonEofPacker::class),
+            'packer' => $container->get(JsonLengthPacker::class),
         ]);
         /**
          * @var ResponseBuilder $responseBuilder

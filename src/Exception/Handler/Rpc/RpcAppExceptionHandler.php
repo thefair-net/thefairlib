@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace TheFairLib\Exception\Handler\Rpc;
 
+use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
 use TheFairLib\Exception\Handler\ExceptionHandler;
@@ -27,9 +28,15 @@ class RpcAppExceptionHandler extends ExceptionHandler
      */
     protected $logger;
 
-    public function __construct(StdoutLoggerInterface $logger)
+    /**
+     * @var FormatterInterface
+     */
+    protected $formatter;
+
+    public function __construct(StdoutLoggerInterface $logger, FormatterInterface $formatter)
     {
         $this->logger = $logger;
+        $this->formatter = $formatter;
     }
 
     /**
@@ -39,9 +46,14 @@ class RpcAppExceptionHandler extends ExceptionHandler
      */
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
+
         $this->logger->error(sprintf('%s in %s code %s[%s]', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile(), $throwable->getCode()));
         $this->logger->error($throwable->getTraceAsString());
-        $result = $this->serviceResponse->showError($throwable->getMessage(), ['data' => $response->getBody(), 'exception' => get_class($throwable), $throwable->getTraceAsString()], $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR);
+
+        $result = $this->serviceResponse->showError($throwable->getMessage(), ['data' => $response->getBody(), 'exception' => get_class($throwable)], $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR);
+        rd_debug([$result, __FILE__, __LINE__, get_class($response)]);
+        $this->logger->warning($this->formatter->format($throwable));
+
 
         return $response->withStatus(ServerCode::OK)
             ->withAddedHeader('content-type', 'application/json')

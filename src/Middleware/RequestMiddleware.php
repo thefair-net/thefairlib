@@ -201,6 +201,9 @@ class RequestMiddleware implements MiddlewareInterface
                 }
             } catch (UnauthorizedException $e) {
                 throw new ServiceException('This action is unauthorized.');
+            } catch (\Throwable $e) {
+                rd_debug([get_class($e)]);
+                throw $e;
             }
         }
     }
