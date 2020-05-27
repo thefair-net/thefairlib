@@ -38,13 +38,17 @@ class PrimaryKeyBuilder
         'firstOrCreate' => [
             'primaryKey' => 'array',
         ],
-        'destroy' => [
+        'findFromCache' => [
             'primaryKey' => 'string',
         ],
     ];
 
     public function __construct($method, $parameters, $primaryKey, $class = null)
     {
+        if (!isset($this->methods[$method])) {
+            throw new ServiceException(sprintf('目前分表路由不支持 %s 方法'), $method);
+        }
+
         $this->method = $method;
         $this->parameters = $parameters;
         $this->primaryKey = $primaryKey;
@@ -54,6 +58,11 @@ class PrimaryKeyBuilder
     protected function find($id, $columns = ['*'])
     {
         return $id;//获得第一个参数做为主键
+    }
+
+    protected function findFromCache($id)
+    {
+        return $id;
     }
 
     protected function create(array $attributes = [])

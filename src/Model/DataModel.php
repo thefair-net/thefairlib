@@ -283,6 +283,12 @@ abstract class DataModel extends Model
         return parent::destroy($id);
     }
 
+//    public static function findFromCache($id)
+//    {
+//        (new static())->rewriteTableName('findFromCache', [$id]);
+//        return parent::findFromCache($id);
+//    }
+
     /**
      * 分表时，保存对象必须使用主键
      *
