@@ -298,7 +298,7 @@ abstract class DataModel extends Model
     public function save(array $options = []): bool
     {
         if ($this->isShardingNum()) {
-            $id = $this->{$this->primaryKey} ?? null;
+            $id = $this->getAttributes()[$this->primaryKey] ?? null;
             if (empty($id)) {//主键不能为空，为 0 也不行
                 throw new ServiceException('sharding key error', ['class_nane' => get_class($this) . '::save']);
             }
