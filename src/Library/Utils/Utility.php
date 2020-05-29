@@ -323,3 +323,16 @@ if (!function_exists('getConfig')) {
         return ApplicationContext::getContainer()->get(ConfigInterface::class)->get($key, $default);
     }
 }
+
+if (!function_exists('now')) {
+    /**
+     * 获得时间
+     *
+     * @param int $time
+     * @return false|string
+     */
+    function now(int $time = 0)
+    {
+        return date('Y-m-d H:i:s', $time > 0 ? $time : time());
+    }
+}
