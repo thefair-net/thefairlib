@@ -19,7 +19,7 @@ class Controller extends Base
      */
     protected static $_responseObj = false;
 
-    protected function init(){
+    public function init(){
         if(self::$_responseObj === false){
             self::$_responseObj = new Service(new \stdClass());
         }

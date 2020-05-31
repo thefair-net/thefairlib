@@ -27,7 +27,7 @@ abstract class Base extends \Yaf\Controller_Abstract
     /**
      * Controller初始化需要的操作
      */
-    abstract protected function init();
+    abstract public function init();
 
     /**
      * 显示正确结果

@@ -24,7 +24,7 @@ abstract class Error extends ErrorBase
      */
     protected static $_responseObj = false;
 
-    protected function init()
+    public function init()
     {
         \Yaf\Dispatcher::getInstance()->autoRender(false);
         if (self::$_responseObj === false) {
