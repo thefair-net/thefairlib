@@ -28,7 +28,10 @@ abstract class ErrorBase extends Base
      *
      * @param \Exception $exception
      */
-    public function errorAction(\Exception $exception){
+    public function errorAction($exception){
+        if($exception instanceof \TypeError){
+            $exception = new \Exception($exception->getMessage());
+        }
         if($exception instanceof \Yaf\Exception){
             switch ($exception->getCode()) {
                 case \Yaf\ERR\NOTFOUND\MODULE:
