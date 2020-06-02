@@ -189,7 +189,7 @@ abstract class DataModel extends Model
     public function setShardingId($shardingKey)
     {
         rd_debug(['$shardingKey' => $shardingKey, $this->getShardingTableNum($shardingKey)]);
-        $this->settingSuffix($this->getShardingTableNum($shardingKey));
+        $this->setSuffix($this->getShardingTableNum($shardingKey));
         $this->table = $this->getTableName($shardingKey);
         $this->setTable($this->table);
         $this->setKeyName($this->primaryKey);
@@ -205,7 +205,7 @@ abstract class DataModel extends Model
         return $suffix;
     }
 
-    protected function settingSuffix($suffix)
+    protected function setSuffix($suffix)
     {
         $this->suffix = $suffix;
         if ($this->isShardingNum()) {
