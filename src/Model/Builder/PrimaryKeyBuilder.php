@@ -45,6 +45,7 @@ class PrimaryKeyBuilder
 
     public function __construct($method, $parameters, $primaryKey, $class = null)
     {
+        throw new ServiceException(sprintf('目前分表路由不支持 %s 方法'), $method);
         if (!isset($this->methods[$method])) {
             throw new ServiceException(sprintf('目前分表路由不支持 %s 方法'), $method);
         }
