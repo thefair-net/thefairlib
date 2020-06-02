@@ -46,13 +46,7 @@ abstract class DataModel extends Model
 
     protected $shardingKey = '';
 
-    /**
-     * 锁，目前是使用 redis 现实.
-     *
-     * @Inject
-     * @var LockInterface
-     */
-    protected $lock;
+    protected $suffix = null;
 
     /**
      * 是否自动维护时间戳
@@ -62,12 +56,18 @@ abstract class DataModel extends Model
     public $timestamps = false;
 
     /**
-     * 触发事件.
+     * The name of the "created at" column.
      *
-     * @Inject
-     * @var EventDispatcherInterface
+     * @var string
      */
-    protected $eventDispatcher;
+    const CREATED_AT = 'ctime';
+
+    /**
+     * The name of the "updated at" column.
+     *
+     * @var string
+     */
+    const UPDATED_AT = 'utime';
 
     /**
      * 底层方法重写
@@ -79,7 +79,7 @@ abstract class DataModel extends Model
     {
         $this->table = $table;
         if ($this->isShardingNum()) {
-            $this->table = Context::set(__CLASS__ . ':table_name', $table);
+            Context::set(__CLASS__ . ':table_name', $table);
         }
     }
 
@@ -118,7 +118,7 @@ abstract class DataModel extends Model
     {
         $this->primaryKey = $primaryKey;
         if ($this->isShardingNum()) {
-            $this->primaryKey = Context::set(__CLASS__ . ':table_name:primary_key', $primaryKey);
+            Context::set(__CLASS__ . ':table_name:primary_key', $primaryKey);
         }
         return $this;
     }
@@ -178,6 +178,67 @@ abstract class DataModel extends Model
             throw new EmptyException('M Conf Err');
         }
         return $tableName . ($shardingKey !== null ? '_' . $this->getShardingTableNum($shardingKey) : '');
+    }
+
+    /**
+     * 获得分表表名
+     *
+     * @param $shardingKey
+     * @return Builder
+     */
+    public function setSuffix($shardingKey)
+    {
+        $this->settingSuffix($this->getShardingTableNum($shardingKey));
+        $this->table = $this->getTableName($shardingKey);
+        $this->setTable($this->table);
+        $this->setKeyName($this->primaryKey);
+        return $this->newQuery();
+    }
+
+    protected function getSuffix()
+    {
+        $suffix = $this->suffix;
+        if ($this->isShardingNum()) {
+            $suffix = Context::get(__CLASS__ . ':table_name:suffix');
+        }
+        return $suffix;
+    }
+
+    protected function settingSuffix($suffix)
+    {
+        $this->suffix = $suffix;
+        if ($this->isShardingNum()) {
+            Context::get(__CLASS__ . ':table_name:suffix', $suffix);
+        }
+    }
+
+    /**
+     * 获得分表表名
+     *
+     * @param $shardingKey
+     * @return Builder
+     */
+    public static function suffix($shardingKey)
+    {
+        $instance = new static;
+        $instance->setSuffix($shardingKey);
+
+        return $instance->newQuery();
+    }
+
+    /**
+     *      * $attributes
+     *
+     * @param array $attributes
+     * @param bool $exists
+     * @return Model
+     */
+    public function newInstance($attributes = [], $exists = false)
+    {
+        $model = parent::newInstance($attributes, $exists);
+        $model->setSuffix($this->getSuffix());
+
+        return $model;
     }
 
     /**
@@ -244,6 +305,22 @@ abstract class DataModel extends Model
     {
         try {
             return Db::connection(empty($poolName) ? $this->connection : $poolName);
+        } catch (Throwable $e) {
+            throw new ConnectionException(sprintf('error pool name: %s , msg %s', $poolName, $e->getMessage()));
+        }
+    }
+
+    /**
+     * Db 连接
+     *
+     * @param string $poolName
+     * @return ConnectionInterface
+     * @throws ConnectionException
+     */
+    public static function getDb($poolName = '')
+    {
+        try {
+            return (new static())->db($poolName);
         } catch (Throwable $e) {
             throw new ConnectionException(sprintf('error pool name: %s , msg %s', $poolName, $e->getMessage()));
         }
