@@ -278,7 +278,7 @@ if (!function_exists('input')) {
      * @param null $default
      * @return mixed
      */
-    function input(string $name, $default = null)
+    function input(string $name, $default = '')
     {
         $id = RequestInterface::class . ':params:' . $name;
         if (Context::has($id)) {
