@@ -79,8 +79,14 @@ abstract class DataModel extends Model
     {
         $this->table = $table;
         if ($this->isShardingNum()) {
-            Context::set(__CLASS__ . ':table_name', $table);
+            rd_debug([get_class($this) => get_class($this), $table]);
+            Context::set($this->getConttextName('table_name'), $table);
         }
+    }
+
+    private function getConttextName($name)
+    {
+        return get_class($this) . ':' . $name;
     }
 
     /**
@@ -92,14 +98,14 @@ abstract class DataModel extends Model
     {
         $table = $this->table;
         if ($this->isShardingNum()) {
-            $table = Context::get(__CLASS__ . ':table_name');
+            $table = Context::get($this->getConttextName('table_name'));
         }
         return $table;
     }
 
     protected function originalTableName($tableName)
     {
-        $name = __CLASS__ . ':original_table_name';
+        $name = $this->getConttextName('original_table_name');
         if (Context::has($name)) {
             $tableName = Context::get($name);
         } else {
@@ -118,7 +124,7 @@ abstract class DataModel extends Model
     {
         $this->primaryKey = $primaryKey;
         if ($this->isShardingNum()) {
-            Context::set(__CLASS__ . ':table_name:primary_key', $primaryKey);
+            Context::set($this->getConttextName('primary_key'), $primaryKey);
         }
         return $this;
     }
@@ -132,7 +138,7 @@ abstract class DataModel extends Model
     {
         $primaryKey = $this->primaryKey;
         if ($this->isShardingNum()) {
-            $primaryKey = Context::get(__CLASS__ . ':table_name:primary_key');
+            $primaryKey = Context::get($this->getConttextName('primary_key'));
         }
         return $primaryKey;
     }
@@ -151,7 +157,7 @@ abstract class DataModel extends Model
      */
     protected function getShardingId($shardingKey): int
     {
-        return intval(crc32(md5($shardingKey)));
+        return intval(crc32(md5((string)$shardingKey)));
     }
 
     /**
@@ -188,11 +194,14 @@ abstract class DataModel extends Model
      */
     public function setShardingId($shardingKey)
     {
-        rd_debug(['$shardingKey' => $shardingKey, $this->getShardingTableNum($shardingKey)]);
-        $this->setSuffix($this->getShardingTableNum($shardingKey));
-        $this->table = $this->getTableName($shardingKey);
-        $this->setTable($this->table);
-        $this->setKeyName($this->primaryKey);
+        if ($this->isShardingNum()) {
+            $this->setSuffix($this->getShardingTableNum($shardingKey));
+            $this->table = $this->getTableName($shardingKey);
+            $this->setTable($this->table);
+            $this->setKeyName($this->primaryKey);
+            rd_debug(['$shardingKey' => $shardingKey, $this->getShardingTableNum($shardingKey), get_class($this), $this->getTable()]);
+
+        }
         return $this->newQuery();
     }
 
@@ -200,7 +209,7 @@ abstract class DataModel extends Model
     {
         $suffix = $this->suffix;
         if ($this->isShardingNum()) {
-            $suffix = Context::get(__CLASS__ . ':table_name:suffix');
+            $suffix = Context::get($this->getConttextName('suffix'));
         }
         return $suffix;
     }
@@ -209,7 +218,7 @@ abstract class DataModel extends Model
     {
         $this->suffix = $suffix;
         if ($this->isShardingNum()) {
-            Context::set(__CLASS__ . ':table_name:suffix', $suffix);
+            Context::set($this->getConttextName('suffix'), $suffix);
         }
     }
 

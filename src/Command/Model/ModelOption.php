@@ -84,6 +84,11 @@ class ModelOption
     protected $primaryKey = 'id';
 
     /**
+     * @var string
+     */
+    protected $keyType = 'int';
+
+    /**
      * @var int
      */
     protected $propertyCase = self::PROPERTY_SNAKE_CASE;
@@ -244,5 +249,16 @@ class ModelOption
     public function getKeyName(): string
     {
         return $this->primaryKey;
+    }
+
+    public function setKeyType(string $keyType): self
+    {
+        $this->keyType = $keyType;
+        return $this;
+    }
+
+    public function getKeyType(): string
+    {
+        return $this->keyType;
     }
 }

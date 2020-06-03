@@ -15,10 +15,8 @@ namespace TheFairLib\Command\Model\Ast;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use ReflectionClass;
-use ReflectionException;
 
-class ModelRewriteShardingNumVisitor extends NodeVisitorAbstract
+class ModelRewriteKeyTypeVisitor extends NodeVisitorAbstract
 {
     /**
      * @var string
@@ -26,47 +24,38 @@ class ModelRewriteShardingNumVisitor extends NodeVisitorAbstract
     protected $class;
 
     /**
-     * @var int
+     * @var string
      */
-    protected $shardingNum;
+    protected $keyType;
 
     /**
      * @var bool
      */
     protected $has = false;
 
-    public function __construct(string $class, int $shardingNum)
+    public function __construct(string $class, string $keyType)
     {
         $this->class = $class;
-        $this->shardingNum = $shardingNum;
+        $this->keyType = $keyType;
     }
 
     public function leaveNode(Node $node)
     {
         switch ($node) {
             case $node instanceof Node\Stmt\Property:
-                if ($node->props[0]->name->toString() === 'shardingNum') {
+                if ($node->props[0]->name->toString() === 'keyType') {
                     $this->has = true;
-                    try {
-                        if ($this->shouldRemoved()) {
-                            return NodeTraverser::REMOVE_NODE;
-                        }
-                    } catch (ReflectionException $e) {
-                        throw $e;
+                    if ($this->shouldRemoved()) {
+                        return NodeTraverser::REMOVE_NODE;
                     }
 
-                    $node->props[0]->default = new Node\Scalar\LNumber($this->shardingNum);
+                    $node->props[0]->default = new Node\Scalar\String_($this->keyType);
                 }
 
                 return $node;
         }
     }
 
-    /**
-     * @param array $nodes
-     * @return Node[]|null
-     * @throws ReflectionException
-     */
     public function afterTraverse(array $nodes)
     {
         if ($this->has || $this->shouldRemoved()) {
@@ -83,7 +72,7 @@ class ModelRewriteShardingNumVisitor extends NodeVisitorAbstract
                 }
                 foreach ($class->stmts as $property) {
                     $flags = Node\Stmt\Class_::MODIFIER_PROTECTED;
-                    $prop = new Node\Stmt\PropertyProperty('shardingNum', new Node\Scalar\LNumber($this->shardingNum));
+                    $prop = new Node\Stmt\PropertyProperty('keyType', new Node\Scalar\String_($this->keyType));
                     $class->stmts[] = new Node\Stmt\Property($flags, [$prop]);
                     return null;
                 }
@@ -93,19 +82,15 @@ class ModelRewriteShardingNumVisitor extends NodeVisitorAbstract
         return null;
     }
 
-    /**
-     * @return bool
-     * @throws ReflectionException
-     */
     protected function shouldRemoved(): bool
     {
-        $ref = new ReflectionClass($this->class);
+        $ref = new \ReflectionClass($this->class);
 
         if (!$ref->getParentClass()) {
             return false;
         }
 
-        $shardingNum = $ref->getParentClass()->getDefaultProperties()['shardingNum'] ?? 0;
-        return $shardingNum === $this->shardingNum;
+        $keyType = $ref->getParentClass()->getDefaultProperties()['keyType'] ?? 'int';
+        return $keyType === $this->keyType;
     }
 }

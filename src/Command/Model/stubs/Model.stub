@@ -35,7 +35,12 @@ class %CLASS% extends %INHERITANCE%
      * @var string
      */
     protected $primaryKey = '%PRIMARY_KEY%';
-
+    /**
+     * The primary key type for the model.
+     *
+     * @var string
+     */
+    protected $keyType = '%KEY_TYPE%';
     /**
      * The attributes that are mass assignable.
      *

@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace TheFairLib\Command\Model;
 
 use TheFairLib\Command\Model\Ast\ModelRewriteConnectionVisitor;
+use TheFairLib\Command\Model\Ast\ModelRewriteKeyTypeVisitor;
 use TheFairLib\Command\Model\Ast\ModelRewriteShardingNumVisitor;
 use TheFairLib\Command\Model\Ast\ModelUpdateVisitor;
 use Hyperf\Command\Command;
@@ -185,6 +186,7 @@ class DataModelCommand extends Command
             $tmpTable = sprintf("%s_0", $table);
         }
         $columns = $this->formatColumns($builder->getColumnTypeListing($tmpTable));
+        $this->checkPrimaryKey($columns, $option);
         $project = new Project();
         $class = $option->getTableMapping()[$table] ?? Str::studly(Str::singular($table));
         $class = $project->namespace($option->getPath()) . $class;
@@ -198,7 +200,6 @@ class DataModelCommand extends Command
             file_put_contents($path, $this->buildClass($table, $class, $option));
         }
         $columns = $this->getColumns($class, $columns, $option->isForceCasts());
-
         $stms = $this->astParser->parse(file_get_contents($path));
         $traverser = new NodeTraverser();
         $traverser->addVisitor(make(ModelUpdateVisitor::class, [
@@ -208,6 +209,7 @@ class DataModelCommand extends Command
         ]));
         $traverser->addVisitor(make(ModelRewriteConnectionVisitor::class, [$class, $option->getPool()]));
         $traverser->addVisitor(make(ModelRewriteShardingNumVisitor::class, [$class, $option->getShardingNum()]));
+        $traverser->addVisitor(make(ModelRewriteKeyTypeVisitor::class, [$class, $option->getKeyType()]));
         foreach ($option->getVisitors() as $visitorClass) {
             $data = make(ModelData::class)->setClass($class)->setColumns($columns);
             $traverser->addVisitor(make($visitorClass, [$option, $data]));
@@ -216,6 +218,25 @@ class DataModelCommand extends Command
         $code = $this->printer->prettyPrintFile($stms);
         file_put_contents($path, $code);
         $this->output->writeln(sprintf('<info>Model %s was created.</info>', $class));
+    }
+
+    protected function checkPrimaryKey($columns, ModelOption &$option)
+    {
+        $status = false;
+        foreach ($columns as $column) {
+            if ($column['column_name'] == $option->getKeyName()) {
+                $status = true;
+                if (in_array($column['data_type'], ['varchar', 'char'])) {
+                    $option->setKeyType('string');
+                } else {
+                    $option->setKeyType('int');
+                }
+            }
+        }
+        if (!$status) {
+            $this->output->writeln("没有找到主键");
+            exit;
+        }
     }
 
     /**
@@ -288,6 +309,7 @@ class DataModelCommand extends Command
             ->replaceClass($stub, $name)
             ->replaceShardingNum($stub, $option->getShardingNum())
             ->replacePrimaryKey($stub, $option->getKeyName())
+            ->replaceKeyType($stub, $option->getKeyType())
             ->replaceTable($stub, $table);
     }
 
@@ -356,6 +378,17 @@ class DataModelCommand extends Command
         $stub = str_replace(
             ['%PRIMARY_KEY%'],
             [$primaryKey],
+            $stub
+        );
+
+        return $this;
+    }
+
+    protected function replaceKeyType(string &$stub, string $keyType): self
+    {
+        $stub = str_replace(
+            ['%KEY_TYPE%'],
+            [$keyType],
             $stub
         );
 
