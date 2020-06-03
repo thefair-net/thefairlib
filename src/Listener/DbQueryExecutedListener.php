@@ -62,9 +62,9 @@ class DbQueryExecutedListener implements ListenerInterface
                     $sql = Str::replaceFirst('?', "'{$value}'", $sql);
                 }
             }
-            rd_debug([[
+            rd_debug([
                 $sql, $event->bindings
-            ]]);
+            ]);
             $this->dbQuery->checkQuery($sql, $event->bindings, $event->connectionName);
         }
     }

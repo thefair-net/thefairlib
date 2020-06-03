@@ -47,7 +47,6 @@ class RpcCoreMiddleware extends \Hyperf\JsonRpc\CoreMiddleware
                 throw $exception;
             }
         }
-        rd_debug([get_class($this), 3, $response, __FUNCTION__, __FILE__]);
         return $response;
     }
 

@@ -160,7 +160,6 @@ class RequestMiddleware implements MiddlewareInterface
                 $parameters = $reflectionMethod->getParameters();
                 if (!empty($parameters)) {
                     foreach ($parameters as $parameter) {
-                        rd_debug([$parameters, $dispatched->handler, bigCamelize($dispatched->handler->route), $method, $parameter->getClass(), $parameter->getType(), $parameter->getName()]);
 
                         if ($parameter->getType() === null) {
                             continue;
@@ -179,7 +178,6 @@ class RequestMiddleware implements MiddlewareInterface
 
                 $routePath = ltrim(bigCamelize($dispatched->handler->route), '/');
                 $className = sprintf('App\Request\%s', str_replace('/', '\\', $routePath));
-                rd_debug(['class' => $className]);
                 if (!class_exists($className)) {
                     throw new ServiceException("Class {$className} not exist");
                 }
@@ -202,7 +200,6 @@ class RequestMiddleware implements MiddlewareInterface
             } catch (UnauthorizedException $e) {
                 throw new ServiceException('This action is unauthorized.');
             } catch (\Throwable $e) {
-                rd_debug([get_class($e)]);
                 throw $e;
             }
         }

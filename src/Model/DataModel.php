@@ -199,8 +199,6 @@ abstract class DataModel extends Model
             $this->table = $this->getTableName($shardingKey);
             $this->setTable($this->table);
             $this->setKeyName($this->primaryKey);
-            rd_debug(['$shardingKey' => $shardingKey, $this->getShardingTableNum($shardingKey), get_class($this), $this->getTable()]);
-
         }
         return $this->newQuery();
     }
@@ -232,7 +230,6 @@ abstract class DataModel extends Model
     {
         $instance = new static;
         $instance->setShardingId($shardingKey);
-        rd_debug([__FILE__, $instance->getSuffix()]);
         return $instance->newQuery();
     }
 
