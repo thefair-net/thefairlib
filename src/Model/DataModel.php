@@ -79,7 +79,6 @@ abstract class DataModel extends Model
     {
         $this->table = $table;
         if ($this->isShardingNum()) {
-            rd_debug([get_class($this) => get_class($this), $table]);
             Context::set($this->getConttextName('table_name'), $table);
         }
     }
@@ -295,7 +294,7 @@ abstract class DataModel extends Model
      */
     private function getShardingTableNum($shardingKey): int
     {
-        if (!is_int($shardingKey)) {
+        if (!preg_match('/^\d+$/', (string)$shardingKey)) {
             $shardingKey = $this->getShardingId($shardingKey);
         }
         return (int)$shardingKey % $this->shardingNum;
