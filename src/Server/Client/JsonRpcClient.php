@@ -16,6 +16,12 @@ abstract class JsonRpcClient extends AbstractServiceClient
      */
     protected $serviceName;
 
+    /**
+     * 定义对应服务提供者的服务协议
+     * @var string
+     */
+    protected $protocol = 'jsonrpc-tcp-length-check';
+
     public function call(string $method, array $params = [])
     {
         try {
