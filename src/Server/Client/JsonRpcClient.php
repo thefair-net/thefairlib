@@ -38,7 +38,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
         } catch (ServiceException $e) {
             throw new ServiceException($e->getMessage(), $e->getData(), $e->getCode(), $e, $e->getHttpStatus());
         } catch (Throwable $e) {
-            throw new ServiceException($e->getMessage(), [], $e->getCode() == 0 ? $e->getCode() : InfoCode::CODE_ERROR);
+            throw new ServiceException($e->getMessage(), [], $e->getCode() > 0 ? $e->getCode() : InfoCode::CODE_ERROR);
         }
     }
 
