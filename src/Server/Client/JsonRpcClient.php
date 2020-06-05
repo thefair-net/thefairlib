@@ -5,17 +5,12 @@ namespace TheFairLib\Server\Client;
 
 
 use Hyperf\RpcClient\AbstractServiceClient;
+use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
 use Throwable;
 
 abstract class JsonRpcClient extends AbstractServiceClient
 {
-    /**
-     * 定义对应服务提供者的服务名称
-     * @var string
-     */
-    protected $serviceName;
-
     /**
      * 定义对应服务提供者的服务协议
      * @var string
@@ -43,7 +38,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
         } catch (ServiceException $e) {
             throw new ServiceException($e->getMessage(), $e->getData(), $e->getCode(), $e, $e->getHttpStatus());
         } catch (Throwable $e) {
-            throw new ServiceException($e->getMessage(), [], $e->getCode());
+            throw new ServiceException($e->getMessage(), [], $e->getCode() === 0 ? $e->getCode() : InfoCode::CODE_ERROR);
         }
     }
 
