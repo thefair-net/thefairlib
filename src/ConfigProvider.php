@@ -142,6 +142,12 @@ class ConfigProvider
                     'source' => __DIR__ . '/../publish/test/Cases/ExampleTest.php',
                     'destination' => BASE_PATH . '/test/Cases/ExampleTest.php',
                 ],
+                [
+                    'id' => 'service',
+                    'description' => 'The message bag for test.',
+                    'source' => __DIR__ . '/../publish/bin/test.service',
+                    'destination' => BASE_PATH . sprintf('/publish/bin/%s.service', env('APP_NAME', 'test')),
+                ],
             ],
         ];
     }
