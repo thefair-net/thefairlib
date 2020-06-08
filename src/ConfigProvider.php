@@ -144,9 +144,15 @@ class ConfigProvider
                 ],
                 [
                     'id' => 'service',
-                    'description' => 'The message bag for test.',
+                    'description' => 'The message test.service.',
                     'source' => __DIR__ . '/../publish/bin/test.service',
                     'destination' => BASE_PATH . sprintf('/publish/bin/%s.service', env('APP_NAME', 'test')),
+                ],
+                [
+                    'id' => 'init-proxy',
+                    'description' => 'The message init-proxy.',
+                    'source' => __DIR__ . '/../publish/bin/init-proxy.sh',
+                    'destination' => BASE_PATH . sprintf('/publish/bin/init-proxy.sh'),
                 ],
             ],
         ];
