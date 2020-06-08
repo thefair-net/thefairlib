@@ -500,18 +500,18 @@ make(Test::class)->call('get_test')
 
 用于 `centos 7`
 
-新建：`/etc/systemd/system/user.service`
+在项目下新建：`bin/push.service`
 
 ```ini
 [Unit]
-Description=user service Http Server
+Description=push service Http Server
 After=network.target
 After=syslog.target
 
 [Service]
 Type=simple
 LimitNOFILE=65535
-ExecStart=/usr/bin/php /home/thefair/www/user_service/bin/hyperf.php start
+ExecStart=/usr/bin/php /home/thefair/www/push_service/bin/hyperf.php start
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=always
 
@@ -519,7 +519,7 @@ Restart=always
 WantedBy=multi-user.target graphical.target
 ```
 
-`sudo systemctl --system daemon-reload`
+使用`ln -s /home/thefair/www/push_service/bin/push.service /usr/lib/systemd/system && systemctl daemon-reload`
 
 ```shell
 #启动服务
