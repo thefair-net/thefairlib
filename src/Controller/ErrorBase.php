@@ -29,7 +29,7 @@ abstract class ErrorBase extends Base
      * @param \Exception $exception
      */
     public function errorAction($exception){
-        if($exception instanceof \TypeError){
+        if($exception instanceof \Error){
             $exception = new \Exception($exception->getMessage());
         }
         if($exception instanceof \Yaf\Exception){
