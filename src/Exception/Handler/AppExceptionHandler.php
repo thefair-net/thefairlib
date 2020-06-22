@@ -17,6 +17,7 @@ use TheFairLib\Constants\ServerCode;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Psr\Http\Message\ResponseInterface;
+use TheFairLib\Library\Logger\Logger;
 use Throwable;
 
 /**
@@ -46,16 +47,16 @@ class AppExceptionHandler extends ExceptionHandler
      */
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
-        $this->logger->error(
+        Logger::get()->error(
             sprintf(
-                '%s in %s code %s[%s]',
+                '%s in %s code %s[%s], %s',
                 $throwable->getMessage(),
                 $throwable->getLine(),
                 $throwable->getFile(),
-                $throwable->getCode()
+                $throwable->getCode(),
+                $throwable->getTraceAsString()
             )
         );
-        $this->logger->error($throwable->getTraceAsString());
         $result = $this->serviceResponse->showError(
             $throwable->getMessage(),
             ['data' => $response->getBody(), 'exception' => get_class($throwable)],

@@ -22,6 +22,7 @@ use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 use Hyperf\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
+use TheFairLib\Library\Logger\Logger;
 
 /**
  * @Listener
@@ -40,7 +41,6 @@ class QueueHandleListener implements ListenerInterface
 
     public function __construct(LoggerFactory $loggerFactory, FormatterInterface $formatter)
     {
-        $this->logger = $loggerFactory->get('queue');
         $this->formatter = $formatter;
     }
 
@@ -63,17 +63,17 @@ class QueueHandleListener implements ListenerInterface
 
             switch (true) {
                 case $event instanceof BeforeHandle:
-                    $this->logger->info(sprintf('[%s] Processing %s.', $date, $jobClass));
+                    Logger::get()->info(sprintf('[%s] Processing %s.', $date, $jobClass));
                     break;
                 case $event instanceof AfterHandle:
-                    $this->logger->info(sprintf('[%s] Processed %s.', $date, $jobClass));
+                    Logger::get()->info(sprintf('[%s] Processed %s.', $date, $jobClass));
                     break;
                 case $event instanceof FailedHandle:
-                    $this->logger->error(sprintf('[%s] Failed %s.', $date, $jobClass));
-                    $this->logger->error($this->formatter->format($event->getThrowable()));
+                    Logger::get()->error(sprintf('[%s] Failed %s.', $date, $jobClass));
+                    Logger::get()->error($this->formatter->format($event->getThrowable()));
                     break;
                 case $event instanceof RetryHandle:
-                    $this->logger->warning(sprintf('[%s] Retried %s.', $date, $jobClass));
+                    Logger::get()->warning(sprintf('[%s] Retried %s.', $date, $jobClass));
                     break;
             }
         }

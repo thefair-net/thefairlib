@@ -22,6 +22,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Hyperf\Utils\Context;
 use ReflectionParameter;
+use Throwable;
 
 /**
  * 接到客户端请求，通过该中间件进行一些调整
@@ -146,6 +147,7 @@ class RequestMiddleware implements MiddlewareInterface
      * 自动验证
      *
      * @param Dispatched $dispatched
+     * @throws Throwable
      */
     protected function autoValidateRequest(Dispatched $dispatched): void
     {
@@ -199,7 +201,7 @@ class RequestMiddleware implements MiddlewareInterface
                 }
             } catch (UnauthorizedException $e) {
                 throw new ServiceException('This action is unauthorized.');
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 throw $e;
             }
         }

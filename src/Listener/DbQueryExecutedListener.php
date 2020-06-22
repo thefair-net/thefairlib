@@ -27,10 +27,6 @@ use Psr\Log\LoggerInterface;
  */
 class DbQueryExecutedListener implements ListenerInterface
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * @var DbQuery
@@ -39,7 +35,6 @@ class DbQueryExecutedListener implements ListenerInterface
 
     public function __construct(ContainerInterface $container, DbQuery $dbQuery)
     {
-        $this->logger = $container->get(LoggerFactory::class)->get('sql');
         $this->dbQuery = $dbQuery;
     }
 
