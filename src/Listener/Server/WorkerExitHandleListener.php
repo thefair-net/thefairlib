@@ -32,9 +32,8 @@ class WorkerExitHandleListener implements ListenerInterface
     {
         if ($event instanceof OnWorkerExit) {
             Logger::get()->error(sprintf(
-                'event: %s , server: %s, worker_id: %d',
+                'event: %s , worker_id: %d',
                 OnWorkerExit::class,
-                $event->server->getLastError(),
                 $event->workerId
             ));
         }

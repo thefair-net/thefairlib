@@ -32,9 +32,8 @@ class WorkerErrorHandleListener implements ListenerInterface
     {
         if ($event instanceof OnWorkerError) {
             Logger::get()->error(sprintf(
-                'event: %s , server: %s, worker_id: %d',
+                'event: %s , worker_id: %d',
                 OnWorkerError::class,
-                $event->server->getLastError(),
                 $event->workerId
             ));
         }
