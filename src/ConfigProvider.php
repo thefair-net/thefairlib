@@ -94,13 +94,13 @@ class ConfigProvider
                     'id' => 'zh_CN',
                     'description' => 'The message bag for validation.',
                     'source' => __DIR__ . '/../publish/languages/zh_CN/validation.php',
-                    'destination' => BASE_PATH . '/config/i18n/languages/zh_CN/validation.php',
+                    'destination' => BASE_PATH . '/config/i18n/zh_CN/validation.php',
                 ],
                 [
                     'id' => 'en',
                     'description' => 'The message bag for validation.',
                     'source' => __DIR__ . '/../publish/languages/en/validation.php',
-                    'destination' => BASE_PATH . '/config/i18n/languages/en/validation.php',
+                    'destination' => BASE_PATH . '/config/i18n/en/validation.php',
                 ],
                 [
                     'id' => 'auth',
