@@ -29,13 +29,22 @@ class Client extends TCP
     {
 
         try {
-            if (isset($params['auth'])) {
-                throw new ServiceException('auth 关键字已经被使用');
+            if (isset($params['__auth']) || isset($params['__header'])) {
+                throw new ServiceException('__auth | __header 是保留关键字');
             }
+            $time = time();
+            $sign = md5(sprintf('%s%s%d', $this->_config['app_key'], $this->_config['app_secret'], $time));
             $requestData = array_merge_recursive($params, [
-                'auth' => [
+                '__auth' => [
                     'app_key' => $this->_config['app_key'],
-                    'app_secret' => $this->_config['app_secret'],
+                    'sign' => $sign,
+                    'time' => $time,
+                ],
+                '__header' => [
+                    'real_client_ip' => Utility::getUserIp() ?? null,
+                    'ua' => $_SERVER['HTTP_X_THEFAIR_UA'] ?? null,
+                    'cid' => $_SERVER['HTTP_X_THEFAIR_CID'] ?? null,
+                    'session_id' => Utility::getGpc('PHPSESSID', 'C') ?? null,
                 ],
             ]);
 
