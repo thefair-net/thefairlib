@@ -21,6 +21,8 @@ use Hyperf\Snowflake\IdGeneratorInterface;
 use Hyperf\Snowflake\Meta;
 use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
+use Psr\Http\Message\ResponseInterface;
+use Swoole\Server as SwooleServer;
 
 if (!function_exists('encode')) {
     /**
@@ -336,3 +338,80 @@ if (!function_exists('now')) {
         return date('Y-m-d H:i:s', $time > 0 ? $time : time());
     }
 }
+
+
+if (!function_exists('getRpcLogArguments')) {
+    /**
+     * 获取要存储的日志部分字段，monolog以外的业务信息
+     *
+     * @return array
+     */
+    function getRpcLogArguments()
+    {
+        /**
+         * @var RequestInterface $request
+         */
+        $request = ApplicationContext::getContainer()->get(RequestInterface::class);
+        /**
+         * @var ResponseInterface $response
+         */
+        $response = Context::get(ResponseInterface::class);
+        $data = $request->getAttribute('data');
+        $params = $request->all();
+        unset($params['__auth']);
+        return [
+            'server_ip' => getServerLocalIp(),
+            'server_time' => now(),
+            'client_info' => getClientInfo(),
+            'pid' => posix_getpid(),//得到当前 Worker 进程的操作系统进程 ID
+            'uri' => $request->getUri()->getPath(),
+            'params' => $params,
+            'method' => $request->getMethod(),
+            'execution_time' => microtime(true) - Context::get('execution_start_time'),
+            'request_body_size' => strlen(encode($data)),
+            'response_body_size' => $response->getBody()->getSize(),
+        ];
+    }
+}
+
+if (!function_exists('getRpcClientIp')) {
+    /**
+     * 获得 Rpc client ip
+     *
+     * @return string
+     */
+    function getRpcClientIp(): string
+    {
+        return getClientInfo()['remote_ip'];
+    }
+}
+
+if (!function_exists('getClientInfo')) {
+    /**
+     * 获得 Rpc client ip
+     *
+     * @return array
+     */
+    function getClientInfo(): array
+    {
+        /**
+         * @var Hyperf\HttpMessage\Server\Response $response
+         */
+        $response = Context::get(ResponseInterface::class);
+
+        /**
+         * @var SwooleServer $server
+         */
+        $server = $response->getAttribute('server');
+        $fd = $response->getAttribute('fd');
+        $clientInfo = $server->getClientInfo($fd);
+        if ($connectTime = arrayGet($clientInfo, 'connect_time')) {
+            $clientInfo['connect_time'] = date('Y-m-d H:i:s', $connectTime);
+        }
+        if ($lastTime = arrayGet($clientInfo, 'last_time')) {
+            $clientInfo['last_time'] = date('Y-m-d H:i:s', $lastTime);
+        }
+        return $clientInfo;
+    }
+}
+

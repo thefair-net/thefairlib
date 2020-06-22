@@ -20,6 +20,7 @@ use TheFairLib\Library\Lock\RedisLockFactory;
 use TheFairLib\Library\Logger\StdoutLoggerFactory;
 use TheFairLib\Listener\DbQueryExecutedListener;
 use TheFairLib\Listener\ErrorHandleListener;
+use TheFairLib\Listener\Logger\LoggerHandleListener;
 use TheFairLib\Listener\RouterHandleListener;
 use TheFairLib\Listener\Server\WorkerErrorHandleListener;
 use TheFairLib\Listener\Server\WorkerExitHandleListener;
@@ -46,6 +47,7 @@ class ConfigProvider
                 RouterHandleListener::class,
                 ValidatorHandleListener::class,
                 DbQueryExecutedListener::class,
+                LoggerHandleListener::class,
                 WorkerStopHandleListener::class,
                 WorkerErrorHandleListener::class,
                 WorkerExitHandleListener::class,

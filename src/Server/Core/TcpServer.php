@@ -12,14 +12,24 @@ declare(strict_types=1);
 
 namespace TheFairLib\Server\Core;
 
+use Hyperf\Di\Annotation\Inject;
+use Hyperf\Framework\Event\OnReceive;
 use Hyperf\HttpMessage\Server\Request as Psr7Request;
 use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\JsonRpc\ResponseBuilder;
 use Hyperf\Server\ServerManager;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Swoole\Server as SwooleServer;
 use Swoole\Server\Port;
 
 class TcpServer extends \Hyperf\JsonRpc\TcpServer
 {
+    /**
+     * @Inject
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
     protected function buildJsonRpcRequest(int $fd, int $fromId, array $data)
     {
         if (!isset($data['method'])) {
@@ -44,5 +54,11 @@ class TcpServer extends \Hyperf\JsonRpc\TcpServer
             return $this->responseBuilder->buildErrorResponse($request, ResponseBuilder::INVALID_REQUEST);
         }
         return $request;
+    }
+
+    public function onReceive(SwooleServer $server, int $fd, int $fromId, string $data): void
+    {
+        parent::onReceive($server, $fd, $fromId, $data);
+        $this->eventDispatcher->dispatch(new OnReceive($server, $fd, $fromId, $data));
     }
 }
