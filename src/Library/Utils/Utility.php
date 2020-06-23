@@ -368,7 +368,7 @@ if (!function_exists('getRpcLogArguments')) {
             'uri' => $request->getUri()->getPath(),
             'params' => $params,
             'method' => $request->getMethod(),
-            'execution_time' => microtime(true) - Context::get('execution_start_time'),
+            'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000,2),
             'request_body_size' => strlen(encode($data)),
             'response_body_size' => $response->getBody()->getSize(),
         ];
