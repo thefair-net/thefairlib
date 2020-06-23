@@ -257,7 +257,7 @@ class Utility
      */
     public static function getUserIp()
     {
-        $x_real_ip = empty($_SERVER['HTTP_X_REAL_IP']) ? '' : $_SERVER['HTTP_X_REAL_IP'];
+        $x_real_ip = empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? '' : $_SERVER['HTTP_X_FORWARDED_FOR'];
         if (!empty($x_real_ip)) {
             $ips = explode(',', $x_real_ip);
             $client_ip = trim($ips[0]);
