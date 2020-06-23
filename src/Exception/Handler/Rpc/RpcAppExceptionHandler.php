@@ -57,13 +57,16 @@ class RpcAppExceptionHandler extends ExceptionHandler
      */
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
-        Logger::get()->error(sprintf('error exception:%s', get_class($throwable)), [
-                'msg' => $throwable->getMessage(),
-                'line' => $throwable->getLine(),
-                'file' => $throwable->getFile(),
-                'code' => $throwable->getCode(),
-                'trace_string' => $throwable->getTraceAsString(),
-            ]
+        Logger::get()->error(sprintf('error exception:%s', get_class($throwable)), array_merge_recursive(
+                [
+                    'msg' => $throwable->getMessage(),
+                    'line' => $throwable->getLine(),
+                    'file' => $throwable->getFile(),
+                    'code' => $throwable->getCode(),
+                    'trace_string' => $throwable->getTraceAsString(),
+                ],
+                getRpcLogArguments()
+            )
         );
 
         $result = $this->serviceResponse->showError(
