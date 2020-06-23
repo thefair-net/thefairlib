@@ -16,11 +16,10 @@ class Logger
     /**
      * 日志
      *
-     * @param string $name
      * @return LoggerInterface
      */
-    public static function get(string $name = '')
+    public static function get()
     {
-        return ApplicationContext::getContainer()->get(LoggerFactory::class)->get($name ?: env('APP_NAME'));
+        return ApplicationContext::getContainer()->get(LoggerFactory::class)->get(env('APP_NAME'));
     }
 }

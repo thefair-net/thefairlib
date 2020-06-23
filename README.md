@@ -20,6 +20,8 @@
 
 安装包 `composer up`
 
+生产环境`composer dump-autoload --optimize`
+
 启动服务开发 `php dev_start.php -c`
 
 ## 项目文件结构
@@ -415,6 +417,10 @@ $data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('thefair_service'
 ]);
 ```
 
+## 统一日志处理
+
+`TheFairLib\Library\Logger::get()`
+
 ## hyperf service 服务之间的访问
 
 配置文件 `config/autoload/services.php`
@@ -504,7 +510,7 @@ make(Test::class)->call('get_test')
 
 ```ini
 [Unit]
-Description=push service Http Server
+Description=push.service Http Server
 After=network.target
 After=syslog.target
 
@@ -519,17 +525,17 @@ Restart=always
 WantedBy=multi-user.target graphical.target
 ```
 
-使用`ln -s /home/thefair/www/push_service/bin/push.service /usr/lib/systemd/system && systemctl daemon-reload`
+使用`ln -s /home/thefair/www/push_service/bin/push.service /usr/lib/systemd/system && systemctl daemon-reload && systemctl enable push.service`
 
 ```shell
 #启动服务
-sudo systemctl start user.service
+sudo systemctl start push.service
 #reload服务
-sudo systemctl reload user.service
+sudo systemctl reload push.service
 #关闭服务
-sudo systemctl stop user.service
+sudo systemctl stop push.service
 
-sudo systemctl status user.service
+sudo systemctl status push.service
 ```
 
 ### supervisorctl 管理项目
