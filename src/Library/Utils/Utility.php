@@ -408,10 +408,11 @@ if (!function_exists('getClientInfo')) {
         if ($connectTime = arrayGet($clientInfo, 'connect_time')) {
             $clientInfo['connect_time'] = date('Y-m-d H:i:s', $connectTime);
         }
-        if ($lastTime = arrayGet($clientInfo, 'last_time')) {
-            $clientInfo['last_time'] = date('Y-m-d H:i:s', $lastTime);
-        }
-        return $clientInfo;
+        return [
+            'remote_port' => arrayGet($clientInfo, 'remote_port'),
+            'remote_ip' => arrayGet($clientInfo, 'remote_ip'),
+            'connect_time' => arrayGet($clientInfo, 'connect_time'),
+        ];
     }
 }
 
