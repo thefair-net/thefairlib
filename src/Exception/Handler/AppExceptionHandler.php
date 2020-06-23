@@ -53,7 +53,7 @@ class AppExceptionHandler extends ExceptionHandler
                     'line' => $throwable->getLine(),
                     'file' => $throwable->getFile(),
                     'code' => $throwable->getCode(),
-                    'trace_string' => $throwable->getTraceAsString(),
+                    'trace' => $throwable->getTrace(),
                 ],
                 getRpcLogArguments()
             )
