@@ -359,10 +359,11 @@ if (!function_exists('getRpcLogArguments')) {
         $data = $request->getAttribute('data');
         $params = $request->all();
         unset($params['__auth']);
+        $clientInfo = getClientInfo();
         return [
             'server_ip' => getServerLocalIp(),
+            'client_ip' => arrayGet($clientInfo, 'remote_ip'),
             'server_time' => now(),
-            'client_info' => getClientInfo(),
             'pid' => posix_getpid(),//得到当前 Worker 进程的操作系统进程 ID
             'uri' => $request->getUri()->getPath(),
             'params' => $params,
