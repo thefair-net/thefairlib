@@ -41,7 +41,7 @@ class Client extends TCP
                     'time' => $time,
                 ],
                 '__header' => [
-                    'real_client_ip' => $_SERVER['X-Forwarded-For'] ?? null,
+                    'real_client_ip' => Utility::getUserIp() ?? null,
                     'cid' => $_SERVER['HTTP_X_THEFAIR_CID'] ?? null,
                     'session_id' => Utility::getGpc('PHPSESSID', 'C') ?? null,
                 ],
