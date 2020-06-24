@@ -352,10 +352,7 @@ if (!function_exists('getRpcLogArguments')) {
          * @var RequestInterface $request
          */
         $request = ApplicationContext::getContainer()->get(RequestInterface::class);
-        /**
-         * @var ResponseInterface $response
-         */
-        $response = Context::get(ResponseInterface::class);
+
         $data = $request->getAttribute('data');
         $params = $request->all();
         unset($params['__auth']);
@@ -368,9 +365,9 @@ if (!function_exists('getRpcLogArguments')) {
             'uri' => $request->getUri()->getPath(),
             'params' => $params,
             'method' => $request->getMethod(),
-            'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000,2),
+            'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
             'request_body_size' => strlen(encode($data)),
-            'response_body_size' => $response->getBody()->getSize(),
+            'response_body_size' => Context::get('server:response_body_size'),
         ];
     }
 }
