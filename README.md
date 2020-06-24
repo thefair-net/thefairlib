@@ -421,6 +421,17 @@ $data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('thefair_service'
 
 `TheFairLib\Library\Logger::get()`
 
+level 日志等级
+1. DEBUG (100): 详细的debug信息。
+2. INFO (200): 关键事件。
+3. NOTICE (250): 普通但是重要的事件。
+4. WARNING (300): 出现非错误的异常。
+5. ERROR (400): 运行时错误，但是不需要立刻处理。
+6. CRITICA (500): 严重错误。
+7. EMERGENCY (600): 系统不可用。
+
+
+
 ## hyperf service 服务之间的访问
 
 配置文件 `config/autoload/services.php`
