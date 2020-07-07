@@ -372,6 +372,47 @@ if (!function_exists('getRpcLogArguments')) {
     }
 }
 
+
+if (!function_exists('getHttpLogArguments')) {
+    /**
+     * 获取要存储的日志部分字段，monolog以外的业务信息
+     *
+     * @return array
+     */
+    function getHttpLogArguments()
+    {
+        /**
+         * @var RequestInterface $request
+         */
+        $request = ApplicationContext::getContainer()->get(RequestInterface::class);
+
+        /**
+         * @var ResponseInterface $response
+         */
+        $response = ApplicationContext::getContainer()->get(ResponseInterface::class);
+
+        $data = $request->getAttribute('data');
+        $sessionId = $request->cookie('PHPSESSID');
+        return [
+            'server_ip' => getServerLocalIp(),
+            'client_ip' => $request->getServerParams(),
+            'server_time' => now(),
+            'pid' => posix_getpid(),//得到当前 Worker 进程的操作系统进程 ID
+            'session_id' => $sessionId,
+            'x_thefair_ua' => $request->getHeader('x-thefair-ua'),
+            'user_agent' => $request->getHeader('user-agent'),
+            'cid' => $request->getHeader('x-thefair-cid'),
+            'uri' => $request->getUri()->getPath(),
+            'url' => $request->fullUrl(),
+            'params' => $request->all(),
+            'method' => $request->getMethod(),
+            'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
+            'request_body_size' => strlen(encode($data)),
+            'response_body_size' => $response->getBody()->getSize(),
+        ];
+    }
+}
+
 if (!function_exists('getRpcClientIp')) {
     /**
      * 获得 Rpc client ip

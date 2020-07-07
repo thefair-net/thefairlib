@@ -14,6 +14,7 @@ namespace TheFairLib\Listener\Logger;
 
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Framework\Event\OnReceive;
+use TheFairLib\Event\OnRequest;
 use TheFairLib\Library\Logger\Logger;
 use Throwable;
 
@@ -26,6 +27,7 @@ class LoggerHandleListener implements ListenerInterface
     {
         return [
             OnReceive::class,
+            OnRequest::class,
         ];
     }
 
@@ -37,6 +39,9 @@ class LoggerHandleListener implements ListenerInterface
         try {
             if ($event instanceof OnReceive) {
                 Logger::get()->info(sprintf("access_logger"), getRpcLogArguments());
+            }
+            if ($event instanceof OnRequest) {
+                Logger::get()->info(sprintf("access_logger"), getHttpLogArguments());
             }
         } catch (Throwable $e) {
             Logger::get()->error(sprintf("write access logger error, %s", $e->getMessage()));

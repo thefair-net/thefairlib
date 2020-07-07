@@ -55,7 +55,7 @@ class AppExceptionHandler extends ExceptionHandler
                     'code' => $throwable->getCode(),
                     'trace' => $throwable->getTrace(),
                 ],
-                getRpcLogArguments()
+                getHttpLogArguments()
             )
         );
         $result = $this->serviceResponse->showError(
