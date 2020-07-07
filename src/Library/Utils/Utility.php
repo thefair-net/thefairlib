@@ -21,7 +21,7 @@ use Hyperf\Snowflake\IdGeneratorInterface;
 use Hyperf\Snowflake\Meta;
 use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
-use Psr\Http\Message\ResponseInterface;
+use Hyperf\HttpServer\Contract\ResponseInterface;
 use Swoole\Server as SwooleServer;
 
 if (!function_exists('encode')) {
@@ -386,12 +386,7 @@ if (!function_exists('getHttpLogArguments')) {
          */
         $request = ApplicationContext::getContainer()->get(RequestInterface::class);
 
-        /**
-         * @var ResponseInterface $response
-         */
-        $response = ApplicationContext::getContainer()->get(ResponseInterface::class);
-
-        $data = $request->getAttribute('data');
+        $data = $request->all();
         $sessionId = $request->cookie('PHPSESSID');
         return [
             'server_ip' => getServerLocalIp(),
@@ -404,11 +399,11 @@ if (!function_exists('getHttpLogArguments')) {
             'cid' => $request->getHeader('x-thefair-cid'),
             'uri' => $request->getUri()->getPath(),
             'url' => $request->fullUrl(),
-            'params' => $request->all(),
+            'params' => $data,
             'method' => $request->getMethod(),
             'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
             'request_body_size' => strlen(encode($data)),
-            'response_body_size' => $response->getBody()->getSize(),
+            'response_body_size' => Context::get('server:response_body_size'),
         ];
     }
 }
