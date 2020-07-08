@@ -21,7 +21,7 @@ use Hyperf\Snowflake\IdGeneratorInterface;
 use Hyperf\Snowflake\Meta;
 use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
-use Hyperf\HttpServer\Contract\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 use Swoole\Server as SwooleServer;
 
 if (!function_exists('encode')) {
@@ -353,7 +353,6 @@ if (!function_exists('getRpcLogArguments')) {
          */
         $request = ApplicationContext::getContainer()->get(RequestInterface::class);
 
-        $data = $request->getAttribute('data');
         $params = $request->all();
         unset($params['__auth']);
         $clientInfo = getClientInfo();
@@ -366,7 +365,7 @@ if (!function_exists('getRpcLogArguments')) {
             'params' => $params,
             'method' => $request->getMethod(),
             'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
-            'request_body_size' => strlen(encode($data)),
+            'request_body_size' => strlen(encode($params)),
             'response_body_size' => Context::get('server:response_body_size'),
         ];
     }
@@ -386,7 +385,8 @@ if (!function_exists('getHttpLogArguments')) {
          */
         $request = ApplicationContext::getContainer()->get(RequestInterface::class);
 
-        $data = $request->all();
+        $params = $request->all();
+        unset($params['__auth']);
         $sessionId = $request->cookie('PHPSESSID');
         return [
             'server_ip' => getServerLocalIp(),
@@ -399,10 +399,10 @@ if (!function_exists('getHttpLogArguments')) {
             'cid' => $request->getHeader('x-thefair-cid'),
             'uri' => $request->getUri()->getPath(),
             'url' => $request->fullUrl(),
-            'params' => $data,
+            'params' => $params,
             'method' => $request->getMethod(),
             'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
-            'request_body_size' => strlen(encode($data)),
+            'request_body_size' => strlen(encode($params)),
             'response_body_size' => Context::get('server:response_body_size'),
         ];
     }

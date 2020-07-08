@@ -44,7 +44,13 @@ class LoggerHandleListener implements ListenerInterface
                 Logger::get()->info(sprintf("access_logger"), getHttpLogArguments());
             }
         } catch (Throwable $e) {
-            Logger::get()->error(sprintf("write access logger error, %s", $e->getMessage()));
+            Logger::get()->error(sprintf(
+                "write access logger error, %s,code:%d,file:%s,line:%d",
+                $e->getMessage(),
+                $e->getCode(),
+                $e->getFile(),
+                $e->getLine()
+            ));
         }
     }
 }

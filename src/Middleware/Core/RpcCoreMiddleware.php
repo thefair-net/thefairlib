@@ -18,6 +18,7 @@ use Hyperf\Rpc\Protocol;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TheFairLib\Library\Logger\Logger;
 
 class RpcCoreMiddleware extends \Hyperf\JsonRpc\CoreMiddleware
 {
@@ -35,6 +36,8 @@ class RpcCoreMiddleware extends \Hyperf\JsonRpc\CoreMiddleware
             $controllerInstance = $this->container->get($controller);
             if (!method_exists($controller, $action)) {
                 // Route found, but the handler does not exist.
+                rd_debug([__CLASS__, __FILE__, $request->getServerParams()]);
+
                 return $this->responseBuilder->buildErrorResponse($request, ResponseBuilder::INTERNAL_ERROR);
             }
             $parameters = $this->parseParameters($controller, $action, $request->getParsedBody());
@@ -52,6 +55,7 @@ class RpcCoreMiddleware extends \Hyperf\JsonRpc\CoreMiddleware
 
     protected function handleNotFound(ServerRequestInterface $request)
     {
+        rd_debug([__FILE__, $request->getServerParams()]);
         return $this->responseBuilder->buildErrorResponse($request, ResponseBuilder::METHOD_NOT_FOUND);
     }
 

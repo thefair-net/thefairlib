@@ -47,13 +47,13 @@ class AppExceptionHandler extends ExceptionHandler
      */
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
-        Logger::get()->error(sprintf('error exception:%s', get_class($throwable)), array_merge_recursive(
+        Logger::get()->error(sprintf('error_exception:%s', get_class($throwable)), array_merge_recursive(
                 [
                     'msg' => $throwable->getMessage(),
                     'line' => $throwable->getLine(),
                     'file' => $throwable->getFile(),
                     'code' => $throwable->getCode(),
-                    'trace' => $throwable->getTrace(),
+                    'trace_string' => $throwable->getTraceAsString(),
                 ],
                 getHttpLogArguments()
             )
