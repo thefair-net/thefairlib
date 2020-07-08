@@ -69,7 +69,7 @@ class RotatingFileHandler extends \Monolog\Handler\RotatingFileHandler
         $glob = str_replace(
             ['{filename}', '{date}'],
             [$fileInfo['filename'], '[0-9][0-9][0-9][0-9]*'],
-            $fileInfo['dirname'] . '/' . $this->filenameFormat
+            $fileInfo['dirname'] . '/{date}/{filename}'
         );
         if (!empty($fileInfo['extension'])) {
             $glob .= '.' . $fileInfo['extension'];
