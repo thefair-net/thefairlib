@@ -7,6 +7,7 @@ namespace TheFairLib\Server\Client;
 use Hyperf\RpcClient\AbstractServiceClient;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
+use TheFairLib\Utility\Utility;
 use Throwable;
 
 abstract class JsonRpcClient extends AbstractServiceClient
@@ -20,25 +21,32 @@ abstract class JsonRpcClient extends AbstractServiceClient
     public function call(string $method, array $params = [])
     {
         try {
-            if (isset($params['auth'])) {
-                throw new ServiceException('auth 关键字已经被使用');
+            if (isset($params['__auth']) || isset($params['__header'])) {
+                throw new ServiceException('__auth | __header 是保留关键字');
             }
             $config = $this->getConsumerConfig();
+            $time = time();
+            $sign = md5(sprintf('%s%s%d', $config['app_key'], $config['app_secret'], $time));
             $requestData = array_merge_recursive($params, [
-                'auth' => [
+                '__auth' => [
                     'app_key' => $config['app_key'],
-                    'app_secret' => $config['app_secret'],
+                    'sign' => $sign,
+                    'time' => $time,
+                ],
+                '__header' => [
+                    'client_ip' => getServerLocalIp(),
                 ],
             ]);
+
             $result = $this->__request($method, $requestData);
             if (!empty($result['code'])) {
-                throw new ServiceException($result['message']['text'] ?? '', $result['result'] ?? [], $result['code']);
+                throw new ServiceException($result['message']['text'] ?? '', $result['result'] ?? [], (int)$result['code']);
             }
             return $result;
         } catch (ServiceException $e) {
-            throw new ServiceException($e->getMessage(), $e->getData(), $e->getCode(), $e, $e->getHttpStatus());
+            throw new ServiceException($e->getMessage(), $e->getData(), (int)$e->getCode(), $e, $e->getHttpStatus());
         } catch (Throwable $e) {
-            throw new ServiceException($e->getMessage(), [], $e->getCode() > 0 ? $e->getCode() : InfoCode::CODE_ERROR);
+            throw new ServiceException($e->getMessage(), [], (int)$e->getCode() > 0 ? (int)$e->getCode() : InfoCode::CODE_ERROR);
         }
     }
 
