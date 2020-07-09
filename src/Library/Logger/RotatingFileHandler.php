@@ -49,6 +49,7 @@ class RotatingFileHandler extends \Monolog\Handler\RotatingFileHandler
 
     protected function getTimedFilename()
     {
+        rd_debug([$logFiles = glob($this->getGlobPattern()), $this->maxFiles]);
         $fileInfo = pathinfo($this->filename);
         $timedFilename = str_replace(
             ['{filename}', '{date}'],

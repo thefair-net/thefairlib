@@ -1,11 +1,12 @@
 [Unit]
-Description=test service
+Description=test service Http Server
 After=network.target
 After=syslog.target
 
 [Service]
 Type=simple
 LimitNOFILE=65535
+ExecStartPre=/usr/bin/sh /home/thefair/www/test_service/bin/init-proxy.sh
 ExecStart=/usr/bin/php /home/thefair/www/test_service/bin/hyperf.php start
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=always
