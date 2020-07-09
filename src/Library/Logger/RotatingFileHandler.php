@@ -26,8 +26,6 @@ use Monolog\Utils;
 class RotatingFileHandler extends \Monolog\Handler\RotatingFileHandler
 {
 
-    protected $maxFiles = 30;
-
     /**
      * @param string $filename
      * @param int $maxFiles The maximal amount of files to keep (0 means unlimited)
@@ -39,17 +37,16 @@ class RotatingFileHandler extends \Monolog\Handler\RotatingFileHandler
     public function __construct($filename, $maxFiles = 0, $level = Logger::DEBUG, $bubble = true, $filePermission = null, $useLocking = false)
     {
         $this->filename = Utils::canonicalizePath($filename);
-        $this->maxFiles = (int)$maxFiles;
+        $this->maxFiles = (int)env('LOG_MAX_FILES_DAY', 30);
         $this->nextRotation = new \DateTime('tomorrow');
         $this->filenameFormat = '{date}/{filename}';
         $this->dateFormat = 'Y-m-d';
 
-        parent::__construct($filename, $maxFiles, $level, $bubble, $filePermission, $useLocking);
+        parent::__construct($filename, $this->maxFiles, $level, $bubble, $filePermission, $useLocking);
     }
 
     protected function getTimedFilename()
     {
-        rd_debug([$logFiles = glob($this->getGlobPattern()), $this->maxFiles]);
         $fileInfo = pathinfo($this->filename);
         $timedFilename = str_replace(
             ['{filename}', '{date}'],
