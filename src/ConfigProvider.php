@@ -73,12 +73,6 @@ class ConfigProvider
                     'destination' => BASE_PATH . '/app/Constants/InfoCode.php',
                 ],
                 [
-                    'id' => 'push',
-                    'description' => 'The config for push',
-                    'source' => __DIR__ . '/../publish/push.php',
-                    'destination' => BASE_PATH . '/config/autoload/push.php',
-                ],
-                [
                     'id' => 'translation',
                     'description' => 'The config for translation',
                     'source' => __DIR__ . '/../publish/translation.php',
