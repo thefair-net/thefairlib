@@ -36,43 +36,7 @@ class RotatingFileHandler extends \Monolog\Handler\RotatingFileHandler
      */
     public function __construct($filename, $maxFiles = 0, $level = Logger::DEBUG, $bubble = true, $filePermission = null, $useLocking = false)
     {
-        $this->filename = Utils::canonicalizePath($filename);
         $this->maxFiles = (int)env('LOG_MAX_FILES_DAY', 30);
-        $this->nextRotation = new \DateTime('tomorrow');
-        $this->filenameFormat = '{date}/{filename}';
-        $this->dateFormat = 'Y-m-d';
-
         parent::__construct($filename, $this->maxFiles, $level, $bubble, $filePermission, $useLocking);
-    }
-
-    protected function getTimedFilename()
-    {
-        $fileInfo = pathinfo($this->filename);
-        $timedFilename = str_replace(
-            ['{filename}', '{date}'],
-            [$fileInfo['filename'], date($this->dateFormat)],
-            $fileInfo['dirname'] . '/{date}/{filename}'
-        );
-
-        if (!empty($fileInfo['extension'])) {
-            $timedFilename .= '.' . $fileInfo['extension'];
-        }
-
-        return $timedFilename;
-    }
-
-    protected function getGlobPattern()
-    {
-        $fileInfo = pathinfo($this->filename);
-        $glob = str_replace(
-            ['{filename}', '{date}'],
-            [$fileInfo['filename'], '[0-9][0-9][0-9][0-9]*'],
-            $fileInfo['dirname'] . '/{date}/{filename}'
-        );
-        if (!empty($fileInfo['extension'])) {
-            $glob .= '.' . $fileInfo['extension'];
-        }
-
-        return $glob;
     }
 }
