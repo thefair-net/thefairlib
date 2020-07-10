@@ -434,7 +434,7 @@ $data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('thefair_service'
 7. EMERGENCY (600): 系统不可用。
 
 ### 其他日志处理
-
+.env 文件配置
 ```ini
 LOG_DIR=/home/xxx/logs/www/  # 日志保存路径
 CLOSE_LOG=0 # 1为关闭日志，0为正常
