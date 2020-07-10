@@ -353,6 +353,8 @@ public function rawSql()
 
 ## 异常
 
+**code 必须为 int，还不是 "0"**
+
 ### 普通异常
 
 ```php
@@ -419,9 +421,10 @@ $data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('thefair_service'
 
 ## 统一日志处理
 
-`TheFairLib\Library\Logger::get()`
+全局方法：`TheFairLib\Library\Logger::get()`
 
-level 日志等级
+### level 日志等级
+
 1. DEBUG (100): 详细的debug信息。
 2. INFO (200): 关键事件。
 3. NOTICE (250): 普通但是重要的事件。
@@ -430,6 +433,13 @@ level 日志等级
 6. CRITICA (500): 严重错误。
 7. EMERGENCY (600): 系统不可用。
 
+### 其他日志处理
+
+```ini
+LOG_DIR=/home/xxx/logs/www/  # 日志保存路径
+CLOSE_LOG=0 # 1为关闭日志，0为正常
+LOG_MAX_FILES_DAY=30 # 日志保存天数
+```
 
 
 ## hyperf service 服务之间的访问
