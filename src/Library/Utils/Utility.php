@@ -450,3 +450,18 @@ if (!function_exists('getClientInfo')) {
     }
 }
 
+
+if (!function_exists('stringToInt')) {
+    /**
+     * string 转 int，不保证唯一性
+     *
+     * @return int
+     */
+    function stringToInt(string $stringToInt): int
+    {
+        return intval(crc32(md5((string)$stringToInt)));
+    }
+}
+
+
+

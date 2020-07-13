@@ -156,7 +156,7 @@ abstract class DataModel extends Model
      */
     protected function getShardingId($shardingKey): int
     {
-        return intval(crc32(md5((string)$shardingKey)));
+        return stringToInt((string)$shardingKey);
     }
 
     /**
