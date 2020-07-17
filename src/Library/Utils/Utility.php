@@ -455,6 +455,7 @@ if (!function_exists('stringToInt')) {
     /**
      * string 转 int，不保证唯一性
      *
+     * @param string $stringToInt
      * @return int
      */
     function stringToInt(string $stringToInt): int
