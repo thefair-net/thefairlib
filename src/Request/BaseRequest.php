@@ -25,7 +25,7 @@ class BaseRequest extends FormRequest
             'page' => 'integer',
             'item_per_page' => 'integer',
             'item_per_row' => 'integer',
-            'last_item_id' => 'string|max:64',
+//            'last_item_id' => 'string|max:64',
 
             'app_id' => 'string|max:32',
             'app_name' => 'string|max:32',
