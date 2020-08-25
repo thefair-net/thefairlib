@@ -35,11 +35,13 @@ class ClientBuilderFactory
         $builder = $this->create($poolName);
         $options = arrayGet(self::$config, sprintf('%s', $poolName));
         return $builder->setHosts([
-            'host' => arrayGet($options, 'host', '127.0.0.1'),
-            'port' => arrayGet($options, 'port', 9200),
-            'user' => arrayGet($options, 'user', ''),
-            'pass' => arrayGet($options, 'pass', ''),
-            'scheme' => arrayGet($options, 'scheme', 'http'),
+            [
+                'host' => arrayGet($options, 'host', '127.0.0.1'),
+                'port' => arrayGet($options, 'port', 9200),
+                'user' => arrayGet($options, 'user', ''),
+                'pass' => arrayGet($options, 'pass', ''),
+                'scheme' => arrayGet($options, 'scheme', 'http'),
+            ],
         ])->build();
     }
 
