@@ -518,7 +518,42 @@ class Test extends \TheFairLib\Server\Client\JsonRpcClient
 
 访问
 ```php
-make(Test::class)->call('get_test')
+make(Test::class)->call('get_test');
+```
+
+## es 搜索
+
+```php
+ $data = TheFairLib\Library\Search\Elastic::getContainer()->get([
+            'index' => 'videos_hot_top',
+            'type' => 'videos_hot_top',
+            'id' => 1,
+        ]);
+```
+
+```json
+{
+  "code": 0,
+  "message": {
+    "text": "",
+    "action": "toast"
+  },
+  "result": {
+    "data": {
+      "_index": "videos_hot_top",
+      "_type": "videos_hot_top",
+      "_id": "1",
+      "_version": 1,
+      "found": true,
+      "_source": {
+        "doc": {
+          "name": "test"
+        },
+        "doc_as_upsert": true
+      }
+    }
+  }
+}
 ```
 
 ## 线上服务启动 
