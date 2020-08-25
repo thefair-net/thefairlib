@@ -82,6 +82,7 @@ config
 │   ├── cache.php // 用于管理缓存组件
 │   ├── commands.php // 用于管理自定义命令
 │   ├── consul.php // 用于管理 Consul 客户端
+│   ├── elastic.php // 用于管理 elasticsearch 客户端
 │   ├── databases.php // 用于管理数据库客户端
 │   ├── devtool.php // 用于管理开发者工具
 │   ├── exceptions.php // 用于管理异常处理器
