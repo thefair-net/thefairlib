@@ -21,6 +21,10 @@ use Swoole\Coroutine;
 
 class ClientBuilderFactory
 {
+    /**
+     * @var array
+     */
+    private static $config;
 
     /**
      * @param string $poolName
@@ -28,7 +32,15 @@ class ClientBuilderFactory
      */
     public function getClient(string $poolName)
     {
-        return $this->create($poolName)->build();
+        $builder = $this->create($poolName);
+        $options = arrayGet(self::$config, sprintf('%s', $poolName));
+        return $builder->setHosts([
+            'host' => arrayGet($options, 'host', '127.0.0.1'),
+            'port' => arrayGet($options, 'port', 9200),
+            'user' => arrayGet($options, 'user', ''),
+            'pass' => arrayGet($options, 'pass', ''),
+            'scheme' => arrayGet($options, 'scheme', 'http'),
+        ])->build();
     }
 
     /**
@@ -37,15 +49,12 @@ class ClientBuilderFactory
      */
     public function create(string $poolName)
     {
-        /**
-         * @var ConfigInterface $config
-         */
-        $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
+        self::$config = ApplicationContext::getContainer()->get(ConfigInterface::class)->get('elastic', []);
         $builder = ClientBuilder::create();
         if (Coroutine::getCid() > 0) {
             $handler = make(PoolHandler::class, [
                 'option' => [
-                    'max_connections' => (int)$config->get(sprintf('elastic.%s.pool.max_connections', $poolName), 100),
+                    'max_connections' => (int)arrayGet(self::$config, sprintf('%s.pool.max_connections', $poolName), 100),
                 ],
             ]);
             $builder->setHandler($handler);
