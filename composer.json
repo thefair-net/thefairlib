@@ -59,7 +59,8 @@
         "hyperf/retry": "^1.1",
         "ext-redis": "*",
         "hyperf/crontab": "^1.1",
-        "hyperf/elasticsearch": "~1.1.0"
+        "hyperf/elasticsearch": "~1.1.0",
+        "thefair/hyperf-rocketmq": "^1.0"
     },
     "require-dev": {
         "swoft/swoole-ide-helper": "^4.2",
