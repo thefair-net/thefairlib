@@ -14,15 +14,16 @@ class RedisClient extends \Redis
     {
         $this->connect($config['host'], $config['port'], $config['timeout'], null, 0, $config['read_timeout']);
 
+        // use password
+        if (isset($config['auth'])) {
+            $this->auth($config['auth']);
+        }
+
         // switch db
         if (isset($config['db'])) {
             $this->select($config['db']);
         }
 
-        // use password
-        if (isset($config['auth'])) {
-            $this->auth($config['auth']);
-        }
     }
 
     /**
