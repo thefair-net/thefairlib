@@ -14,6 +14,7 @@ use Hyperf\Utils\Serializer\SimpleNormalizer;
 use TheFairLib\Contract\LockInterface;
 use TheFairLib\Contract\ResponseBuilderInterface;
 use TheFairLib\Contract\ResponseInterface;
+use TheFairLib\Contract\ServiceGovernanceManageInterface;
 use TheFairLib\Library\Http\ResponseBuilderFactory;
 use TheFairLib\Library\Http\ServiceResponse;
 use TheFairLib\Library\Lock\RedisLockFactory;
@@ -21,12 +22,14 @@ use TheFairLib\Library\Logger\StdoutLoggerFactory;
 use TheFairLib\Listener\DbQueryExecutedListener;
 use TheFairLib\Listener\ErrorHandleListener;
 use TheFairLib\Listener\Logger\LoggerHandleListener;
+use TheFairLib\Listener\RegisterServiceListener;
 use TheFairLib\Listener\RouterHandleListener;
 use TheFairLib\Listener\Server\WorkerErrorHandleListener;
 use TheFairLib\Listener\Server\WorkerExitHandleListener;
 use TheFairLib\Listener\Server\WorkerStopHandleListener;
 use TheFairLib\Listener\ValidatorHandleListener;
 use TheFairLib\Middleware\Core\ServiceMiddleware;
+use TheFairLib\Service\ServiceGovernance\Consul\Manage;
 
 class ConfigProvider
 {
@@ -41,6 +44,7 @@ class ConfigProvider
                 LockInterface::class => RedisLockFactory::class,
                 NormalizerInterface::class => SimpleNormalizer::class,
                 ResponseBuilderInterface::class => ResponseBuilderFactory::class,
+                ServiceGovernanceManageInterface::class => Manage::class,
             ],
             'listeners' => [
                 ErrorHandleListener::class,
@@ -48,6 +52,7 @@ class ConfigProvider
                 ValidatorHandleListener::class,
                 DbQueryExecutedListener::class,
                 LoggerHandleListener::class,
+                RegisterServiceListener::class,
                 WorkerStopHandleListener::class,
                 WorkerErrorHandleListener::class,
                 WorkerExitHandleListener::class,
