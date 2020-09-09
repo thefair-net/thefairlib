@@ -19,6 +19,11 @@ class Api extends Response
 
     private $_code = 0;
 
+    private $_action = 'log';
+
+    const ACTION_TOAST = 'toast';
+    const ACTION_REDIRECT = 'redirect';
+
     private static $_jsonpCallbackName = 'callback';
     private static $_isJsonp = false;
 
@@ -42,6 +47,10 @@ class Api extends Response
         return $this->_code;
     }
 
+    public function getAction(){
+        return $this->_action;
+    }
+
     public function setResult($result){
         return $this->_result = $result;
     }
@@ -52,6 +61,10 @@ class Api extends Response
 
     public function setCode($code){
         return $this->_code = $code;
+    }
+
+    public function setAction($action){
+        return $this->_action = $action;
     }
 
     public static function setCallBack($callback){
@@ -88,9 +101,11 @@ class Api extends Response
     }
 
     private function _buildApiBody(){
+        $action = $this->getAction();
+        $msg = $this->getMsg();
         return array(
             'code' => $this->getCode(),
-            'message' => array('text' => $this->getMsg(), 'action' => 'toast'),
+            'message' => !empty($action) ? array('content' => $msg, 'action' => $action) : (!empty($msg) ? array('content' => $msg, 'action' => self::ACTION_TOAST) : new \stdClass()),
             'result' => (object) $this->getResult(),
         );
     }

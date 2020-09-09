@@ -38,4 +38,9 @@ class Controller extends Base
     public function showSuccess($msg = ''){
         $this->showResult(['state' => true], (!empty($msg) ? $msg : 'success'));
     }
+
+    public function redirect($url){
+        self::$_responseObj->setAction(self::$_responseObj::ACTION_REDIRECT);
+        $this->showResult(new \stdClass(), $url);
+    }
 }
