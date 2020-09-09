@@ -41,7 +41,7 @@ class ErrorHandleListener implements ListenerInterface
                 Logger::get()->debug("mac: " . $message);
             }
             if (error_reporting() & $level) {
-                Logger::get()->error(sprintf('set_error_handler:%s', $message), [
+                Logger::get()->critical(sprintf('set_error_handler:%s', $message), [
                     'level' => $level,
                     'msg' => $message,
                     'file' => $file,
@@ -53,7 +53,7 @@ class ErrorHandleListener implements ListenerInterface
         });
 
         set_exception_handler(function (Throwable $e) {
-            Logger::get()->error(sprintf('set_exception_handler:%s', $e->getMessage()), [
+            Logger::get()->critical(sprintf('set_exception_handler:%s', $e->getMessage()), [
                 'msg' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -73,7 +73,7 @@ class ErrorHandleListener implements ListenerInterface
                 case E_CORE_ERROR:
                 case E_COMPILE_ERROR:
                     $msg = arrayGet($error, 'message');
-                    Logger::get()->error(sprintf('register_shutdown_function:%s', $msg), [
+                    Logger::get()->critical(sprintf('register_shutdown_function:%s', $msg), [
                         'msg' => $msg,
                         'file' => arrayGet($error, 'file'),
                         'line' => arrayGet($error, 'line'),
