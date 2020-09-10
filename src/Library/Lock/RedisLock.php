@@ -72,6 +72,7 @@ class RedisLock implements LockInterface
             }
 
             // Wait a random delay before to retry
+            mt_srand();//重新播种
             $delay = mt_rand(floor($this->retryDelay / 2), $this->retryDelay);
             usleep($delay * 1000);
 
