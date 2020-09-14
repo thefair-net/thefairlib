@@ -270,20 +270,15 @@ abstract class DataModel extends Model
     }
 
     /**
+     * redis 前缀
+     *
      * @param $type
      * @param $dataType
      * @return string
      */
     protected function getPrefix($type, $dataType)
     {
-        $productPrefix = '';
-        if (env('PRODUCT_NAME')) {
-            $productPrefix = env('PRODUCT_NAME') . '#';
-        }
-        if (!in_array($type, ['Cache', 'Storage']) || !in_array($dataType, ['key', 'hash', 'set', 'zset', 'list', 'string', 'geo'])) {
-            throw new ServiceException('Redis cache prefix config error!');
-        }
-        return $productPrefix . $type . '#' . env('PHASE', 'prod') . '#' . $dataType . '#';
+        return getPrefix($type, $dataType);
     }
 
     /**

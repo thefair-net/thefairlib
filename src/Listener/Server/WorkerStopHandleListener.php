@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace TheFairLib\Listener\Server;
 
 use Hyperf\Event\Contract\ListenerInterface;
+use Hyperf\Framework\Event\OnShutdown;
 use Hyperf\Framework\Event\OnWorkerStop;
 use TheFairLib\Library\Logger\Logger;
 
@@ -25,11 +26,20 @@ class WorkerStopHandleListener implements ListenerInterface
     {
         return [
             OnWorkerStop::class,
+            OnShutdown::class,
         ];
     }
 
     public function process(object $event)
     {
+
+        if ($event instanceof OnShutdown) {
+            Logger::get()->warning(sprintf(
+                'event: %s , worker_id: %d',
+                OnShutdown::class,
+                $event->workerId
+            ));
+        }
         if ($event instanceof OnWorkerStop) {
             Logger::get()->warning(sprintf(
                 'event: %s , worker_id: %d',
