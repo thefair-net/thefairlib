@@ -574,7 +574,9 @@ After=syslog.target
 [Service]
 Type=simple
 LimitNOFILE=65535
+ExecStartPre=/usr/bin/sh /home/thefair/www/push_service/bin/init-proxy.sh
 ExecStart=/usr/bin/php /home/thefair/www/push_service/bin/hyperf.php start
+ExecStop=/usr/bin/php /home/thefair/www/push_service/bin/hyperf.php deregister_consul
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=always
 
