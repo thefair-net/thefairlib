@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TheFairLib;
 
 use Hyperf\Contract\ConfigInterface;
+use Hyperf\Contract\LengthAwarePaginatorInterface;
 use Hyperf\Contract\NormalizerInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Devtool\VendorPublishCommand;
@@ -29,6 +30,7 @@ use TheFairLib\Listener\Server\WorkerExitHandleListener;
 use TheFairLib\Listener\Server\WorkerStopHandleListener;
 use TheFairLib\Listener\ValidatorHandleListener;
 use TheFairLib\Middleware\Core\ServiceMiddleware;
+use TheFairLib\Model\Paginator\LengthAwarePaginator;
 use TheFairLib\Service\ServiceGovernance\Consul\Manage;
 
 class ConfigProvider
@@ -45,6 +47,7 @@ class ConfigProvider
                 NormalizerInterface::class => SimpleNormalizer::class,
                 ResponseBuilderInterface::class => ResponseBuilderFactory::class,
                 ServiceGovernanceManageInterface::class => Manage::class,
+                LengthAwarePaginatorInterface::class => LengthAwarePaginator::class,
             ],
             'listeners' => [
                 ErrorHandleListener::class,

@@ -16,6 +16,7 @@
 
 `composer create-project lmz/thefair-skeleton test_service`
 
+复制项目中的 `.env.example` 为 `.env`
 本地配置文件 `.env`
 
 安装包 `composer up`
@@ -82,10 +83,10 @@ config
 │   ├── cache.php // 用于管理缓存组件
 │   ├── commands.php // 用于管理自定义命令
 │   ├── consul.php // 用于管理 Consul 客户端
-│   ├── elastic.php // 用于管理 elasticsearch 客户端
 │   ├── databases.php // 用于管理数据库客户端
 │   ├── devtool.php // 用于管理开发者工具
 │   ├── exceptions.php // 用于管理异常处理器
+│   ├── elastic.php // 用于管理 elasticsearch 客户端
 │   ├── listeners.php // 用于管理事件监听者
 │   ├── lock.php // 分布式锁
 │   ├── logger.php // 用于管理日志
@@ -315,6 +316,55 @@ UserInfo::shardingId($uid)->where([
 ])->first();
 ```
 
+### 分页
+
+行数大于 50 会抛出异常。(无法直接修改，改动太大)
+
+```json
+{
+    "code": 40001,
+    "message": {
+        "text": "per page max 50",
+        "action": "toast"
+    },
+    "result": {
+        "per_age": 300,
+    }
+}
+```
+
+demo 方法
+```php
+UserInfo::query()->paginate(3)])
+```
+
+返回结果
+
+```json
+{
+  "code": 0,
+  "message": {
+    "text": "",
+    "action": "toast"
+  },
+  "result": {
+    "item_list": [
+      {
+        "id": 4434,
+        "title": "你永远不知道明天和意外哪个先来"
+      }
+    ],
+    "page": 1,
+    "item_per_page": 3,
+    "item_count": 500,
+    "page_count": 167
+  }
+}
+```
+
+### 全局 uuid
+
+`getUuid()`
 
 ### sql 注入
 
@@ -351,6 +401,25 @@ public function rawSql()
 上面这条 sql 传入的是一个字符串，如果用参数过滤很容易误杀，必须使用**预处理查询**
 
 ***系统底层会监控 sql 语句，发现原生 sql 语法，自动报警***
+
+## Redis 使用
+
+### getPrefix 缓存前缀
+
+`getPrefix('Cache', 'hash')`
+
+### 全局用法
+
+```php
+TheFairLib\Library\Cache\Redis::getContainer('pool_name')->set();
+TheFairLib\Library\Cache\Redis::getContainer('pool_name')->get();
+```
+
+### zset 全局分页
+
+```php
+getItemListByPageFromCache(self::REDIS_POOL, $name, $lastItemId, 'asc', $itemPerPage, true);
+```
 
 ## 异常
 
@@ -420,6 +489,16 @@ $data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('thefair_service'
 ]);
 ```
 
+## Elasticsearch 搜索
+
+```php
+\TheFairLib\Library\Search\Elastic::getContainer()->get([
+    'index' => 'xxx',
+    'type' => 'xxx',
+    'id' => 1,
+]);
+```
+
 ## 统一日志处理
 
 全局方法：`TheFairLib\Library\Logger::get()`
@@ -435,7 +514,7 @@ $data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('thefair_service'
 7. EMERGENCY (600): 系统不可用。
 
 ### 其他日志处理
-.env 文件配置
+
 ```ini
 LOG_DIR=/home/xxx/logs/www/  # 日志保存路径
 CLOSE_LOG=0 # 1为关闭日志，0为正常
@@ -519,42 +598,7 @@ class Test extends \TheFairLib\Server\Client\JsonRpcClient
 
 访问
 ```php
-make(Test::class)->call('get_test');
-```
-
-## es 搜索
-
-```php
- $data = TheFairLib\Library\Search\Elastic::getContainer()->get([
-            'index' => 'videos_hot_top',
-            'type' => 'videos_hot_top',
-            'id' => 1,
-        ]);
-```
-
-```json
-{
-  "code": 0,
-  "message": {
-    "text": "",
-    "action": "toast"
-  },
-  "result": {
-    "data": {
-      "_index": "videos_hot_top",
-      "_type": "videos_hot_top",
-      "_id": "1",
-      "_version": 1,
-      "found": true,
-      "_source": {
-        "doc": {
-          "name": "test"
-        },
-        "doc_as_upsert": true
-      }
-    }
-  }
-}
+make(Test::class)->call('get_test')
 ```
 
 ## 线上服务启动 
@@ -574,9 +618,7 @@ After=syslog.target
 [Service]
 Type=simple
 LimitNOFILE=65535
-ExecStartPre=/usr/bin/sh /home/thefair/www/push_service/bin/init-proxy.sh
 ExecStart=/usr/bin/php /home/thefair/www/push_service/bin/hyperf.php start
-ExecStop=/usr/bin/php /home/thefair/www/push_service/bin/hyperf.php deregister_consul
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=always
 

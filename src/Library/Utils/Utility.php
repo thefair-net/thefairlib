@@ -464,6 +464,14 @@ if (!function_exists('stringToInt')) {
     }
 }
 
+if (!function_exists('getStaging')) {
+
+    function getStaging(): bool
+    {
+        return env('PHASE') != "prod";
+    }
+}
+
 if (!function_exists('getPrefix')) {
     /**
      * redis 前缀
@@ -482,5 +490,68 @@ if (!function_exists('getPrefix')) {
             throw new ServiceException('Redis cache prefix config error!');
         }
         return $productPrefix . $type . '#' . env('PHASE', 'prod') . '#' . $dataType . '#';
+    }
+}
+
+if (!function_exists('getItemListByPageFromCache')) {
+    function getItemListByPageFromCache(string $pool, $listCacheKey, $lastItemId, $order = 'desc', $itemPerPage = 20, $withScores = false): array
+    {
+        $total = Redis::getContainer($pool)->zCard($listCacheKey);
+        $itemPerPage = min(50, $itemPerPage);
+        $pageCount = ceil($total / $itemPerPage);
+        $list = [];
+        if ($total) {
+            if (!empty($lastItemId)) {
+                $start = getItemRankFromCache($pool, $listCacheKey, $lastItemId, $order);
+                $start += 1;
+            } else {
+                $start = $lastItemId;
+            }
+
+            $end = $start + $itemPerPage - 1;
+            $funcName = $order == 'desc' ? 'zRevRange' : 'zRange';
+
+            if ($withScores === true) {
+                $list = Redis::getContainer($pool)->$funcName($listCacheKey, $start, $end, true);
+            } else {
+                $list = Redis::getContainer($pool)->$funcName($listCacheKey, $start, $end);
+            }
+            if (!empty($list)) {
+                $lastItemId = end($list);
+                if ($withScores === true) {
+                    $lastItemId = key($list);
+                }
+            }
+        }
+
+        $result = [
+            'item_list' => $list,
+            'item_count' => $total,
+            'item_per_page' => $itemPerPage,
+            'page_count' => $pageCount,
+        ];
+
+        $lastPos = getItemRankFromCache($pool, $listCacheKey, $lastItemId, $order);
+        if ($lastPos != $total - 1 && !empty($list)) {
+            $result['last_item_id'] = $lastItemId;
+        }
+        return $result;
+    }
+}
+
+if (!function_exists('getItemRankFromCache')) {
+    /**
+     * 获取缓存中成员的排名,用于展示未读消息数或者获取列表的起始位置
+     *
+     * @param string $pool
+     * @param $listCacheKey
+     * @param $lastItemId
+     * @param string $order
+     * @return int
+     */
+    function getItemRankFromCache(string $pool, $listCacheKey, $lastItemId, $order = 'desc'): int
+    {
+        return $order == 'desc' ? (int)Redis::getContainer($pool)->zRevRank($listCacheKey, $lastItemId) :
+            (int)Redis::getContainer($pool)->zRank($listCacheKey, $lastItemId);
     }
 }
