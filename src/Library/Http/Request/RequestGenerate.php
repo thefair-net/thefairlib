@@ -93,7 +93,7 @@ class RequestGenerate extends RequestBase
         $routePath = ltrim(bigCamelize($handler->route), '/');
         $requestClassName = sprintf('App\Request\%s', str_replace('/', '\\', $routePath));
         $requestClassPath = sprintf('%s/app/Request/%s.php', BASE_PATH, $routePath);
-        
+
         if (!file_exists(dirname($requestClassPath))) {
             mkdir(dirname($requestClassPath) . '/', 0755, true);
             $this->output->writeln(sprintf('create dir [%s] .', dirname($requestClassPath)));
@@ -102,6 +102,9 @@ class RequestGenerate extends RequestBase
         if (!file_exists($requestClassPath)) {
             file_put_contents($requestClassPath, $this->buildClass($requestClassName));
             $this->output->writeln(sprintf('create class [%s] file .', $requestClassPath));
+        }
+        if (file_exists(dirname($requestClassPath)) && file_exists($requestClassPath)) {
+            $this->output->writeln(sprintf('success [%s] .', $requestClassName));
         }
         $this->param[$keyName] = true;
     }
