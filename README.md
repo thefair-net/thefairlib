@@ -1,5 +1,7 @@
 # Rpc Service 搭建说明文档
 
+最新文档说明：https://github.com/thefair-net/thefairlib
+
 [TOC]
 
 ## 安装
@@ -140,6 +142,10 @@ http 服务使用 `@AutoController`
 Rpc 服务使用 `@RpcService`
 
 如 ` * @RpcService(name="v2/test", protocol="jsonrpc-tcp-length-check", server="json-rpc")`
+
+### 自动生成 Request 文件
+
+`php bin/hyperf.php request`
 
 ### 参数过滤
 
