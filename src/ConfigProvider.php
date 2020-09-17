@@ -13,9 +13,11 @@ use Hyperf\HttpServer\CoreMiddleware;
 use Hyperf\TfConfig\ConfigFactory;
 use Hyperf\Utils\Serializer\SimpleNormalizer;
 use TheFairLib\Contract\LockInterface;
+use TheFairLib\Contract\RequestParamInterface;
 use TheFairLib\Contract\ResponseBuilderInterface;
 use TheFairLib\Contract\ResponseInterface;
 use TheFairLib\Contract\ServiceGovernanceManageInterface;
+use TheFairLib\Library\Http\Request\RequestParam;
 use TheFairLib\Library\Http\ResponseBuilderFactory;
 use TheFairLib\Library\Http\ServiceResponse;
 use TheFairLib\Library\Lock\RedisLockFactory;
@@ -48,6 +50,7 @@ class ConfigProvider
                 ResponseBuilderInterface::class => ResponseBuilderFactory::class,
                 ServiceGovernanceManageInterface::class => Manage::class,
                 LengthAwarePaginatorInterface::class => LengthAwarePaginator::class,
+                RequestParamInterface::class => RequestParam::class,
             ],
             'listeners' => [
                 ErrorHandleListener::class,
