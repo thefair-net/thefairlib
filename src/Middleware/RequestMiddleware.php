@@ -54,5 +54,4 @@ class RequestMiddleware implements MiddlewareInterface
 
         return $handler->handle($request);
     }
-
 }

@@ -49,5 +49,4 @@ class RequestCommand extends Command
         $this->container->get(RequestGenerate::class)->automaticallyGenerate($input, $output);
         $output->writeln('------------------ success ------------------');
     }
-
 }

@@ -165,5 +165,4 @@ class RequestGenerate extends RequestBase
     {
         return trim(implode('\\', array_slice(explode('\\', $name), 0, -1)), '\\');
     }
-
 }

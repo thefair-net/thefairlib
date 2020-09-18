@@ -59,5 +59,4 @@ class DeregisterServerCommand extends Command
             }
         }
     }
-
 }

@@ -32,7 +32,6 @@ class WorkerStopHandleListener implements ListenerInterface
 
     public function process(object $event)
     {
-
         if ($event instanceof OnShutdown) {
             Logger::get()->warning(sprintf(
                 'event: %s , worker_id: %d',

@@ -40,7 +40,6 @@ use Hyperf\Utils\ApplicationContext;
  */
 class Schema
 {
-
     protected $connection = 'default';
 
 
@@ -63,5 +62,4 @@ class Schema
     {
         return $this->connection = $poolName;
     }
-
 }

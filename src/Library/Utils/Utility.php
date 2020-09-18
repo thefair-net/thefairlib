@@ -465,7 +465,6 @@ if (!function_exists('stringToInt')) {
 }
 
 if (!function_exists('getStaging')) {
-
     function getStaging(): bool
     {
         return env('PHASE') != "prod";

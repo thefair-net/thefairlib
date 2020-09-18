@@ -10,56 +10,56 @@ namespace TheFairLib\Library\Queue\Message;
 
 class TestMessage extends BaseMessage
 {
-	protected $name;
-	protected $address;
+    protected $name;
+    protected $address;
 
-	protected $messageType = 'test';
+    protected $messageType = 'test';
 
-	/**
-	 * Get the value of name
-	 *
-	 * @return mixed
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * Get the value of name
+     *
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * Set the value of name
-	 *
-	 * @param mixed $name
-	 *
-	 * @return self
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
+    /**
+     * Set the value of name
+     *
+     * @param mixed $name
+     *
+     * @return self
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Get the value of address
-	 *
-	 * @return mixed
-	 */
-	public function getAddress()
-	{
-		return $this->address;
-	}
+    /**
+     * Get the value of address
+     *
+     * @return mixed
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
 
-	/**
-	 * Set the value of address
-	 *
-	 * @param mixed $address
-	 *
-	 * @return self
-	 */
-	public function setAddress($address)
-	{
-		$this->address = $address;
+    /**
+     * Set the value of address
+     *
+     * @param mixed $address
+     *
+     * @return self
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
 
-		return $this;
-	}
+        return $this;
+    }
 }

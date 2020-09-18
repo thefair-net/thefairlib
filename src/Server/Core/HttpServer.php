@@ -32,5 +32,4 @@ class HttpServer extends \Hyperf\HttpServer\Server
         parent::onRequest($request, $response);
         $this->eventDispatcher->dispatch(new OnRequest($request, $response));
     }
-
 }

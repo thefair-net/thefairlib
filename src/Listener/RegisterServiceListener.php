@@ -51,5 +51,4 @@ class RegisterServiceListener implements ListenerInterface
     {
         $this->manage->registeredServices();
     }
-
 }

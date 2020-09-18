@@ -113,7 +113,7 @@ class RocketMQ
      *
      * @return MQConsumer
      */
-    public function getConsumer($topic, $groupId, $messageTag = NULL)
+    public function getConsumer($topic, $groupId, $messageTag = null)
     {
         return $this->client->getConsumer($this->instance_id, $topic, $groupId, $messageTag);
     }
@@ -130,7 +130,7 @@ class RocketMQ
      * @return void
      * @throws Throwable
      */
-    public function consumeMessage($topic, $groupId, callable $func, $messageTag = NULL, $numOfMessages = 1)
+    public function consumeMessage($topic, $groupId, callable $func, $messageTag = null, $numOfMessages = 1)
     {
         $consumer = $this->getConsumer($topic, $groupId, $messageTag);
 

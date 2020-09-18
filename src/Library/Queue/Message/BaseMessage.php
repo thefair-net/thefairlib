@@ -53,7 +53,7 @@ abstract class BaseMessage
 
             foreach ($data as $key => $value) {
                 if (empty($value)) {
-					continue;
+                    continue;
                 }
 
                 $func = 'set' . ucwords(camelize($key));

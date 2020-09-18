@@ -3,7 +3,6 @@
 
 namespace TheFairLib\Server\Client;
 
-
 use Hyperf\RpcClient\AbstractServiceClient;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
@@ -49,5 +48,4 @@ abstract class JsonRpcClient extends AbstractServiceClient
             throw new ServiceException($e->getMessage(), [], (int)$e->getCode() > 0 ? (int)$e->getCode() : InfoCode::CODE_ERROR);
         }
     }
-
 }

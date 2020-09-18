@@ -178,7 +178,6 @@ abstract class RequestBase
                 $parameters = $reflectionMethod->getParameters();
                 if (!empty($parameters)) {
                     foreach ($parameters as $parameter) {
-
                         if ($parameter->getType() === null) {
                             continue;
                         }

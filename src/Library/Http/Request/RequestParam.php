@@ -32,5 +32,4 @@ class RequestParam extends RequestBase implements RequestParamInterface
         $this->checkValidityRouteRequest($dispatched);
         $this->autoValidateRequest($dispatched);
     }
-    
 }
