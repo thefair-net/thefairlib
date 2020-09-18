@@ -36,7 +36,7 @@ class RotatingFileHandler extends \Monolog\Handler\RotatingFileHandler
      */
     public function __construct($filename, $maxFiles = 0, $level = Logger::DEBUG, $bubble = true, $filePermission = null, $useLocking = false)
     {
-        $this->maxFiles = (int)env('LOG_MAX_FILES_DAY', 30);
+        $this->maxFiles = (int)env('LOG_MAX_FILES_DAY', $maxFiles);
         parent::__construct($filename, $this->maxFiles, $level, $bubble, $filePermission, $useLocking);
     }
 }

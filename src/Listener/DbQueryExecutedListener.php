@@ -33,7 +33,7 @@ class DbQueryExecutedListener implements ListenerInterface
      */
     private $dbQuery;
 
-    public function __construct(ContainerInterface $container, DbQuery $dbQuery)
+    public function __construct(DbQuery $dbQuery)
     {
         $this->dbQuery = $dbQuery;
     }

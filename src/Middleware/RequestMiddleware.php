@@ -33,7 +33,7 @@ class RequestMiddleware implements MiddlewareInterface
      */
     protected $implements;
 
-    public function __construct(ContainerInterface $container, ServerRequestInterface $request, ConfigInterface $config)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }

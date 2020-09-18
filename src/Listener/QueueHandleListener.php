@@ -29,17 +29,13 @@ use TheFairLib\Library\Logger\Logger;
  */
 class QueueHandleListener implements ListenerInterface
 {
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     /**
      * @var FormatterInterface
      */
     protected $formatter;
 
-    public function __construct(LoggerFactory $loggerFactory, FormatterInterface $formatter)
+    public function __construct( FormatterInterface $formatter)
     {
         $this->formatter = $formatter;
     }

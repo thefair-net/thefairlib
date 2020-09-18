@@ -14,6 +14,7 @@ namespace TheFairLib\Middleware\Core;
 
 use Closure;
 use Hyperf\HttpServer\Router\Dispatched;
+use Hyperf\JsonRpc\ResponseBuilder;
 use Hyperf\Rpc\Protocol;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;

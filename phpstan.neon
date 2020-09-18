@@ -4,5 +4,17 @@
 # vendor/bin/phpstan analyse app --memory-limit 200M -l 0
 #
 parameters:
-  ignoreErrors:
+    excludes_analyse:
+        - publish/bin/dev_start.php
+        - publish/Constants/InfoCode.php
+        - publish/Constants/ServerCode.php
+        - publish/test/Cases/ExampleTest.php
+        - publish/test/Cases/DocTest.php
+        - src/Exception/BusinessException.php
+#    ignoreErrors:
+#    - '#Class [a-zA-Z0-9\\_]+ was not found while trying to analyse it - autoloading is probably not configured properly.#'
+#
+#          message: '#[.*]?autoloading is probably not configured properly.#'
+#          paths:
+#            - publish/test/*
 #    - '#Static call to instance method Hyperf\\DbConnection\\Db::[a-zA-Z0-9\\_]+\(\)#'

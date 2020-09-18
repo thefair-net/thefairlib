@@ -83,6 +83,9 @@
             "src/Library/Utils/Utility.php"
         ]
     },
+    "scripts": {
+        "analyse": "phpstan analyse --memory-limit 1024M -l 0 -c phpstan.neon ./src ./publish"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.1-dev"

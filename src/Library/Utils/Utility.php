@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
  */
 
-use TheFairLib\Constants\ServerCode;
+use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\DbConnection\Db;
@@ -36,11 +36,7 @@ if (!function_exists('encode')) {
     {
         switch ($format) {
             case 'json':
-                if (extension_loaded('jsond')) {
-                    $ret = jsond_encode($data, JSON_UNESCAPED_UNICODE);
-                } else {
-                    $ret = json_encode($data, JSON_UNESCAPED_UNICODE);
-                }
+                $ret = json_encode($data, JSON_UNESCAPED_UNICODE);
                 break;
             case 'base64':
                 $ret = base64_encode($data);
@@ -68,11 +64,7 @@ if (!function_exists('decode')) {
     {
         switch ($format) {
             case 'json':
-                if (extension_loaded('jsond')) {
-                    $ret = jsond_decode($data, true);
-                } else {
-                    $ret = json_decode($data, true);
-                }
+                $ret = json_decode($data, true);
                 break;
             case 'base64':
                 $ret = base64_decode($data);
@@ -166,7 +158,7 @@ if (!function_exists('getUuid')) {
         if (!empty($uuid->uuid)) {
             return intval(substr("{$uuid->uuid}", -19));
         }
-        throw new ServiceException('uuid error', [], ServerCode::SERVER_CODE_ERROR);
+        throw new ServiceException('uuid error', [], InfoCode::SERVER_CODE_ERROR);
     }
 }
 
@@ -495,7 +487,7 @@ if (!function_exists('getPrefix')) {
 if (!function_exists('getItemListByPageFromCache')) {
     function getItemListByPageFromCache(string $pool, $listCacheKey, $lastItemId, $order = 'desc', $itemPerPage = 20, $withScores = false): array
     {
-        $total = Redis::getContainer($pool)->zCard($listCacheKey);
+        $total = \TheFairLib\Library\Cache\Redis::getContainer($pool)->zCard($listCacheKey);
         $itemPerPage = min(50, $itemPerPage);
         $pageCount = ceil($total / $itemPerPage);
         $list = [];
@@ -511,9 +503,9 @@ if (!function_exists('getItemListByPageFromCache')) {
             $funcName = $order == 'desc' ? 'zRevRange' : 'zRange';
 
             if ($withScores === true) {
-                $list = Redis::getContainer($pool)->$funcName($listCacheKey, $start, $end, true);
+                $list = \TheFairLib\Library\Cache\Redis::getContainer($pool)->$funcName($listCacheKey, $start, $end, true);
             } else {
-                $list = Redis::getContainer($pool)->$funcName($listCacheKey, $start, $end);
+                $list = \TheFairLib\Library\Cache\Redis::getContainer($pool)->$funcName($listCacheKey, $start, $end);
             }
             if (!empty($list)) {
                 $lastItemId = end($list);
@@ -550,7 +542,7 @@ if (!function_exists('getItemRankFromCache')) {
      */
     function getItemRankFromCache(string $pool, $listCacheKey, $lastItemId, $order = 'desc'): int
     {
-        return $order == 'desc' ? (int)Redis::getContainer($pool)->zRevRank($listCacheKey, $lastItemId) :
-            (int)Redis::getContainer($pool)->zRank($listCacheKey, $lastItemId);
+        return $order == 'desc' ? (int)\TheFairLib\Library\Cache\Redis::getContainer($pool)->zRevRank($listCacheKey, $lastItemId) :
+            (int)\TheFairLib\Library\Cache\Redis::getContainer($pool)->zRank($listCacheKey, $lastItemId);
     }
 }
