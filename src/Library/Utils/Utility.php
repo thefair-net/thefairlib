@@ -269,7 +269,7 @@ if (!function_exists('input')) {
      * 参数请求
      *
      * @param $name
-     * @param null $default
+     * @param $default
      * @return mixed
      */
     function input(string $name, $default = '')

@@ -16,11 +16,14 @@ namespace TheFairLib\Library\Http\Request;
 use Closure;
 use FastRoute\Dispatcher;
 use Hyperf\Contract\ConfigInterface;
+use Hyperf\Di\Aop\Ast;
 use Hyperf\Di\ReflectionManager;
 use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\HttpServer\Router\DispatcherFactory;
 use Hyperf\HttpServer\Router\Handler;
 use Hyperf\HttpServer\Router\RouteCollector;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use ReflectionParameter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,6 +37,17 @@ class RequestGenerate extends RequestBase
      * @var OutputInterface
      */
     protected $output;
+
+    /**
+     * @var Ast
+     */
+    private $parser;
+
+    public function __construct(ContainerInterface $container, ServerRequestInterface $request, ConfigInterface $config)
+    {
+        $this->parser = new Ast();
+        parent::__construct($container, $request, $config);
+    }
 
     /**
      * 自动生成 Request 文件
@@ -80,6 +94,9 @@ class RequestGenerate extends RequestBase
         if (preg_match('/[_\-]/', $method)) {
             throw new ServiceException('Do not use [_-]');
         }
+        $reflectionClass = ReflectionManager::reflectClass($className);
+
+        $this->parse($reflectionClass->getFileName());
 
         $reflectionMethod = ReflectionManager::reflectMethod($className, $method);
         /**
@@ -107,6 +124,14 @@ class RequestGenerate extends RequestBase
             $this->output->writeln(sprintf('success [%s] .', $requestClassName));
         }
         $this->param[$keyName] = true;
+    }
+
+    protected function parse($filename)
+    {
+//        $stmts = $this->parser->parse(file_get_contents($filename));
+//        rd_debug($stmts);
+//        exit();
+//        $className = $this->parser->parseClassByStmts($stmts);
     }
 
     /**
