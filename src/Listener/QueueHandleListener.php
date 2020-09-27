@@ -35,7 +35,7 @@ class QueueHandleListener implements ListenerInterface
      */
     protected $formatter;
 
-    public function __construct( FormatterInterface $formatter)
+    public function __construct(FormatterInterface $formatter)
     {
         $this->formatter = $formatter;
     }

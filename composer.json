@@ -83,6 +83,7 @@
         ]
     },
     "scripts": {
+        "cs-fix": "php-cs-fixer fix ./src",
         "analyse": "phpstan analyse --memory-limit 1024M -l 0 -c phpstan.neon ./src ./publish"
     },
     "extra": {
