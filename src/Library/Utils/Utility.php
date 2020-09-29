@@ -496,7 +496,7 @@ if (!function_exists('getItemListByPageFromCache')) {
                 $start = getItemRankFromCache($pool, $listCacheKey, $lastItemId, $order);
                 $start += 1;
             } else {
-                $start = $lastItemId;
+                $start = (int)$lastItemId;
             }
 
             $end = $start + $itemPerPage - 1;
