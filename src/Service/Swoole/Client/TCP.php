@@ -45,7 +45,8 @@ class TCP extends Base
         if (!$client->connect($this->_ip, $this->_port, $this->_timeout)) {
             throw new ServiceException(sprintf("connect failed. code: %d", $client->errCode), [
                 'ip' => $this->_ip,
-                'port' => $this->_timeout,
+                'port' => $this->_port,
+                'timeout' => $this->_timeout,
             ]);
         }
         $this->client = $client;
