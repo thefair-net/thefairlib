@@ -9,6 +9,7 @@
 
 namespace TheFairLib\Logger;
 
+use TheFairLib\Config\Config;
 use TheFairLib\Utility\Utility;
 use TheFairLib\Dingxiang\DingxingClient;
 
@@ -34,6 +35,10 @@ class Logger
 
     public function getPath()
     {
+        $path = Config::get_app('logger_path');
+        if (!empty($path)) {
+            $this->_path = $path;
+        }
         return $this->_path;
     }
 
