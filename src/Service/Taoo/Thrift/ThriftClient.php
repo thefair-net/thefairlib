@@ -28,8 +28,8 @@ class ThriftClient extends TCP
                 'params' => $params,
             ],
         ];
-        $result = $this->send($this->_encode($requestData), $callback);
-        $result = $this->_decode($result);
+        $this->send($this->_encode($requestData), $callback);
+        $result = $this->_decode($this->recv());
 
         if(!empty($result['code']) && $result['code'] >= 40000){
             Logger::Instance()->error($result['code'] .':'. $result['message']);
