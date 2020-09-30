@@ -19,6 +19,11 @@ class TCP extends Base
      */
     protected $isConnected = false;
 
+    /**
+     * 单连接请求
+     *
+     * @throws ServiceException
+     */
     protected function connect(): void
     {
         if ($this->isConnected) {
@@ -39,12 +44,11 @@ class TCP extends Base
         ]);
 
         if (!$client->connect($this->_ip, $this->_port, $this->_timeout)) {
-            throw new ServiceException("connect failed. Error: {$client->errCode}\n", [
+            throw new ServiceException(sprintf("connect failed. code: %d", $client->errCode), [
                 'ip' => $this->_ip,
                 'port' => $this->_timeout,
             ]);
         }
-        print_r([$client->getsockname()]);
         $this->client = $client;
         $this->isConnected = true;
     }
