@@ -145,7 +145,9 @@ Rpc 服务使用 `@RpcService`
 
 ### 自动生成 Request 文件
 
-`php bin/hyperf.php request`
+```shell
+php bin/hyperf.php request
+```
 
 ### 参数过滤
 
