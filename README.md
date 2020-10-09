@@ -701,3 +701,16 @@ supervisorctl reload
 composer test
 ```
 
+
+## 格式化项目代码
+
+```shell
+composer cs-fix
+```
+
+## 静态语法检测
+
+```shell
+composer analyse
+```
+
