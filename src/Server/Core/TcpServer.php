@@ -74,7 +74,7 @@ class TcpServer extends \Hyperf\JsonRpc\TcpServer
      * @param int $fromId
      * @param string $data
      */
-    public function onReceive(SwooleServer $server, int $fd, int $fromId, string $data): void
+    public function onReceive($server, int $fd, int $fromId, string $data): void
     {
         parent::onReceive($server, $fd, $fromId, $data);
         $this->eventDispatcher->dispatch(new OnReceive($server, $fd, $fromId, $data));
@@ -87,7 +87,7 @@ class TcpServer extends \Hyperf\JsonRpc\TcpServer
      * @param int $fd
      * @param ResponseInterface $response
      */
-    protected function send(SwooleServer $server, int $fd, ResponseInterface $response): void
+    protected function send($server, int $fd, ResponseInterface $response): void
     {
         Context::set('server:response_body_size', $response->getBody()->getSize());
         $server->send($fd, (string)$response->getBody());
