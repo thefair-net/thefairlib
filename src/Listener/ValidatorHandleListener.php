@@ -7,9 +7,11 @@ use TheFairLib\Contract\ValidatorExtendInterface;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Validation\Event\ValidatorFactoryResolved;
 use TheFairLib\Library\Validator\Get;
+use TheFairLib\Library\Validator\Integer;
 use TheFairLib\Library\Validator\Mobile;
 use TheFairLib\Library\Validator\Post;
 use TheFairLib\Library\Validator\Str;
+use TheFairLib\Library\Validator\Strings;
 
 class ValidatorHandleListener implements ListenerInterface
 {
@@ -22,7 +24,9 @@ class ValidatorHandleListener implements ListenerInterface
             Post::class,
             Get::class,
             Str::class,
+            Strings::class,
             Mobile::class,
+            Integer::class,
         ],
     ];
 
