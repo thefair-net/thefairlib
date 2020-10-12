@@ -225,8 +225,8 @@ str或s 对字符串进行编码
 `'phone' => 'required|str'` 
 `'phone' => 'required|s'` 
 
-i 对整数值进行强转，如果直接使用参数取值为字符串类型
-`'age' => 'required|i'` 
+i 对整数值进行强转，如果直接使用参数取值为字符串类型，主要解决当`declare(strict_types=1);`时，会报`ust be of the type int, string given`
+使用方法`'age' => 'required|i'` 
 
 ## Model 模型
 
