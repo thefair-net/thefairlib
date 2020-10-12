@@ -22,9 +22,9 @@ class BaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'page' => 'integer',
-            'item_per_page' => 'integer',
-            'item_per_row' => 'integer',
+            'page' => 'i',
+            'item_per_page' => 'i',
+            'item_per_row' => 'i',
 //            'last_item_id' => 'string|max:64',
 
             'app_id' => 'string|max:32',
