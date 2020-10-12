@@ -183,5 +183,6 @@ return [
     'str' => 'The :str must be a string.',
 
     'mobile' => 'The :mobile must be a valid mobile number',
-
+    'i' => 'The :attribute must be an integer.',
+    's' => 'The :str must be a string.',
 ];
