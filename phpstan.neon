@@ -11,6 +11,7 @@ parameters:
         - publish/test/Cases/ExampleTest.php
         - publish/test/Cases/DocTest.php
         - src/Exception/BusinessException.php
+        - src/Model/DataModel.php
 #    ignoreErrors:
 #    - '#Class [a-zA-Z0-9\\_]+ was not found while trying to analyse it - autoloading is probably not configured properly.#'
 #
