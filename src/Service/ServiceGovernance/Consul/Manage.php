@@ -208,7 +208,6 @@ class Manage implements ServiceGovernanceManageInterface
                 'Protocol' => $service['protocol'],
             ],
         ];
-        rd_debug($requestBody);
         if ($service['protocol'] === 'jsonrpc-http') {
             $requestBody['Check'] = [
                 'DeregisterCriticalServiceAfter' => '90m',

@@ -23,6 +23,7 @@ use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Server as SwooleServer;
+use TheFairLib\Library\Utils\AES;
 
 if (!function_exists('encode')) {
     /**
@@ -550,5 +551,46 @@ if (!function_exists('getItemRankFromCache')) {
     {
         return $order == 'desc' ? (int)\TheFairLib\Library\Cache\Redis::getContainer($pool)->zRevRank($listCacheKey, $lastItemId) :
             (int)\TheFairLib\Library\Cache\Redis::getContainer($pool)->zRank($listCacheKey, $lastItemId);
+    }
+}
+
+if (!function_exists('encrypt')) {
+    /**
+     * 加密 说明文档 https://qydev.weixin.qq.com/wiki/index.php?title=%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%96%B9%E6%A1%88%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E
+     *
+     *
+     * @param $data
+     * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
+     * @return string
+     */
+    function encrypt(string $data, string $aesKey)
+    {
+        $aesKey = base64_decode($aesKey . '=', true);
+        return base64_encode(AES::encrypt(
+            $data,
+            $aesKey,
+            substr($aesKey, 0, 16)
+        ));
+    }
+}
+
+if (!function_exists('decrypt')) {
+    /**
+     * 解密 说明文档 https://qydev.weixin.qq.com/wiki/index.php?title=%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%96%B9%E6%A1%88%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E
+     * https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Message_encryption_and_decryption_instructions.html
+     *
+     *
+     * @param $data
+     * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
+     * @return string
+     */
+    function decrypt(string $data, string $aesKey)
+    {
+        $aesKey = base64_decode($aesKey . '=', true);
+        return AES::decrypt(
+            base64_decode($data, true),
+            $aesKey,
+            substr($aesKey, 0, 16)
+        );
     }
 }

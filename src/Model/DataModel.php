@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace TheFairLib\Model;
 
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Collection;
 use TheFairLib\Contract\LockInterface;
 use TheFairLib\Exception\EmptyException;
 use TheFairLib\Exception\ServiceException;
@@ -30,11 +31,11 @@ use Throwable;
  * Class DataModel
  * @package TheFairLib\Model
  *
- * @method static Builder create(array $attributes)
+ * @method static \Hyperf\Database\Model\Model|Builder create(array $attributes)
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
- * @method static Builder firstOrCreate(array $attributes, array $values = [])
- * @method static Builder updateOrCreate(array $attributes, array $values = [])
- * @method static Builder find($id, $columns = ['*'])
+ * @method static \Hyperf\Database\Model\Model|static firstOrCreate(array $attributes, array $values = [])
+ * @method static \Hyperf\Database\Model\Model updateOrCreate(array $attributes, array $values = [])
+ * @method static null|Collection|\Hyperf\Database\Model\Model|static|static[] find($id, $columns = ['*'])
  */
 abstract class DataModel extends Model
 {

@@ -183,4 +183,6 @@ return [
     'get' => ':get 必须为 get 请求',
     'str' => ':str 必须是一个字符串',
     'mobile' => ':mobile 必须为一个有效的手机号码',
+    'i' => ':attribute 必须是个整数',
+    's' => ':str 必须是一个字符串',
 ];
