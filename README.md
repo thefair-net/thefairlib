@@ -228,6 +228,16 @@ str或s 对字符串进行编码
 i 对整数值进行强转，如果直接使用参数取值为字符串类型，主要解决当`declare(strict_types=1);`时，会报`ust be of the type int, string given`
 使用方法`'age' => 'required|i'` 
 
+> string、integer、int  被系统底层占用
+>
+#### http 服务
+
+`'phone' => 'required|s|post'` 
+
+`'phone' => 'required|s|get'`  // get 验证直接使用empty判断，不能传0、空、false
+
+
+
 ## Model 模型
 
 约束：只做数据库、缓存操作，不写业务逻辑，业务推荐写在 service 里面
