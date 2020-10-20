@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace TheFairLib\Exception\Handler;
 
+use Hyperf\Di\Annotation\Inject;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -37,6 +38,12 @@ class AppExceptionHandler extends ExceptionHandler
     {
         $this->logger = $logger;
     }
+
+    /**
+     * @Inject
+     * @var \TheFairLib\Contract\ResponseInterface
+     */
+    protected $serviceResponse;
 
     /**
      * 默认异常处理

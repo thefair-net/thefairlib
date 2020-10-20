@@ -44,6 +44,12 @@ class RpcAppExceptionHandler extends ExceptionHandler
      */
     protected $formatter;
 
+    /**
+     * @Inject
+     * @var \TheFairLib\Contract\ResponseInterface
+     */
+    protected $serviceResponse;
+
     public function __construct(StdoutLoggerInterface $logger, FormatterInterface $formatter)
     {
         $this->logger = $logger;

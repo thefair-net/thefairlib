@@ -42,7 +42,7 @@ abstract class BaseAbstractProcess extends AbstractProcess
         Context::set(static::class . ':enable', $enable);
     }
 
-    public function isEnable(): bool
+    public function isEnable($server): bool
     {
         return (bool)Context::get(static::class . ':enable');
     }

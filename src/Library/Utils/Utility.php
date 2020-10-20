@@ -349,16 +349,17 @@ if (!function_exists('getRpcLogArguments')) {
         $params = $request->all();
         unset($params['__auth']);
         $clientInfo = getClientInfo();
+        $len = strlen(encode($params));
         return [
             'server_ip' => getServerLocalIp(),
             'client_ip' => arrayGet($clientInfo, 'remote_ip'),
             'server_time' => now(),
             'pid' => posix_getpid(),//得到当前 Worker 进程的操作系统进程 ID
             'uri' => $request->getUri()->getPath(),
-            'params' => $params,
+            'params' => $len <= 2048 ? $params : ['len' => $len, 'msg' => '...'],
             'method' => $request->getMethod(),
             'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
-            'request_body_size' => strlen(encode($params)),
+            'request_body_size' => $len,
             'response_body_size' => Context::get('server:response_body_size'),
         ];
     }
@@ -381,6 +382,11 @@ if (!function_exists('getHttpLogArguments')) {
         $params = $request->all();
         unset($params['__auth']);
         $sessionId = $request->cookie('PHPSESSID');
+        $len = strlen(encode($params));
+        $uri = $request->getUri()->getPath();
+        if (in_array($uri, ['/favicon.ico'])) {
+            return [];
+        }
         return [
             'server_ip' => getServerLocalIp(),
             'client_ip' => $request->getServerParams(),
@@ -390,12 +396,12 @@ if (!function_exists('getHttpLogArguments')) {
             'x_thefair_ua' => $request->getHeader('x-thefair-ua'),
             'user_agent' => $request->getHeader('user-agent'),
             'cid' => $request->getHeader('x-thefair-cid'),
-            'uri' => $request->getUri()->getPath(),
+            'uri' => $uri,
             'url' => $request->fullUrl(),
-            'params' => $params,
+            'params' => $len <= 2048 ? $params : ['len' => $len, 'msg' => '...'],
             'method' => $request->getMethod(),
             'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
-            'request_body_size' => strlen(encode($params)),
+            'request_body_size' => $len,
             'response_body_size' => Context::get('server:response_body_size'),
         ];
     }

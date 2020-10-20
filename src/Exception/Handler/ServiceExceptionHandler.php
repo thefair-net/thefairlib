@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace TheFairLib\Exception\Handler;
 
+use Hyperf\Di\Annotation\Inject;
 use TheFairLib\Exception\BusinessException;
 use TheFairLib\Exception\EmptyException;
 use TheFairLib\Exception\ServiceException;
@@ -18,6 +19,12 @@ use Throwable;
  */
 class ServiceExceptionHandler extends ExceptionHandler
 {
+
+    /**
+     * @Inject
+     * @var \TheFairLib\Contract\ResponseInterface
+     */
+    protected $serviceResponse;
 
     /**
      * Handle the exception, and return the specified result.

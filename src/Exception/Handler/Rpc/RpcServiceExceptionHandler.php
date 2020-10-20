@@ -24,6 +24,12 @@ class RpcServiceExceptionHandler extends ExceptionHandler
      */
     protected $responseBuilder;
 
+    /**
+     * @Inject
+     * @var \TheFairLib\Contract\ResponseInterface
+     */
+    protected $serviceResponse;
+
 
     /**
      * Handle the exception, and return the specified result.

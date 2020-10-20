@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace TheFairLib\Exception\Handler;
 
 use Hyperf\Database\Exception\QueryException;
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
@@ -16,6 +17,12 @@ use Throwable;
  */
 class QueryExceptionHandler extends ExceptionHandler
 {
+
+    /**
+     * @Inject
+     * @var \TheFairLib\Contract\ResponseInterface
+     */
+    protected $serviceResponse;
 
     /**
      * Handle the exception, and return the specified result.
