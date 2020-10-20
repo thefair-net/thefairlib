@@ -519,6 +519,22 @@ $data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('thefair_service'
 ]);
 ```
 
+## http 跨域
+
+配置`config/autoload/middlewares.php`
+
+```php
+<?php
+
+use TheFairLib\Middleware\Core\CorsMiddleware;
+
+return [
+    'http' => [
+        CorsMiddleware::class,
+    ],
+];
+```
+
 ## 统一日志处理
 
 全局方法：`TheFairLib\Library\Logger::get()`
