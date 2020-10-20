@@ -82,7 +82,7 @@ class ErrorHandleListener implements ListenerInterface
                      * @var ResponseInterface $response
                      */
                     $response = new Response();
-                    $response->withStatus(ServerCode::SERVER_ERROR)->withBody(new SwooleStream($msg));
+                    $response->withStatus(ServerCode::SERVER_ERROR)->withBody(new SwooleStream($msg))->send(true);
                     break;
             }
         });
