@@ -172,7 +172,7 @@ abstract class DataModel
         $ret = $this->db('default')->select('select uuid_short() as uuid');
         $uuid = $ret[0]['uuid'];
         if (!empty($uuid)) {
-            return $uuid;
+            return intval(substr("{$uuid}", -19));
         } else {
             throw new Exception('uuid error', [], 50000);
         }
