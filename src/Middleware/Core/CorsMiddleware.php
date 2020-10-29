@@ -16,7 +16,9 @@ declare(strict_types=1);
 
 namespace TheFairLib\Middleware\Core;
 
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Utils\Context;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -30,20 +32,55 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class CorsMiddleware implements MiddlewareInterface
 {
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * 跨域
+     *
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $response = Context::get(ResponseInterface::class);
-        $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeader('origin'))
-            ->withHeader('Access-Control-Allow-Credentials', 'true')
-            // Headers 可以根据实际情况进行改写。
-            ->withHeader('Access-Control-Allow-Headers', $request->getHeader('access-control-request-headers'));
+        $origin = $request->getHeader('origin');
+        if ($this->isOrigin($origin)) {//如果没有配置，默认就是全局跨域
+            $response = Context::get(ResponseInterface::class);
+            $response = $response->withHeader('Access-Control-Allow-Origin', $origin)
+                ->withHeader('Access-Control-Allow-Credentials', 'true')
+                // Headers 可以根据实际情况进行改写。
+                ->withHeader('Access-Control-Allow-Headers', $request->getHeader('access-control-request-headers'));
 
-        Context::set(ResponseInterface::class, $response);
+            Context::set(ResponseInterface::class, $response);
 
-        if ($request->getMethod() == 'OPTIONS') {
-            return $response;
+            if ($request->getMethod() == 'OPTIONS') {
+                return $response;
+            }
         }
 
         return $handler->handle($request);
+    }
+
+    /**
+     * 判断是否跨域
+     *
+     * @param $originHost
+     * @return bool
+     */
+    protected function isOrigin($originHost): bool
+    {
+        $origin = $this->container->get(ConfigInterface::class)->get('auth.cors.origin', []);
+        if (empty($origin)) {
+            return true;
+        }
+        return in_array($origin, $originHost);
     }
 }
