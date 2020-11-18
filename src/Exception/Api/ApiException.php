@@ -17,10 +17,11 @@ class ApiException extends BaseException
 {
     private $extData = array();
     private $extCode = '10000';
+    private $extAction = '';
     private $originalCode = '';
     private $httpStatus = 400;
 
-    public function __construct($msg, $data = array(), $code = '40001', $httpStatus = 400){
+    public function __construct($msg, $data = array(), $code = '40001', $httpStatus = 400, $action =''){
         //检查msg，如果是int，check下error配置，是否存在该错误码
         if(is_int($msg)){
             $errorMsg = Config::get_error($msg);
@@ -40,6 +41,7 @@ class ApiException extends BaseException
         parent::__construct((string)$msg);
         $this->extData      = $data;
         $this->extCode      = $code;
+        $this->extAction    = $action;
         $this->httpStatus   = $httpStatus;
     }
 
@@ -49,6 +51,10 @@ class ApiException extends BaseException
 
     public function getExtData(){
         return $this->extData;
+    }
+
+    public function getExtAction(){
+        return $this->extAction;
     }
 
     public function getHttpStatus(){

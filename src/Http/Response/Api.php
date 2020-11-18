@@ -19,8 +19,9 @@ class Api extends Response
 
     private $_code = 0;
 
-    private $_action = 'log';
+    private $_action = '';
 
+    const ACTION_LOG = 'log';
     const ACTION_TOAST = 'toast';
     const ACTION_REDIRECT = 'redirect';
 
@@ -105,7 +106,7 @@ class Api extends Response
         $msg = $this->getMsg();
         return array(
             'code' => $this->getCode(),
-            'message' => !empty($action) ? array('content' => $msg, 'action' => $action) : (!empty($msg) ? array('content' => $msg, 'action' => self::ACTION_TOAST) : new \stdClass()),
+            'message' => !empty($action) ? array('content' => $msg, 'action' => $action) : (!empty($msg) ? array('content' => $msg, 'action' => self::ACTION_LOG) : new \stdClass()),
             'result' => (object) $this->getResult(),
         );
     }

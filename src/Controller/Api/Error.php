@@ -30,7 +30,7 @@ class Error extends ErrorBase
     protected function _errorDefault(\Exception $e){
         if($e instanceof ApiException){
             $this->showError(
-                $e->getMessage(), $e->getExtData(),  $e->getExtCode(), $e->getHttpStatus()
+                $e->getMessage(), $e->getExtData(),  $e->getExtCode(), $e->getHttpStatus(),  $e->getExtAction()
             );
         }else{
             if(defined('APP_NAME')){
@@ -71,15 +71,16 @@ class Error extends ErrorBase
         $this->showError('Not Found', [], 40001, 404);
     }
 
-    public function showResult($result, $msg = '', $code = '0'){
+    public function showResult($result, $msg = '', $code = '0', $action = ''){
         self::$_responseObj->setCode($code);
         self::$_responseObj->setMsg($msg);
         self::$_responseObj->setResult($result);
+        self::$_responseObj->setAction($action);
         $this->_setResponse(self::$_responseObj->send());
     }
 
-    public function showError($error, $result = array() , $code = '40001', $httpCode = 400){
+    public function showError($error, $result = array() , $code = '40001', $httpCode = 400, $action = ''){
         self::$_responseObj->setHttpCode($httpCode);
-        $this->showResult($result, $error, $code);
+        $this->showResult($result, $error, $code, $action);
     }
 }
