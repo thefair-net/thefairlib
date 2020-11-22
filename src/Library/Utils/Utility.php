@@ -594,3 +594,86 @@ if (!function_exists('decrypt')) {
         );
     }
 }
+
+
+if (!function_exists('utf8Len')) {
+
+    /**
+     * 字符串长度
+     *
+     * @param string $content
+     * @return int
+     */
+    function utf8Len(string $content): int
+    {
+        return (int)mb_strlen($content, "UTF-8");
+    }
+}
+
+if (!function_exists('stringGroup')) {
+
+    /**
+     * 字符串分组
+     *
+     * @param string $content
+     * @param int $contentLenLimit
+     * @return array
+     */
+    function stringGroup(string $content, int $contentLenLimit = 1000): array
+    {
+        $len = utf8Len($content);
+        if ($len <= 0) {
+            return [];
+        }
+        if ($len <= $contentLenLimit) {
+            return [
+                [
+                    'content' => $content,
+                    'order' => 1,
+                ],
+            ];
+        }
+        $count = ceil($len / $contentLenLimit);
+        $data = [];
+        for ($i = 1; $i <= $count; $i++) {
+            $subContent = mb_substr($content, ($i - 1) * $contentLenLimit, $contentLenLimit, 'utf-8');
+            $data[] = [
+                'order' => $i,
+                'content' => $subContent,
+            ];
+        }
+        return $data;
+    }
+}
+
+if (!function_exists('esFormatDate')) {
+
+    /**
+     * 格式化时间
+     * @param $date
+     * @return string
+     */
+    function esFormatDate($date): string
+    {
+        if (empty($date)) {
+            $date = 0;
+        }
+        $date = is_int($date) ? date('Y-m-d H:i:s', $date) : $date;
+
+        $result = preg_match('/[1-9]\d+\-\d+\-\d+( \d+:\d+:\d+)?/', $date, $matches);
+        if ($result) {
+            $date = $matches[0];
+            if (strlen($date) < 13) {
+                $date = $date . " 00:00:01";
+            }
+
+            $date = str_replace(' ', 'T', $date) . 'Z';
+
+            $date = str_replace('Z', "+08:00", $date);
+
+            return $date;
+        } else {
+            return '1970-01-01T00:00:01Z';
+        }
+    }
+}
