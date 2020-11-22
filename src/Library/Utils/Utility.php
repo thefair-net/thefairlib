@@ -65,7 +65,8 @@ if (!function_exists('decode')) {
     {
         switch ($format) {
             case 'json':
-                $ret = json_decode($data, true);
+                //fix bigint转为科学记数法
+                $ret = json_decode($data, true, 512, JSON_BIGINT_AS_STRING);
                 break;
             case 'base64':
                 $ret = base64_decode($data);
