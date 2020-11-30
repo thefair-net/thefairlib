@@ -498,6 +498,7 @@ if (!function_exists('getItemListByPageFromCache')) {
         $total = \TheFairLib\Library\Cache\Redis::getContainer($pool)->zCard($listCacheKey);
         $itemPerPage = min(50, $itemPerPage);
         $pageCount = ceil($total / $itemPerPage);
+        $currentPage = 1;
         $list = [];
         if ($total) {
             if (!empty($lastItemId)) {
@@ -508,6 +509,7 @@ if (!function_exists('getItemListByPageFromCache')) {
             }
 
             $end = $start + $itemPerPage - 1;
+            $currentPage = ceil($end / $itemPerPage);
             $funcName = $order == 'desc' ? 'zRevRange' : 'zRange';
 
             if ($withScores === true) {
@@ -528,6 +530,7 @@ if (!function_exists('getItemListByPageFromCache')) {
             'item_count' => $total,
             'item_per_page' => $itemPerPage,
             'page_count' => $pageCount,
+            'current_page' => $currentPage,
         ];
 
         $lastPos = getItemRankFromCache($pool, $listCacheKey, $lastItemId, $order);
