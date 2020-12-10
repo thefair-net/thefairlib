@@ -150,11 +150,12 @@ if (!function_exists('getUuid')) {
     /**
      * 获取数据库uuid.
      *
+     * @param string $dbname
      * @return int uuid
      */
-    function getUuid()
+    function getUuid(string $dbname = 'default')
     {
-        $ret = Db::select('select uuid_short() as uuid');
+        $ret = Db::connection($dbname)->select('select uuid_short() as uuid');
         $uuid = $ret[0] ?? null;
         if (!empty($uuid->uuid)) {
             return intval(substr("{$uuid->uuid}", -19));
