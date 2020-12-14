@@ -62,7 +62,8 @@
         "hyperf/elasticsearch": "~1.1.0",
         "thefair/hyperf-rocketmq": "^1.0",
         "hyperf/consul": "^1.1",
-        "hyperf/service-governance": "^1.1"
+        "hyperf/service-governance": "^1.1",
+        "emojione/emojione": "^4.5"
     },
     "require-dev": {
         "swoft/swoole-ide-helper": "^4.2",
