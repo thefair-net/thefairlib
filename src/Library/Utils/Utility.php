@@ -681,3 +681,33 @@ if (!function_exists('esFormatDate')) {
         }
     }
 }
+
+if (!function_exists('parseEmoji')) {
+    /**
+     * 将字符串中的表情转为转义字符
+     *
+     * @param string $str
+     * @return string
+     */
+    function parseEmoji(string $str): string
+    {
+        $client = new \Emojione\Client(new \Emojione\Ruleset());
+
+        return $client->toShort($str);
+    }
+}
+
+if (!function_exists('toEmoji')) {
+    /**
+     * 将字符串中的表情字符转为表情
+     *
+     * @param string $str
+     * @return string
+     */
+    function toEmoji(string $str): string
+    {
+        $client = new \Emojione\Client(new \Emojione\Ruleset());
+
+        return $client->shortnameToUnicode($str);
+    }
+}
