@@ -193,7 +193,7 @@ class ServerCode extends ErrorCode
     const REQUEST_RANGE_NOT_SATIS = 416;
 
     /**
-     * @Message("Expectation Failed	")
+     * @Message("Expectation Failed")
      */
     const EXPECTATION_FAILED = 417;
 

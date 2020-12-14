@@ -48,4 +48,18 @@ abstract class JsonRpcClient extends AbstractServiceClient
             throw new ServiceException($e->getMessage(), [], (int)$e->getCode() > 0 ? (int)$e->getCode() : InfoCode::CODE_ERROR);
         }
     }
+
+    /**
+     * 返回数组
+     *
+     * @param string $method
+     * @param array $params
+     * @return array
+     */
+    public function smart(string $method, array $params = []): array
+    {
+        $result = $this->call($method, $params);
+        //@todo
+        return arrayGet($result, 'result', []);
+    }
 }

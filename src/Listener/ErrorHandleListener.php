@@ -59,7 +59,6 @@ class ErrorHandleListener implements ListenerInterface
                 'line' => $e->getLine(),
                 'trace_string' => $e->getTraceAsString(),
             ]);
-            throw $e;
         });
 
         register_shutdown_function(function () {

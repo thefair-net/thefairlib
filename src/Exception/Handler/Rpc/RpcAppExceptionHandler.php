@@ -44,6 +44,12 @@ class RpcAppExceptionHandler extends ExceptionHandler
      */
     protected $formatter;
 
+    /**
+     * @Inject
+     * @var \TheFairLib\Contract\ResponseInterface
+     */
+    protected $serviceResponse;
+
     public function __construct(StdoutLoggerInterface $logger, FormatterInterface $formatter)
     {
         $this->logger = $logger;
@@ -60,15 +66,15 @@ class RpcAppExceptionHandler extends ExceptionHandler
         Logger::get()->error(
             sprintf('error_exception:%s', get_class($throwable)),
             array_merge_recursive(
-            [
+                [
                     'msg' => $throwable->getMessage(),
                     'line' => $throwable->getLine(),
                     'file' => $throwable->getFile(),
                     'code' => $throwable->getCode(),
                     'trace_string' => $throwable->getTraceAsString(),
                 ],
-            getRpcLogArguments()
-        )
+                getRpcLogArguments()
+            )
         );
 
         $result = $this->serviceResponse->showError(

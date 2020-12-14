@@ -37,7 +37,6 @@ class RpcCoreMiddleware extends \Hyperf\JsonRpc\CoreMiddleware
             $controllerInstance = $this->container->get($controller);
             if (!method_exists($controller, $action)) {
                 // Route found, but the handler does not exist.
-                rd_debug([__CLASS__, __FILE__, $request->getServerParams()]);
 
                 return $this->responseBuilder->buildErrorResponse($request, ResponseBuilder::INTERNAL_ERROR);
             }
@@ -56,7 +55,6 @@ class RpcCoreMiddleware extends \Hyperf\JsonRpc\CoreMiddleware
 
     protected function handleNotFound(ServerRequestInterface $request)
     {
-        rd_debug([__FILE__, $request->getServerParams()]);
         return $this->responseBuilder->buildErrorResponse($request, ResponseBuilder::METHOD_NOT_FOUND);
     }
 

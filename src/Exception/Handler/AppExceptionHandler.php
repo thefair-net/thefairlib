@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace TheFairLib\Exception\Handler;
 
+use Hyperf\Di\Annotation\Inject;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -39,6 +40,12 @@ class AppExceptionHandler extends ExceptionHandler
     }
 
     /**
+     * @Inject
+     * @var \TheFairLib\Contract\ResponseInterface
+     */
+    protected $serviceResponse;
+
+    /**
      * 默认异常处理
      *
      * @param Throwable $throwable
@@ -50,15 +57,15 @@ class AppExceptionHandler extends ExceptionHandler
         Logger::get()->error(
             sprintf('error_exception:%s', get_class($throwable)),
             array_merge_recursive(
-            [
+                [
                     'msg' => $throwable->getMessage(),
                     'line' => $throwable->getLine(),
                     'file' => $throwable->getFile(),
                     'code' => $throwable->getCode(),
                     'trace_string' => $throwable->getTraceAsString(),
                 ],
-            getHttpLogArguments()
-        )
+                getHttpLogArguments()
+            )
         );
         $result = $this->serviceResponse->showError(
             $throwable->getMessage(),

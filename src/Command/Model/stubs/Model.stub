@@ -6,6 +6,7 @@ namespace %NAMESPACE%;
 
 %USES%
 
+
 class %CLASS% extends %INHERITANCE%
 {
     /**

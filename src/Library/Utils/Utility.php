@@ -23,6 +23,7 @@ use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Server as SwooleServer;
+use TheFairLib\Library\Utils\AES;
 
 if (!function_exists('encode')) {
     /**
@@ -64,7 +65,8 @@ if (!function_exists('decode')) {
     {
         switch ($format) {
             case 'json':
-                $ret = json_decode($data, true);
+                //fix bigint转为科学记数法
+                $ret = json_decode($data, true, 512, JSON_BIGINT_AS_STRING);
                 break;
             case 'base64':
                 $ret = base64_decode($data);
@@ -269,7 +271,7 @@ if (!function_exists('input')) {
      * 参数请求
      *
      * @param $name
-     * @param null $default
+     * @param $default
      * @return mixed
      */
     function input(string $name, $default = '')
@@ -348,16 +350,17 @@ if (!function_exists('getRpcLogArguments')) {
         $params = $request->all();
         unset($params['__auth']);
         $clientInfo = getClientInfo();
+        $len = strlen(encode($params));
         return [
             'server_ip' => getServerLocalIp(),
             'client_ip' => arrayGet($clientInfo, 'remote_ip'),
             'server_time' => now(),
             'pid' => posix_getpid(),//得到当前 Worker 进程的操作系统进程 ID
             'uri' => $request->getUri()->getPath(),
-            'params' => $params,
+            'params' => $len <= 2048 ? $params : ['len' => $len, 'msg' => '...'],
             'method' => $request->getMethod(),
             'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
-            'request_body_size' => strlen(encode($params)),
+            'request_body_size' => $len,
             'response_body_size' => Context::get('server:response_body_size'),
         ];
     }
@@ -380,6 +383,11 @@ if (!function_exists('getHttpLogArguments')) {
         $params = $request->all();
         unset($params['__auth']);
         $sessionId = $request->cookie('PHPSESSID');
+        $len = strlen(encode($params));
+        $uri = $request->getUri()->getPath();
+        if (in_array($uri, ['/favicon.ico'])) {
+            return [];
+        }
         return [
             'server_ip' => getServerLocalIp(),
             'client_ip' => $request->getServerParams(),
@@ -389,12 +397,12 @@ if (!function_exists('getHttpLogArguments')) {
             'x_thefair_ua' => $request->getHeader('x-thefair-ua'),
             'user_agent' => $request->getHeader('user-agent'),
             'cid' => $request->getHeader('x-thefair-cid'),
-            'uri' => $request->getUri()->getPath(),
+            'uri' => $uri,
             'url' => $request->fullUrl(),
-            'params' => $params,
+            'params' => $len <= 2048 ? $params : ['len' => $len, 'msg' => '...'],
             'method' => $request->getMethod(),
             'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
-            'request_body_size' => strlen(encode($params)),
+            'request_body_size' => $len,
             'response_body_size' => Context::get('server:response_body_size'),
         ];
     }
@@ -490,16 +498,18 @@ if (!function_exists('getItemListByPageFromCache')) {
         $total = \TheFairLib\Library\Cache\Redis::getContainer($pool)->zCard($listCacheKey);
         $itemPerPage = min(50, $itemPerPage);
         $pageCount = ceil($total / $itemPerPage);
+        $currentPage = 1;
         $list = [];
         if ($total) {
             if (!empty($lastItemId)) {
                 $start = getItemRankFromCache($pool, $listCacheKey, $lastItemId, $order);
                 $start += 1;
             } else {
-                $start = $lastItemId;
+                $start = (int)$lastItemId;
             }
 
             $end = $start + $itemPerPage - 1;
+            $currentPage = ceil($end / $itemPerPage);
             $funcName = $order == 'desc' ? 'zRevRange' : 'zRange';
 
             if ($withScores === true) {
@@ -520,6 +530,7 @@ if (!function_exists('getItemListByPageFromCache')) {
             'item_count' => $total,
             'item_per_page' => $itemPerPage,
             'page_count' => $pageCount,
+            'current_page' => $currentPage,
         ];
 
         $lastPos = getItemRankFromCache($pool, $listCacheKey, $lastItemId, $order);
@@ -547,32 +558,126 @@ if (!function_exists('getItemRankFromCache')) {
     }
 }
 
-if (!function_exists('parseEmoji')) {
+if (!function_exists('encrypt')) {
     /**
-     * 将字符串中的表情转为转义字符
+     * 加密 说明文档 https://qydev.weixin.qq.com/wiki/index.php?title=%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%96%B9%E6%A1%88%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E
      *
-     * @param string $str
+     *
+     * @param $data
+     * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    function parseEmoji(string $str): string
+    function encrypt(string $data, string $aesKey)
     {
-        $client = new \Emojione\Client(new \Emojione\Ruleset());
-
-        return $client->toShort($str);
+        $aesKey = base64_decode($aesKey . '=', true);
+        return base64_encode(AES::encrypt(
+            $data,
+            $aesKey,
+            substr($aesKey, 0, 16)
+        ));
     }
 }
 
-if (!function_exists('toEmoji')) {
+if (!function_exists('decrypt')) {
     /**
-     * 将字符串中的表情字符转为表情
+     * 解密 说明文档 https://qydev.weixin.qq.com/wiki/index.php?title=%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%96%B9%E6%A1%88%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E
+     * https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Message_encryption_and_decryption_instructions.html
      *
-     * @param string $str
+     *
+     * @param $data
+     * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    function toEmoji(string $str): string
+    function decrypt(string $data, string $aesKey)
     {
-        $client = new \Emojione\Client(new \Emojione\Ruleset());
+        $aesKey = base64_decode($aesKey . '=', true);
+        return AES::decrypt(
+            base64_decode($data, true),
+            $aesKey,
+            substr($aesKey, 0, 16)
+        );
+    }
+}
 
-        return $client->shortnameToUnicode($str);
+
+if (!function_exists('utf8Len')) {
+
+    /**
+     * 字符串长度
+     *
+     * @param string $content
+     * @return int
+     */
+    function utf8Len(string $content): int
+    {
+        return (int)mb_strlen($content, "UTF-8");
+    }
+}
+
+if (!function_exists('stringGroup')) {
+
+    /**
+     * 字符串分组
+     *
+     * @param string $content
+     * @param int $contentLenLimit
+     * @return array
+     */
+    function stringGroup(string $content, int $contentLenLimit = 1000): array
+    {
+        $len = utf8Len($content);
+        if ($len <= 0) {
+            return [];
+        }
+        if ($len <= $contentLenLimit) {
+            return [
+                [
+                    'content' => $content,
+                    'order' => 1,
+                ],
+            ];
+        }
+        $count = ceil($len / $contentLenLimit);
+        $data = [];
+        for ($i = 1; $i <= $count; $i++) {
+            $subContent = mb_substr($content, ($i - 1) * $contentLenLimit, $contentLenLimit, 'utf-8');
+            $data[] = [
+                'order' => $i,
+                'content' => $subContent,
+            ];
+        }
+        return $data;
+    }
+}
+
+if (!function_exists('esFormatDate')) {
+
+    /**
+     * 格式化时间
+     * @param $date
+     * @return string
+     */
+    function esFormatDate($date): string
+    {
+        if (empty($date)) {
+            $date = 0;
+        }
+        $date = is_int($date) ? date('Y-m-d H:i:s', $date) : $date;
+
+        $result = preg_match('/[1-9]\d+\-\d+\-\d+( \d+:\d+:\d+)?/', $date, $matches);
+        if ($result) {
+            $date = $matches[0];
+            if (strlen($date) < 13) {
+                $date = $date . " 00:00:01";
+            }
+
+            $date = str_replace(' ', 'T', $date) . 'Z';
+
+            $date = str_replace('Z', "+08:00", $date);
+
+            return $date;
+        } else {
+            return '1970-01-01T00:00:01Z';
+        }
     }
 }

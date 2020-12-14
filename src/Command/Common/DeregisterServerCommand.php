@@ -58,5 +58,6 @@ class DeregisterServerCommand extends Command
                 $i++;
             }
         }
+        return 0;
     }
 }

@@ -145,7 +145,9 @@ Rpc 服务使用 `@RpcService`
 
 ### 自动生成 Request 文件
 
-`php bin/hyperf.php request`
+```shell
+php bin/hyperf.php request
+```
 
 ### 参数过滤
 
@@ -217,10 +219,22 @@ class GetTest extends BaseRequest
 
 mobile 国内手机号验证
 
- `'phone' => 'required|mobile'` 
+`'phone' => 'required|mobile'` 
 
-str 对字符串进行编码
-`   'phone' => 'required|str'` 
+str或s 对字符串进行编码
+`'phone' => 'required|str'` 
+`'phone' => 'required|s'` 
+
+i 对整数值进行强转，如果直接使用参数取值为字符串类型，主要解决当`declare(strict_types=1);`时，会报`ust be of the type int, string given`
+使用方法`'age' => 'required|i'` 
+
+#### http 服务
+
+`'phone' => 'required|s|post'` 
+
+`'phone' => 'required|s|get'`  // get 验证直接使用empty判断，不能传0、空、false
+
+> string、integer、int  被系统底层占用
 
 ## Model 模型
 
@@ -505,6 +519,22 @@ $data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('thefair_service'
 ]);
 ```
 
+## http 跨域
+
+配置`config/autoload/middlewares.php`
+
+```php
+<?php
+
+use TheFairLib\Middleware\Core\CorsMiddleware;
+
+return [
+    'http' => [
+        CorsMiddleware::class,
+    ],
+];
+```
+
 ## 统一日志处理
 
 全局方法：`TheFairLib\Library\Logger::get()`
@@ -699,5 +729,18 @@ supervisorctl reload
 
 ```shell
 composer test
+```
+
+
+## 格式化项目代码
+
+```shell
+composer cs-fix
+```
+
+## 静态语法检测
+
+```shell
+composer analyse
 ```
 
