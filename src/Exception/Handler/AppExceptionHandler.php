@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace TheFairLib\Exception\Handler;
 
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Validation\ValidationException;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -54,11 +55,22 @@ class AppExceptionHandler extends ExceptionHandler
      */
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
+        switch (get_class($throwable)) {
+            case ValidationException::class:
+                /**
+                 * @var ValidationException $throwable
+                 */
+                $msg = $throwable->validator->errors()->first();
+                break;
+            default:
+                $msg = $throwable->getMessage();
+                break;
+        }
         Logger::get()->error(
             sprintf('error_exception:%s', get_class($throwable)),
             array_merge_recursive(
                 [
-                    'msg' => $throwable->getMessage(),
+                    'msg' => $msg,
                     'line' => $throwable->getLine(),
                     'file' => $throwable->getFile(),
                     'code' => $throwable->getCode(),

@@ -15,6 +15,7 @@ namespace TheFairLib\Exception\Handler\Rpc;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 use Hyperf\Utils\Context;
+use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ServerRequestInterface;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
@@ -63,11 +64,22 @@ class RpcAppExceptionHandler extends ExceptionHandler
      */
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
+        switch (get_class($throwable)) {
+            case ValidationException::class:
+                /**
+                 * @var ValidationException $throwable
+                 */
+                $msg = $throwable->validator->errors()->first();
+                break;
+            default:
+                $msg = $throwable->getMessage();
+                break;
+        }
         Logger::get()->error(
             sprintf('error_exception:%s', get_class($throwable)),
             array_merge_recursive(
                 [
-                    'msg' => $throwable->getMessage(),
+                    'msg' => $msg,
                     'line' => $throwable->getLine(),
                     'file' => $throwable->getFile(),
                     'code' => $throwable->getCode(),

@@ -66,7 +66,8 @@ if (!function_exists('decode')) {
         switch ($format) {
             case 'json':
                 //fix bigint转为科学记数法
-                $ret = json_decode($data, true, 512, JSON_BIGINT_AS_STRING);
+//                $ret = json_decode($data, true, 512, JSON_BIGINT_AS_STRING);
+                $ret = json_decode($data, true);
                 break;
             case 'base64':
                 $ret = base64_decode($data);
@@ -151,11 +152,12 @@ if (!function_exists('getUuid')) {
     /**
      * 获取数据库uuid.
      *
+     * @param string $dbname
      * @return int uuid
      */
-    function getUuid()
+    function getUuid(string $dbname = 'default')
     {
-        $ret = Db::select('select uuid_short() as uuid');
+        $ret = Db::connection($dbname)->select('select uuid_short() as uuid');
         $uuid = $ret[0] ?? null;
         if (!empty($uuid->uuid)) {
             return intval(substr("{$uuid->uuid}", -19));
