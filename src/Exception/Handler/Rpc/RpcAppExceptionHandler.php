@@ -20,10 +20,13 @@ use Psr\Http\Message\ServerRequestInterface;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
 use TheFairLib\Contract\ResponseBuilderInterface;
+use TheFairLib\Exception\BusinessException;
+use TheFairLib\Exception\EmptyException;
 use TheFairLib\Exception\Handler\ExceptionHandler;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Psr\Http\Message\ResponseInterface;
+use TheFairLib\Exception\ServiceException;
 use TheFairLib\Library\Logger\Logger;
 use Throwable;
 
@@ -64,12 +67,19 @@ class RpcAppExceptionHandler extends ExceptionHandler
      */
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
+        $data = [];
         switch (get_class($throwable)) {
             case ValidationException::class:
                 /**
                  * @var ValidationException $throwable
                  */
                 $msg = $throwable->validator->errors()->first();
+                break;
+            case BusinessException::class:
+            case EmptyException::class:
+            case ServiceException::class:
+                $msg = $throwable->getMessage();
+                $data = $throwable->getData();
                 break;
             default:
                 $msg = $throwable->getMessage();
@@ -84,6 +94,7 @@ class RpcAppExceptionHandler extends ExceptionHandler
                     'file' => $throwable->getFile(),
                     'code' => $throwable->getCode(),
                     'trace_string' => $throwable->getTraceAsString(),
+                    'ext_data' => $data,
                 ],
                 getRpcLogArguments()
             )
