@@ -72,7 +72,7 @@ class DocTest extends HttpTestCase
 //
 //        }
 
-        printf("Test Class '%s' started.\n", $className);
+        printf("\nTest Class '%s' 类名：%s \n", $className, $classDoc->name);
 
         $this->assertIsObject($classDoc);
         $this->assertIsString($classDoc->name);
@@ -80,7 +80,7 @@ class DocTest extends HttpTestCase
         $this->assertTrue(!empty($classDoc->name));
         $this->assertIsArray($classDoc->tag);
 
-        printf("Test Class '%s' end.\n", $className);
+//        printf("Test Class '%s' end.\n", $className);
         self::$doc[$className] = true;
     }
 
@@ -102,20 +102,26 @@ class DocTest extends HttpTestCase
             ])) {
             return;
         }
-        printf("Test Method '%s::%s' started.\n", $className, $method);
         $classDoc = AnnotationCollector::getClassMethodAnnotation($className, $method);
 
-//        if (isset($classDoc[Doc::class]) && $classDoc[Doc::class] instanceof Doc) {
-//
-//        }
+        if (!isset($classDoc[Doc::class])) {
+            printf('%s::%s error doc', $className, $method);
+        }
         $classDoc = $classDoc[Doc::class];
+
         $this->assertIsObject($classDoc);
         $this->assertIsString($classDoc->name);
         $this->assertIsString($classDoc->desc);
         $this->assertTrue(!empty($classDoc->name));
         $this->assertIsArray($classDoc->tag);
 
-        printf("Test Method '%s::%s' end.\n", $className, $method);
+        printf("Test Method '%s::%s'  | 方法名：%s\n", $className, $method, $classDoc->name);
+
+//        if (isset($classDoc[Doc::class]) && $classDoc[Doc::class] instanceof Doc) {
+//
+//        }
+
+//        printf("Test Method '%s::%s' end.\n", $className, $method);
         self::$doc[$keyName] = true;
     }
 
