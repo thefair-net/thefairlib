@@ -76,6 +76,8 @@ class TcpServer extends \Hyperf\JsonRpc\TcpServer
      */
     public function onReceive($server, int $fd, int $fromId, string $data): void
     {
+        // 利用协程上下文存储请求开始的时间，用来计算程序执行时间
+        Context::set('execution_start_time', microtime(true));
         parent::onReceive($server, $fd, $fromId, $data);
         $this->eventDispatcher->dispatch(new OnReceive($server, $fd, $fromId, $data));
     }

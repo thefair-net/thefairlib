@@ -41,7 +41,9 @@ class RequestMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // 利用协程上下文存储请求开始的时间，用来计算程序执行时间
-        Context::set('execution_start_time', microtime(true));
+        if (Context::has('execution_start_time')) {
+            Context::set('execution_start_time', microtime(true));
+        }
 
         $dispatched = $request->getAttribute(Dispatched::class);
 
