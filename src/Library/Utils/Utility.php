@@ -351,10 +351,6 @@ if (!function_exists('getRpcLogArguments')) {
         unset($params['__auth']);
         $clientInfo = getClientInfo();
         $len = strlen(encode($params));
-        $exe = -1;
-        if (Context::has('execution_start_time')) {
-            $exe = round((microtime(true) - Context::get('execution_start_time')) * 1000, 2);
-        }
         return [
             'server_ip' => getServerLocalIp(),
             'client_ip' => arrayGet($clientInfo, 'remote_ip'),
@@ -363,7 +359,7 @@ if (!function_exists('getRpcLogArguments')) {
             'uri' => $request->getUri()->getPath(),
             'params' => $len <= 2048 ? $params : ['len' => $len, 'msg' => '...'],
             'method' => $request->getMethod(),
-            'execution_time' => $exe,
+            'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
             'request_body_size' => $len,
             'response_body_size' => Context::get('server:response_body_size'),
         ];
@@ -392,10 +388,6 @@ if (!function_exists('getHttpLogArguments')) {
         if (in_array($uri, ['/favicon.ico'])) {
             return [];
         }
-        $exe = -1;
-        if (Context::has('execution_start_time')) {
-            $exe = round((microtime(true) - Context::get('execution_start_time')) * 1000, 2);
-        }
         return [
             'server_ip' => getServerLocalIp(),
             'client_ip' => $request->getServerParams(),
@@ -409,7 +401,7 @@ if (!function_exists('getHttpLogArguments')) {
             'url' => $request->fullUrl(),
             'params' => $len <= 2048 ? $params : ['len' => $len, 'msg' => '...'],
             'method' => $request->getMethod(),
-            'execution_time' => $exe,
+            'execution_time' => round((microtime(true) - Context::get('execution_start_time')) * 1000, 2),
             'request_body_size' => $len,
             'response_body_size' => Context::get('server:response_body_size'),
         ];
