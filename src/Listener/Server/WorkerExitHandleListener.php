@@ -31,7 +31,7 @@ class WorkerExitHandleListener implements ListenerInterface
     public function process(object $event)
     {
         if ($event instanceof OnWorkerExit) {
-            Logger::get()->error(sprintf(
+            Logger::get()->warning(sprintf(
                 'event: %s , worker_id: %d',
                 OnWorkerExit::class,
                 $event->workerId
