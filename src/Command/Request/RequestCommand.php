@@ -8,7 +8,6 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use TheFairLib\Contract\ServiceGovernanceManageInterface;
 use TheFairLib\Library\Http\Request\RequestGenerate;
 
 /**
@@ -23,15 +22,10 @@ class RequestCommand extends Command
      */
     private $container;
 
-    /**
-     * @var ServiceGovernanceManageInterface
-     */
-    private $manage;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->manage = $container->get(ServiceGovernanceManageInterface::class);
         parent::__construct('request');
         $this->setDescription('自动生成请求参数文件');
     }

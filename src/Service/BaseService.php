@@ -18,12 +18,4 @@ abstract class BaseService
      * @var LockInterface
      */
     protected $lock;
-
-    /**
-     * 触发事件.
-     *
-     * @Inject
-     * @var EventDispatcherInterface
-     */
-    protected $eventDispatcher;
 }

@@ -361,11 +361,6 @@ class ModelUpdateVisitor extends NodeVisitorAbstract
             case 'int':
             case 'bigint':
                 return 'integer';
-            case 'decimal':
-            case 'float':
-            case 'double':
-            case 'real':
-                return 'float';
             case 'bool':
             case 'boolean':
                 return 'boolean';

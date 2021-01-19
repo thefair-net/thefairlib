@@ -15,8 +15,6 @@ namespace TheFairLib\Server\Core;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Utils\Context;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Swoole\Http\Request as SwooleRequest;
-use Swoole\Http\Response as SwooleResponse;
 use TheFairLib\Event\OnRequest;
 
 class HttpServer extends \Hyperf\HttpServer\Server
@@ -28,7 +26,7 @@ class HttpServer extends \Hyperf\HttpServer\Server
      */
     protected $eventDispatcher;
 
-    public function onRequest(SwooleRequest $request, SwooleResponse $response): void
+    public function onRequest($request, $response): void
     {
         // 利用协程上下文存储请求开始的时间，用来计算程序执行时间
         Context::set('execution_start_time', microtime(true));

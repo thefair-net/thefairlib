@@ -17,5 +17,4 @@ use Hyperf\Di\Annotation\Inject;
 
 abstract class ExceptionHandler extends \Hyperf\ExceptionHandler\ExceptionHandler
 {
-
 }

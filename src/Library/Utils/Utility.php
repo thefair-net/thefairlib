@@ -595,3 +595,118 @@ if (!function_exists('decrypt')) {
         );
     }
 }
+
+if (!function_exists('listItemFromCache')) {
+    /**
+     * 通过页码获取缓存分页
+     *
+     * @param string $poolName
+     * @param string $key
+     * @param int $page
+     * @param string $order
+     * @param int $itemPerPage
+     * @param bool $withScores
+     * @return array
+     */
+    function listItemFromCache(string $poolName, string $key, int $page = 1, string $order = 'desc', int $itemPerPage = 20, bool $withScores = true): array
+    {
+        $itemCount = \TheFairLib\Library\Cache\Redis::getContainer($poolName)->zCard($key);
+        $itemPerPage = min(50, $itemPerPage);
+        $pageCount = ceil($itemCount / $itemPerPage);
+        $result = [
+            'item_list' => [],
+            'page' => $page,
+            'item_per_page' => $itemPerPage,
+            'item_count' => $itemCount,
+            'page_count' => $pageCount,
+        ];
+        if ($page < 1) {
+            $page = 1;
+        }
+        if ($itemCount > 0 && in_array($order, ['desc', 'asc']) && $page <= $pageCount) {
+            $startIndex = ($page - 1) * $itemPerPage;
+            $data = [];
+            switch (true) {
+                case $withScores === true && $order === 'desc':
+                    $data = \TheFairLib\Library\Cache\Redis::getContainer($poolName)->zRevRangeByScore($key, '+inf', '-inf', ['withscores' => true, 'limit' => [$startIndex, $itemPerPage]]);
+                    break;
+                case $withScores === true && $order === 'asc':
+                    $data = \TheFairLib\Library\Cache\Redis::getContainer($poolName)->zRangeByScore($key, '-inf', '+inf', ['withscores' => true, 'limit' => [$startIndex, $itemPerPage]]);
+                    break;
+                case $withScores === false && $order === 'desc':
+                    $data = \TheFairLib\Library\Cache\Redis::getContainer($poolName)->zRevRangeByScore($key, '+inf', '-inf', ['limit' => [$startIndex, $itemPerPage]]);
+                    break;
+                case $withScores === false && $order === 'asc':
+                    $data = \TheFairLib\Library\Cache\Redis::getContainer($poolName)->zRangeByScore($key, '-inf', '+inf', ['limit' => [$startIndex, $itemPerPage]]);
+                    break;
+            }
+            $result['item_list'] = $data;
+            $result['page'] = $page;
+        }
+        return $result;
+    }
+}
+
+if (!function_exists('formatTimeText')) {
+
+    /**
+     * 格式化时间
+     *
+     * @param int $seconds
+     * @return string
+     */
+    function formatTimeText(int $seconds): string
+    {
+        $secondsCount = intval($seconds);
+        $minutes = intval($secondsCount / 60);
+        $secondsLeft = $secondsCount % 60;
+
+        return ($minutes < 10 ? '0' . strval($minutes) : strval($minutes)) . ":" . ($secondsLeft < 10 ? '0' . strval($secondsLeft) : strval($secondsLeft));
+    }
+}
+
+if (!function_exists('esFormatDate')) {
+
+    /**
+     * 格式化时间
+     * @param $date
+     * @return string
+     */
+    function esFormatDate($date): string
+    {
+        if (empty($date)) {
+            $date = 0;
+        }
+        $date = is_int($date) ? date('Y-m-d H:i:s', $date) : $date;
+
+        $result = preg_match('/[1-9]\d+\-\d+\-\d+( \d+:\d+:\d+)?/', $date, $matches);
+        if ($result) {
+            $date = $matches[0];
+            if (strlen($date) < 13) {
+                $date = $date . " 00:00:01";
+            }
+
+            $date = str_replace(' ', 'T', $date) . 'Z';
+
+            $date = str_replace('Z', "+08:00", $date);
+
+            return $date;
+        } else {
+            return '1970-01-01T00:00:01Z';
+        }
+    }
+}
+
+if (!function_exists('utf8Len')) {
+
+    /**
+     * 字符串长度
+     *
+     * @param string $content
+     * @return int
+     */
+    function utf8Len(string $content): int
+    {
+        return (int)mb_strlen($content, "UTF-8");
+    }
+}

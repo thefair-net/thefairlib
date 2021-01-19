@@ -29,12 +29,12 @@ class BaseRequest extends FormRequest
 
             'app_id' => 'str|max:32',
             'app_name' => 'str|max:32',
-            'source' => 'str|max:32',
+//            'source' => 'str|max:32',
             '__from' => 'str|max:32',
 
-            'sort' => 'str|max:32',
-            'sort_field' => 'str|max:32',
-            'sort_order' => 'str|max:32',
+//            'sort' => 'str|max:32',
+//            'sort_field' => 'str|max:32',
+//            'sort_order' => 'str|max:32',
         ];
     }
 }
