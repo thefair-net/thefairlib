@@ -442,7 +442,7 @@ TheFairLib\Library\Cache\Redis::getContainer('pool_name')->get();
 getItemListByPageFromCache(self::REDIS_POOL, $name, $lastItemId, 'asc', $itemPerPage, true);
 
 //页码 
-listItemFromCache(string $poolName, string $key, int $page = 1, string $order = 'desc', int $itemPerPage = 20, bool $withScores = true)
+listItemFromCache(self::REDIS_POOL, $name, 1,'desc', $itemPerPage, true);
 ```
 
 ## 异常
