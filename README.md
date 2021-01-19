@@ -8,8 +8,8 @@
 
 仅可运行于 Linux 和 Mac 环境下，Windows 下也可以通过 Docker for Windows 来作为运行环境或虚拟机，通常来说 Mac 环境下，推荐本地环境部署
 
-* PHP >= 7.2
-* Swoole PHP 扩展 >= 4.4，并关闭了 Short Name
+* PHP >= 7.3
+* Swoole PHP 扩展 >= 4.5，并关闭了 Short Name
 * OpenSSL PHP 扩展
 * JSON PHP 扩展
 * PDO PHP 扩展 （如需要使用到 MySQL 客户端）
@@ -23,9 +23,8 @@
 
 安装包 `composer up`
 
-生产环境`composer dump-autoload --optimize`
+生产环境`composer dump-autoload -o`
 
-启动服务开发 `php dev_start.php -c`
 
 ## 项目文件结构
 
