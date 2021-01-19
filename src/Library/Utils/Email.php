@@ -20,7 +20,7 @@ class Email
      * @param string $title
      * @throws Throwable
      */
-    public static function send($email, $subject, $content, $title = '新世相系统')
+    public static function send($email, $subject, $content, $title = '系统通知')
     {
         if (!$email || !$subject || !$content) {
             return;
