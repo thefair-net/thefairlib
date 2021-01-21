@@ -16,9 +16,8 @@ use Hyperf\Utils\Context;
  * @property int code
  * @property string action
  */
-class ServiceResponse implements ResponseInterface
+class ApiResponse implements ResponseInterface
 {
-    
     private $params = [
         'result',
         'code',
@@ -75,7 +74,7 @@ class ServiceResponse implements ResponseInterface
         return [
             'code' => $this->code,
             'message' => [
-                'text' => $this->msg,
+                'content' => $this->msg,
                 'action' => $this->action,
             ],
             'result' => $this->result,

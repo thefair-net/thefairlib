@@ -654,63 +654,13 @@ WantedBy=multi-user.target graphical.target
 
 ```shell
 #启动服务
-sudo systemctl start push.service
+systemctl start push.service
 #reload服务
-sudo systemctl reload push.service
+systemctl reload push.service
 #关闭服务
-sudo systemctl stop push.service
+systemctl stop push.service
 
-sudo systemctl status push.service
-```
-
-### supervisorctl 管理项目
-
-编辑新复制出来的配置文件 `/etc/supervisord.d/supervisord.conf`，并在文件结尾处添加以下内容后保存文件：
-
-```ini
-# 新建一个应用并设置一个名称，这里设置为 user_service
-[program:user_service]
-# 设置命令在指定的目录内执行
-directory=/home/thefair/www/user_service/
-# 这里为您要管理的项目的启动命令
-command=php ./bin/hyperf.php start
-# 以哪个用户来运行该进程
-user=root
-# supervisor 启动时自动该应用
-autostart=true
-# 进程退出后自动重启进程
-autorestart=true
-# 进程持续运行多久才认为是启动成功
-startsecs=1
-# 重试次数
-startretries=3
-# stderr 日志输出位置
-stderr_logfile=/home/thefair/www/user_service/runtime/stderr.log
-# stdout 日志输出位置
-stdout_logfile=/home/thefair/www/user_service/runtime/stdout.log
-```
-
-启动 Supervisor
-
-```shell
-supervisord -c /etc/supervisord.d/supervisord.conf
-```
-
-使用 supervisorctl 管理项目
-
-```shell
-# 启动 user_service 应用
-supervisorctl start user_service
-# 重启 user_service 应用
-supervisorctl restart user_service
-# 停止 user_service 应用
-supervisorctl stop user_service  
-# 查看所有被管理项目运行状态
-supervisorctl status
-# 重新加载配置文件
-supervisorctl update
-# 重新启动所有程序
-supervisorctl reload
+systemctl status push.service
 ```
 
 ## 单元测试

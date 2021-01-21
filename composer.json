@@ -88,6 +88,9 @@
             "config": "TheFairLib\\ConfigProvider"
         }
     },
+    "bin": [
+        "bin/service_stop.sh"
+    ],
     "repositories": {
         "packagist": {
             "type": "composer",
