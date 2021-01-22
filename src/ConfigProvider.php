@@ -149,12 +149,6 @@ class ConfigProvider
                     'source' => __DIR__ . '/../publish/bin/test.service',
                     'destination' => BASE_PATH . sprintf('/bin/%s.service', str_replace('_service', '', env('APP_NAME', 'test'))),
                 ],
-                [
-                    'id' => 'init-proxy',
-                    'description' => 'The message init-proxy.',
-                    'source' => __DIR__ . '/../publish/bin/init-proxy.sh',
-                    'destination' => BASE_PATH . sprintf('/bin/init-proxy.sh'),
-                ],
             ],
         ];
     }
