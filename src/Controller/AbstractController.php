@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 namespace TheFairLib\Controller;
 
+use Hyperf\Utils\Context;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
-use TheFairLib\Library\Http\ServiceResponse;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
@@ -29,29 +29,6 @@ abstract class AbstractController implements \TheFairLib\Contract\ResponseInterf
      * @var \TheFairLib\Contract\ResponseInterface
      */
     protected $serviceResponse;
-
-    private $params = [
-        'result',
-        'code',
-        'msg',
-        'action',
-    ];
-
-    final public function __get($name)
-    {
-        if (!in_array($name, $this->params)) {
-            throw new ServiceException('error param', ['name' => $name]);
-        }
-        return Context::get(__CLASS__ . ':' . $name);
-    }
-
-    final public function __set($name, $value)
-    {
-        if (!in_array($name, $this->params)) {
-            throw new ServiceException('error param', [$name => $value]);
-        }
-        return Context::set(__CLASS__ . ':' . $name, $value);
-    }
 
     /**
      * @Inject
