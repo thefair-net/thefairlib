@@ -6,7 +6,6 @@ namespace TheFairLib\Server\Client;
 use Hyperf\RpcClient\AbstractServiceClient;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
-use TheFairLib\Utility\Utility;
 use Throwable;
 
 abstract class JsonRpcClient extends AbstractServiceClient

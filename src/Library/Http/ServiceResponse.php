@@ -18,7 +18,7 @@ use Hyperf\Utils\Context;
  */
 class ServiceResponse implements ResponseInterface
 {
-    
+
     private $params = [
         'result',
         'code',
@@ -45,7 +45,7 @@ class ServiceResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function showResult(array $result, $msg = '', $code = 0, $action = 'toast')
+    final public function showResult(array $result, string $msg = '', $code = 0, $action = 'toast')
     {
         $this->result = $result;
         $this->msg = $msg;
@@ -57,7 +57,7 @@ class ServiceResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function showError($error, array $result = [], $code = InfoCode::CODE_ERROR, $action = 'toast')
+    final public function showError(string $error, array $result = [], $code = InfoCode::CODE_ERROR, $action = 'toast')
     {
         return $this->showResult($result, $error, $code);
     }
@@ -65,7 +65,7 @@ class ServiceResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function showSuccess($msg = '', $action = 'toast')
+    final public function showSuccess(string $msg = '', $action = 'toast')
     {
         return $this->showResult(['status' => true], $msg ?: 'success');
     }

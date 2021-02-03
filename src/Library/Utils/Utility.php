@@ -710,3 +710,17 @@ if (!function_exists('utf8Len')) {
         return (int)mb_strlen($content, "UTF-8");
     }
 }
+
+if (!function_exists('container')) {
+
+    /**
+     * 从容器中获得实例
+     *
+     * @param string $id
+     * @return mixed
+     */
+    function container(string $id)
+    {
+        return ApplicationContext::getContainer()->get($id);
+    }
+}

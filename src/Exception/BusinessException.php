@@ -27,6 +27,9 @@ class BusinessException extends ServiceException
     public function __construct(int $code, array $replace = [], array $data = [], Throwable $previous = null, int $httpStatus = ServerCode::BAD_REQUEST)
     {
         $message = InfoCode::getMessage($code, $replace);
+        if (class_exists('\App\Constants\InfoCode')) {
+            $message = \App\Constants\InfoCode::getMessage($code, $replace);
+        }
 
         if (empty($message)) {//如果返回信息为空，就抛默认的错误
             $message = InfoCode::getMessage(InfoCode::CODE_ERROR_NULL, ['code' => $code]);
