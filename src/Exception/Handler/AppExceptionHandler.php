@@ -92,7 +92,7 @@ class AppExceptionHandler extends ExceptionHandler
         );
         $result = $this->serviceResponse->showError(
             $throwable->getMessage(),
-            ['data' => $response->getBody(), 'exception' => get_class($throwable)],
+            ['data' => $response->getBody()],
             $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR
         );
         return $response->withStatus($throwable->getHttpStatus ?? ServerCode::BAD_REQUEST)

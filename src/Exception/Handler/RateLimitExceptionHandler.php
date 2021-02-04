@@ -42,7 +42,6 @@ class RateLimitExceptionHandler extends ExceptionHandler
             ]),
             [
                 'error' => $body,
-                'exception' => get_class($throwable),
             ]
         );
         return $response->withBody(new SwooleStream(encode($result)));
