@@ -147,7 +147,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
     protected function setCache(string $id, array $data, $ttl, $poolName)
     {
         if ($ttl > 0) {
-            $ttl = max($ttl, self::TTL_MAX);
+            $ttl = min($ttl, self::TTL_MAX);
             $str = encode($data);
             if (strlen($str) <= (2 * 1024)) {
                 Redis::getContainer($poolName)->setex($id, $ttl, $str);
