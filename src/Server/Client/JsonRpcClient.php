@@ -4,17 +4,46 @@
 namespace TheFairLib\Server\Client;
 
 use Hyperf\RpcClient\AbstractServiceClient;
+use Hyperf\Utils\Context;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
+use TheFairLib\Library\Cache\Redis;
 use Throwable;
+use function Symfony\Component\Translation\t;
 
 abstract class JsonRpcClient extends AbstractServiceClient
 {
+
+    /**
+     * 最大缓存时间
+     *
+     * @var int
+     */
+    const TTL_MAX = 86400;
+
     /**
      * 定义对应服务提供者的服务协议
      * @var string
      */
     protected $protocol = 'jsonrpc-tcp-length-check';
+
+    protected function getServicePath()
+    {
+        return Context::get(__CLASS__ . '::servicePath');
+    }
+
+    protected function setServicePath(string $path)
+    {
+        Context::set(__CLASS__ . '::servicePath', $path);
+    }
+
+    protected function __generateRpcPath(string $methodName): string
+    {
+        if (!$this->serviceName || !$this->getServicePath()) {
+            throw new InvalidArgumentException('Parameter $serviceName missing.');
+        }
+        return $this->pathGenerator->generate($this->getServicePath(), $methodName);
+    }
 
     public function call(string $method, array $params = [])
     {
@@ -23,6 +52,9 @@ abstract class JsonRpcClient extends AbstractServiceClient
                 throw new ServiceException('__auth | __header 是保留关键字');
             }
             $config = $this->getConsumerConfig();
+            if (empty($config)) {
+                throw new ServiceException('error config');
+            }
             $time = time();
             $sign = md5(sprintf('%s%s%d', $config['app_key'], $config['app_secret'], $time));
             $requestData = array_merge_recursive($params, [
@@ -35,8 +67,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
                     'client_ip' => getServerLocalIp(),
                 ],
             ]);
-
-            $result = $this->__request($method, $requestData);
+            $result = $this->__request($this->generate($method), $requestData);
             if (!empty($result['code'])) {
                 throw new ServiceException($result['message']['text'] ?? '', $result['result'] ?? [], (int)$result['code']);
             }
@@ -53,12 +84,87 @@ abstract class JsonRpcClient extends AbstractServiceClient
      *
      * @param string $method
      * @param array $params
+     * @param array $ttl
      * @return array
      */
-    public function smart(string $method, array $params = []): array
+    public function smart(string $method, array $params = [], $ttl = 0, $poolName = 'default'): array
     {
-        $result = $this->call($method, $params);
+        switch (true) {
+            case $ttl > 0:
+                $key = $this->getCacheKey($method, $params);
+                if (!($result = $this->getCache($key, $poolName))) {
+                    $result = $this->call($method, $params);
+                    $this->setCache($key, $result, $ttl, $poolName);
+                }
+                break;
+            default:
+                $result = $this->call($method, $params);
+                break;
+        }
         //@todo
         return arrayGet($result, 'result', []);
+    }
+
+    /**
+     * 生成 path
+     *
+     * @param string $method
+     * @return string
+     */
+    protected function generate(string $method)
+    {
+        $handledNamespace = trim($method, '/');
+        $this->setServicePath(dirname($handledNamespace));
+        return basename($handledNamespace);
+    }
+
+    /**
+     * 缓存处理
+     *
+     * @param string $method
+     * @param array $params
+     * @param int $ttl
+     * @param string $poolName
+     * @return array
+     */
+    protected function getCache(string $id, string $poolName = 'default')
+    {
+        $data = [];
+        if (Redis::getContainer($poolName)->exists($id)) {
+            $data = Redis::getContainer($poolName)->get($id);
+        }
+        return !empty($data) ? decode($data) : [];
+    }
+
+    /**
+     * 缓存
+     *
+     * @param string $id
+     * @param array $data
+     * @param $ttl
+     * @param $poolName
+     */
+    protected function setCache(string $id, array $data, $ttl, $poolName)
+    {
+        if ($ttl > 0) {
+            $ttl = max($ttl, self::TTL_MAX);
+            $str = encode($data);
+            if (strlen($str) <= (2 * 1024)) {
+                Redis::getContainer($poolName)->setex($id, $ttl, $str);
+            }
+        }
+    }
+
+    /**
+     * 缓存 key
+     *
+     * @param string $method
+     * @param array $params
+     * @return string
+     */
+    protected function getCacheKey(string $method, array $params = []): string
+    {
+        $id = md5(encode([$method, $params]));
+        return getPrefix('Cache', 'string') . sprintf('%s#%s#%s', env('APP_NAME'), __FUNCTION__, $id);
     }
 }
