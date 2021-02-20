@@ -45,7 +45,7 @@ class ServiceResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function showResult(array $result, string $msg = '', $code = 0, $action = 'toast')
+    final public function showResult(array $result, string $msg = '', int $code = 0, string $action = 'toast')
     {
         $this->result = $result;
         $this->msg = $msg;
@@ -57,17 +57,17 @@ class ServiceResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function showError(string $error, array $result = [], $code = InfoCode::CODE_ERROR, $action = 'toast')
+    final public function showError(string $error, array $result = [], int $code = InfoCode::CODE_ERROR, string $action = 'toast')
     {
-        return $this->showResult($result, $error, $code);
+        return $this->showResult($result, $error, $code, $action);
     }
 
     /**
      * {@inheritdoc}
      */
-    final public function showSuccess(string $msg = '', $action = 'toast')
+    final public function showSuccess(string $msg = '', string $action = 'toast')
     {
-        return $this->showResult(['status' => true], $msg ?: 'success');
+        return $this->showResult(['status' => true], $msg ?: 'success', $action);
     }
 
     private function toArray(): array

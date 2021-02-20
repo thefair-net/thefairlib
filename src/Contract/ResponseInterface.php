@@ -25,7 +25,7 @@ interface ResponseInterface
      * @param string $action
      * @return mixed
      */
-    public function showResult(array $result, string $msg = '', int $code = 0, $action = 'toast');
+    public function showResult(array $result, string $msg = '', int $code = 0, string $action = 'toast');
 
     /**
      * 失败返回.
@@ -36,7 +36,7 @@ interface ResponseInterface
      * @param string $action
      * @return mixed
      */
-    public function showError(string $error, array $result = [], int $code = InfoCode::CODE_ERROR, $action = 'toast');
+    public function showError(string $error, array $result = [], int $code = InfoCode::CODE_ERROR, string $action = 'toast');
 
     /**
      * 成功
@@ -45,5 +45,5 @@ interface ResponseInterface
      * @param string $action
      * @return mixed
      */
-    public function showSuccess(string $msg = '', $action = 'toast');
+    public function showSuccess(string $msg = '', string $action = 'toast');
 }
