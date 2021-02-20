@@ -18,6 +18,11 @@ class InfoCode extends ErrorCode
     const CODE_RATE_LIMIT = 50003;
 
     /**
+     * @Message("login")
+     */
+    const CODE_LOGIN = 40000;
+
+    /**
      * @Message("server error")
      */
     const CODE_ERROR = 40001;

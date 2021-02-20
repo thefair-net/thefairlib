@@ -724,3 +724,60 @@ if (!function_exists('container')) {
         return ApplicationContext::getContainer()->get($id);
     }
 }
+
+if (!function_exists('getCookies')) {
+
+    /**
+     * cookies
+     *
+     * @return array
+     */
+    function getCookies(): array
+    {
+        return container(RequestInterface::class)->getCookieParams() ?? [];
+    }
+}
+
+
+if (!function_exists('getCookie')) {
+
+    /**
+     * cookie
+     *
+     * @return string
+     */
+    function getCookie(string $name): string
+    {
+        return arrayGet(getCookies(), $name) ?? '';
+    }
+}
+
+if (!function_exists('parseEmoji')) {
+    /**
+     * 将字符串中的表情转为转义字符
+     *
+     * @param string $str
+     * @return string
+     */
+    function parseEmoji(string $str): string
+    {
+        $client = new \Emojione\Client(new \Emojione\Ruleset());
+
+        return $client->toShort($str);
+    }
+}
+
+if (!function_exists('toEmoji')) {
+    /**
+     * 将字符串中的表情字符转为表情
+     *
+     * @param string $str
+     * @return string
+     */
+    function toEmoji(string $str): string
+    {
+        $client = new \Emojione\Client(new \Emojione\Ruleset());
+
+        return html_entity_decode($client->shortnameToUnicode($str));
+    }
+}

@@ -1,0 +1,52 @@
+<?php
+/***************************************************************************
+ *
+ * Copyright (c) 2021 liumingzhi, Inc. All Rights Reserved
+ *
+ **************************************************************************
+ *
+ * @file Device.php
+ * @author liumingzhi(liumingzhij26@gmail.com)
+ * @date 2021-01-26 10:41:00
+ *
+ **/
+
+namespace TheFairLib\Server\Client;
+
+use App\Rpc\Test\TestRpcClient;
+use App\Service\Test\TestService;
+use Hyperf\Contract\ContainerInterface;
+use Hyperf\Di\Annotation\Inject;
+use Hyperf\Utils\ApplicationContext;
+use TheFairLib\Annotation\Doc;
+
+class RpcClient
+{
+
+    /**
+     * @Doc(name="使用连接池，可以复用连接")
+     *
+     * @param string $serviceName
+     * @return JsonRpcClient
+     */
+    public static function get(string $serviceName): JsonRpcClient
+    {
+        $serviceName = ucwords(camelize($serviceName));
+        $class = sprintf('TheFairLib\Server\Client\%s', $serviceName);
+        return container($class);
+    }
+
+    /**
+     * @Doc(name="会有部分性能问题，每次都需要实例化")
+     *
+     * @param string $serviceName
+     * @return JsonRpcClient
+     */
+    public static function make(string $serviceName): JsonRpcClient
+    {
+        return retry(2, function () use ($serviceName) {//默认重试 2 次，一次 100 ms
+            return make(CommonService::class, [ApplicationContext::getContainer(), $serviceName]);
+        }, 100);
+    }
+
+}

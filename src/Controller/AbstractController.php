@@ -79,7 +79,7 @@ abstract class AbstractController implements \TheFairLib\Contract\ResponseInterf
      * @param string $msg
      * @param int $code
      * @param string $action
-     * @return mixed
+     * @return array
      */
     final public function showResult(array $result, string $msg = '', int $code = 0, $action = 'toast')
     {
@@ -89,15 +89,15 @@ abstract class AbstractController implements \TheFairLib\Contract\ResponseInterf
     /**
      * 失败返回.
      *
-     * @param $error
+     * @param $msg
      * @param array $result
      * @param int $code
      * @param string $action
-     * @return mixed
+     * @return array
      */
-    final public function showError($error, array $result = [], int $code = InfoCode::CODE_ERROR, $action = 'toast')
+    final public function showError(string $msg, array $result = [], int $code = InfoCode::CODE_ERROR, $action = 'toast')
     {
-        return $this->serviceResponse->showError($error, $result, $code, $action);
+        return $this->serviceResponse->showError($msg, $result, $code, $action);
     }
 
     /**
@@ -105,9 +105,9 @@ abstract class AbstractController implements \TheFairLib\Contract\ResponseInterf
      *
      * @param string $msg
      * @param string $action
-     * @return mixed
+     * @return array
      */
-    final public function showSuccess($msg = '', $action = 'toast')
+    final public function showSuccess(string $msg = '', $action = 'toast')
     {
         return $this->serviceResponse->showSuccess($msg, $action);
     }

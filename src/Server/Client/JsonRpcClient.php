@@ -87,7 +87,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
      * @param array $ttl
      * @return array
      */
-    public function smart(string $method, array $params = [], $ttl = 0, $poolName = 'default'): array
+    public function smart(string $method, array $params = [], int $ttl = 0, string $poolName = 'default'): array
     {
         switch (true) {
             case $ttl > 0:
@@ -103,6 +103,19 @@ abstract class JsonRpcClient extends AbstractServiceClient
         }
         //@todo
         return arrayGet($result, 'result', []);
+    }
+
+
+    /**
+     * 清除由 smart 生成的缓存
+     *
+     * @param string $method
+     * @param array $params
+     * @param string $poolName
+     */
+    public function clear(string $method, array $params = [], string $poolName = 'default'): void
+    {
+        Redis::getContainer($poolName)->del($this->getCacheKey($method, $params));
     }
 
     /**
@@ -149,7 +162,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
         if ($ttl > 0) {
             $ttl = min($ttl, self::TTL_MAX);
             $str = encode($data);
-            if (strlen($str) <= (2 * 1024)) {
+            if (strlen($str) <= (10 * 1024)) {//超过 10k 不缓存
                 Redis::getContainer($poolName)->setex($id, $ttl, $str);
             }
         }
@@ -165,6 +178,6 @@ abstract class JsonRpcClient extends AbstractServiceClient
     protected function getCacheKey(string $method, array $params = []): string
     {
         $id = md5(encode([$method, $params]));
-        return getPrefix('Cache', 'string') . sprintf('%s#%s#%s', env('APP_NAME'), __FUNCTION__, $id);
+        return getPrefix('Cache', 'string') . sprintf('%s#%s', env('APP_NAME'), $id);
     }
 }
