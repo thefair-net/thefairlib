@@ -66,7 +66,7 @@ class ServiceResponse implements ResponseInterface
      */
     final public function showSuccess($msg = '', $action = 'toast')
     {
-        return $this->showResult(['status' => true], $msg ?: 'success');
+        return $this->showResult(['status' => true], $msg ?: 'success', 0, $action);
     }
 
     private function toArray(): array
