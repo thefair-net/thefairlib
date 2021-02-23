@@ -781,3 +781,17 @@ if (!function_exists('toEmoji')) {
         return html_entity_decode($client->shortnameToUnicode($str));
     }
 }
+if (!function_exists('redirect')) {
+    /**
+     * 重定向跳转
+     *
+     * @param string $toUrl
+     * @param int $status
+     * @param string $schema
+     * @return mixed
+     */
+    function redirect(string $toUrl, int $status = 302, string $schema = 'http')
+    {
+        return container(\Hyperf\HttpServer\Contract\ResponseInterface::class)->redirect($toUrl, $status, $schema);
+    }
+}
