@@ -49,5 +49,4 @@ class RpcClient
             return make(CommonService::class, [ApplicationContext::getContainer(), $serviceName]);
         }, 100);
     }
-
 }

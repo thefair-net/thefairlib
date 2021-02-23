@@ -15,11 +15,13 @@ use TheFairLib\Contract\LockInterface;
 use TheFairLib\Contract\RequestParamInterface;
 use TheFairLib\Contract\ResponseBuilderInterface;
 use TheFairLib\Contract\ResponseInterface;
+use TheFairLib\Contract\WeChatFactoryInterface;
 use TheFairLib\Library\Http\Request\RequestParam;
 use TheFairLib\Library\Http\ResponseBuilderFactory;
 use TheFairLib\Library\Http\ServiceResponse;
 use TheFairLib\Library\Lock\RedisLockFactory;
 use TheFairLib\Library\Logger\StdoutLoggerFactory;
+use TheFairLib\Library\WeChat\EasyWeChat\WeChatFactoryService;
 use TheFairLib\Listener\DbQueryExecutedListener;
 use TheFairLib\Listener\ErrorHandleListener;
 use TheFairLib\Listener\Logger\LoggerHandleListener;
@@ -46,6 +48,7 @@ class ConfigProvider
                 ResponseBuilderInterface::class => ResponseBuilderFactory::class,
                 LengthAwarePaginatorInterface::class => LengthAwarePaginator::class,
                 RequestParamInterface::class => RequestParam::class,
+                WeChatFactoryInterface::class => WeChatFactoryService::class,
             ],
             'listeners' => [
                 ErrorHandleListener::class,

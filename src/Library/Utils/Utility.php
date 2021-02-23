@@ -16,9 +16,9 @@ use TheFairLib\Exception\ServiceException;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\DbConnection\Db;
 use Hyperf\HttpServer\Contract\RequestInterface;
-use Hyperf\Snowflake\IdGenerator\SnowflakeIdGenerator;
-use Hyperf\Snowflake\IdGeneratorInterface;
-use Hyperf\Snowflake\Meta;
+//use Hyperf\Snowflake\IdGenerator\SnowflakeIdGenerator;
+//use Hyperf\Snowflake\IdGeneratorInterface;
+//use Hyperf\Snowflake\Meta;
 use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
 use Psr\Http\Message\ResponseInterface;
@@ -80,40 +80,40 @@ if (!function_exists('decode')) {
         return $ret;
     }
 }
-
-if (!function_exists('generateSnowId')) {
-    /**
-     * 分布式全局唯一ID生成算法
-     * @return int
-     */
-    function generateSnowId()
-    {
-        $container = ApplicationContext::getContainer();
-        /**
-         * @var SnowflakeIdGenerator $generator
-         */
-        $generator = $container->get(IdGeneratorInterface::class);
-        return $generator->generate();
-    }
-}
-
-if (!function_exists('degenerateSnowId')) {
-    /**
-     * 根据ID反推对应的Meta
-     * @param $id
-     * @return Meta
-     */
-    function degenerateSnowId($id)
-    {
-        $container = ApplicationContext::getContainer();
-        /**
-         * @var SnowflakeIdGenerator $generator
-         */
-        $generator = $container->get(IdGeneratorInterface::class);
-
-        return $generator->degenerate($id);
-    }
-}
+//
+//if (!function_exists('generateSnowId')) {
+//    /**
+//     * 分布式全局唯一ID生成算法
+//     * @return int
+//     */
+//    function generateSnowId()
+//    {
+//        $container = ApplicationContext::getContainer();
+//        /**
+//         * @var SnowflakeIdGenerator $generator
+//         */
+//        $generator = $container->get(IdGeneratorInterface::class);
+//        return $generator->generate();
+//    }
+//}
+//
+//if (!function_exists('degenerateSnowId')) {
+//    /**
+//     * 根据ID反推对应的Meta
+//     * @param $id
+//     * @return Meta
+//     */
+//    function degenerateSnowId($id)
+//    {
+//        $container = ApplicationContext::getContainer();
+//        /**
+//         * @var SnowflakeIdGenerator $generator
+//         */
+//        $generator = $container->get(IdGeneratorInterface::class);
+//
+//        return $generator->degenerate($id);
+//    }
+//}
 
 if (!function_exists('arrayGet')) {
     /**

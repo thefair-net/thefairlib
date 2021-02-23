@@ -43,7 +43,9 @@ class BusinessException extends ServiceException
             foreach (['\App\Constants\InfoCode', '\App\Constants\ErrorCode', '\App\Constants\ServerCode'] as $className) {
                 if (class_exists($className)) {
                     $message = $className::getMessage($code, $replace);
-                    if (!empty($message)) return $message;
+                    if (!empty($message)) {
+                        return $message;
+                    }
                 }
             }
         }

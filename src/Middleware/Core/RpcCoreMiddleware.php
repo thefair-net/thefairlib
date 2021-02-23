@@ -37,10 +37,9 @@ class RpcCoreMiddleware extends \Hyperf\JsonRpc\CoreMiddleware
             $controllerInstance = $this->container->get($controller);
             if (!method_exists($controller, $action)) {
                 // Route found, but the handler does not exist.
-
                 return $this->responseBuilder->buildErrorResponse($request, ResponseBuilder::INTERNAL_ERROR);
             }
-            $parameters = $this->parseParameters($controller, $action, $request->getParsedBody());
+            $parameters = $this->parseMethodParameters($controller, $action, $dispatched->params);
             try {
                 $response = $controllerInstance->{$action}(...$parameters);
             } catch (\Throwable $exception) {

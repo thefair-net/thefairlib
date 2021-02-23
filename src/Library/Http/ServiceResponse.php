@@ -18,7 +18,6 @@ use Hyperf\Utils\Context;
  */
 class ServiceResponse implements ResponseInterface
 {
-
     private $params = [
         'result',
         'code',

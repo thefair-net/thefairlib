@@ -47,5 +47,4 @@ class CommonService extends JsonRpcClient
     {
         return $this->serviceName;
     }
-
 }

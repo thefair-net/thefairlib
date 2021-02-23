@@ -5,11 +5,11 @@ namespace TheFairLib\Server\Client;
 
 use Hyperf\RpcClient\AbstractServiceClient;
 use Hyperf\Utils\Context;
+use InvalidArgumentException;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
 use TheFairLib\Library\Cache\Redis;
 use Throwable;
-use function Symfony\Component\Translation\t;
 
 abstract class JsonRpcClient extends AbstractServiceClient
 {
@@ -84,7 +84,8 @@ abstract class JsonRpcClient extends AbstractServiceClient
      *
      * @param string $method
      * @param array $params
-     * @param array $ttl
+     * @param int $ttl
+     * @param string $poolName
      * @return array
      */
     public function smart(string $method, array $params = [], int $ttl = 0, string $poolName = 'default'): array
@@ -134,9 +135,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
     /**
      * 缓存处理
      *
-     * @param string $method
-     * @param array $params
-     * @param int $ttl
+     * @param string $id
      * @param string $poolName
      * @return array
      */
