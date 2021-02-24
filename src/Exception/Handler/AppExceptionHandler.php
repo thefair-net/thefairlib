@@ -59,6 +59,7 @@ class AppExceptionHandler extends ExceptionHandler
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
         $data = [];
+        $status = ServerCode::BAD_REQUEST;
         switch (get_class($throwable)) {
             case ValidationException::class:
                 /**
@@ -71,6 +72,7 @@ class AppExceptionHandler extends ExceptionHandler
             case ServiceException::class:
                 $msg = $throwable->getMessage();
                 $data = $throwable->getData();
+                $status = $throwable->getHttpStatus();
                 break;
             default:
                 $msg = $throwable->getMessage();
@@ -95,7 +97,7 @@ class AppExceptionHandler extends ExceptionHandler
             ['data' => $response->getBody()],
             $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR
         );
-        return $response->withStatus($throwable->getHttpStatus() ?? ServerCode::BAD_REQUEST)
+        return $response->withStatus($status)
             ->withAddedHeader('content-type', 'application/json')
             ->withAddedHeader('charset', 'utf-8')
             ->withBody(new SwooleStream(encode($result)));
