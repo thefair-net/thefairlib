@@ -19,7 +19,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
      *
      * @var int
      */
-    const TTL_MAX = 43200;
+    const TTL_MAX = 1800;
 
     /**
      * 定义对应服务提供者的服务协议
