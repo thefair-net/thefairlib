@@ -9,6 +9,8 @@ use Hyperf\Contract\LengthAwarePaginatorInterface;
 use Hyperf\Contract\NormalizerInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpServer\CoreMiddleware;
+use Hyperf\JsonRpc\JsonRpcPoolTransporter;
+use Hyperf\JsonRpc\JsonRpcTransporter;
 use Hyperf\TfConfig\ConfigFactory;
 use Hyperf\Utils\Serializer\SimpleNormalizer;
 use TheFairLib\Contract\LockInterface;
@@ -49,6 +51,7 @@ class ConfigProvider
                 LengthAwarePaginatorInterface::class => LengthAwarePaginator::class,
                 RequestParamInterface::class => RequestParam::class,
                 WeChatFactoryInterface::class => WeChatFactoryService::class,
+                JsonRpcTransporter::class => JsonRpcPoolTransporter::class,
             ],
             'listeners' => [
                 ErrorHandleListener::class,
