@@ -33,6 +33,11 @@ class InfoCode extends ErrorCode
     const CODE_ERROR_NULL = 400400;
 
     /**
+     * @Message("service forbidden")
+     */
+    const CODE_SERVER_FORBIDDEN = 400300;
+
+    /**
      * @Message("server error")
      */
     const SERVER_CODE_ERROR = 50000;

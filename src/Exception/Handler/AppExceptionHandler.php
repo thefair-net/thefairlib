@@ -95,7 +95,7 @@ class AppExceptionHandler extends ExceptionHandler
             ['data' => $response->getBody()],
             $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR
         );
-        return $response->withStatus($throwable->getHttpStatus ?? ServerCode::BAD_REQUEST)
+        return $response->withStatus($throwable->getHttpStatus() ?? ServerCode::BAD_REQUEST)
             ->withAddedHeader('content-type', 'application/json')
             ->withAddedHeader('charset', 'utf-8')
             ->withBody(new SwooleStream(encode($result)));
