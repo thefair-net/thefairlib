@@ -20,7 +20,7 @@ use EasyWeChat\Kernel\Exceptions\InvalidConfigException;
 use Hyperf\Di\Annotation\Inject;
 use ReflectionException;
 
-abstract class MessageModel
+abstract class MessageService
 {
 
     /**
