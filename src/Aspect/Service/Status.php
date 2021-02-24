@@ -42,8 +42,7 @@ class Status extends AbstractAspect
 
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        $path = BASE_PATH . sprintf('/runtime/service_status');
-        if (file_exists($path)) {
+        if (file_exists(config('app.service_status_path', ''))) {
             throw new BusinessException(InfoCode::CODE_SERVER_FORBIDDEN, [], [], null, ServerCode::FORBIDDEN);
         }
         return $proceedingJoinPoint->process();
