@@ -16,7 +16,7 @@
 * Redis PHP 扩展 （如需要使用到 Redis 客户端）
 * Protobuf PHP 扩展 （如需要使用到 gRPC 服务端或客户端）
 
-`composer create-project lmz/thefair-skeleton test_service`
+`composer create-project lmz/xxx-skeleton test_service`
 
 复制项目中的 `.env.example` 为 `.env`
 本地配置文件 `.env`
@@ -292,7 +292,7 @@ class UserInfo extends DataModel
      *
      * @var string
      */
-    protected $connection = 'thefair_user';
+    protected $connection = 'xxx_user';
     /**
      * sharding num
      *
@@ -401,7 +401,7 @@ demo 用例
 public function rawSql()
 {
     $uid = "1 or 1=1";
-    return $this->db()->select("select * from thefair_user_info_0 where uid = {$uid}");
+    return $this->db()->select("select * from xxx_user_info_0 where uid = {$uid}");
 }
 ```
 上面这条 sql 可以使用参数过滤做来，如强转 int
@@ -416,7 +416,7 @@ public function rawSql()
 public function rawSql()
 {
     $nick = "1 or 1=1";
-    return $this->db()->select("select * from thefair_user_info_0 where nick = $nick");
+    return $this->db()->select("select * from xxx_user_info_0 where nick = $nick");
 }
 ```
 上面这条 sql 传入的是一个字符串，如果用参数过滤很容易误杀，必须使用**预处理查询**
@@ -508,7 +508,7 @@ throw new EmptyException('数据为空', ['uid' => 1]);
 
 
 ```php
-$data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('thefair_service')->call('/v2/test/get_test', [
+$data = \TheFairLib\Service\JsonRpc\RpcClient\Client::Instance('xxx_service')->call('/v2/test/get_test', [
 
 ]);
 ```
@@ -602,27 +602,14 @@ return [
 
 新建 RpcClient 
 
-```php
-<?php
-
-
-namespace App\Rpc;
-
-class Test extends \TheFairLib\Server\Client\JsonRpcClient
-{
-
-    /**
-     * 定义对应服务提供者的服务名称
-     * @var string
-     */
-    protected $serviceName = 'v2/test';
-
-}
-```
-
 访问
 ```php
-make(Test::class)->call('get_test')
+
+function smart(string $method, array $params = [], int $ttl = 0, string $poolName = 'default'): array {}
+
+RpcClient::get('content_service')->smart('v1/test/get_test', [], 1000, 'user_info');
+
+
 ```
 
 ## 线上服务启动 
@@ -642,7 +629,7 @@ After=syslog.target
 [Service]
 Type=simple
 LimitNOFILE=65535
-ExecStart=/usr/bin/php /home/thefair/www/push_service/bin/hyperf.php start
+ExecStart=/usr/bin/php /home/xxx/www/push_service/bin/hyperf.php start
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=always
 
@@ -650,13 +637,13 @@ Restart=always
 WantedBy=multi-user.target graphical.target
 ```
 
-使用`ln -s /home/thefair/www/push_service/bin/push.service /usr/lib/systemd/system && systemctl daemon-reload && systemctl enable push.service`
+使用`ln -s /home/xxx/www/push_service/bin/push.service /usr/lib/systemd/system && systemctl daemon-reload && systemctl enable push.service`
 
 ```shell
 #启动服务
 systemctl start push.service
-#reload服务
-systemctl reload push.service
+#restart服务
+systemctl restart push.service
 #关闭服务
 systemctl stop push.service
 
