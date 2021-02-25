@@ -38,6 +38,11 @@ class InfoCode extends ErrorCode
     const CODE_SERVER_FORBIDDEN = 400300;
 
     /**
+     * @Message("service http_not_found")
+     */
+    const CODE_SERVER_HTTP_NOT_FOUND = 400404;
+
+    /**
      * @Message("server error")
      */
     const SERVER_CODE_ERROR = 50000;
