@@ -91,7 +91,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
     public function smart(string $method, array $params = [], int $ttl = 0, string $poolName = 'default'): array
     {
         switch (true) {
-            case $ttl > 0:
+            case $ttl > 0 && !config('app.close_rpc_smart_cache', false):
                 $key = $this->getCacheKey($method, $params);
                 if (!($result = $this->getCache($key, $poolName))) {
                     $result = $this->call($method, $params);
