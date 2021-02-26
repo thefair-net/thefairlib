@@ -11,11 +11,13 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
  */
 
+use Hyperf\HttpMessage\Cookie\Cookie;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\DbConnection\Db;
 use Hyperf\HttpServer\Contract\RequestInterface;
+
 //use Hyperf\Snowflake\IdGenerator\SnowflakeIdGenerator;
 //use Hyperf\Snowflake\IdGeneratorInterface;
 //use Hyperf\Snowflake\Meta;
@@ -749,6 +751,19 @@ if (!function_exists('getCookie')) {
     function getCookie(string $name): string
     {
         return arrayGet(getCookies(), $name) ?? '';
+    }
+}
+
+if (!function_exists('setCookies')) {
+
+    /**
+     * @param Cookie $cookie
+     */
+    function setCookies(Cookie $cookie): void
+    {
+        Context::override(ResponseInterface::class, function (ResponseInterface $response) use ($cookie) {
+            return $response->withCookie($cookie);
+        });
     }
 }
 

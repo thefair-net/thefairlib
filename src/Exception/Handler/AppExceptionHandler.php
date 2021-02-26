@@ -94,7 +94,11 @@ class AppExceptionHandler extends ExceptionHandler
         );
         $result = $this->serviceResponse->showError(
             $throwable->getMessage(),
-            ['data' => $response->getBody()],
+            [
+                'data' => $response->getBody(),
+                'file' => str_replace(BASE_PATH, '.', $throwable->getFile()),
+                'line' => $throwable->getLine(),
+            ],
             $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR
         );
         return $response->withStatus($status)

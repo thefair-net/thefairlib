@@ -235,7 +235,14 @@ i 对整数值进行强转，如果直接使用参数取值为字符串类型，
 
 `'phone' => 'required|s|get'`  // get 验证直接使用empty判断，不能传0、空、false
 
+### cookie
 
+```php
+getCookie('xxx');
+getCookies();
+getCookies();
+setCookies(new \Hyperf\HttpMessage\Cookie\Cookie('xxx', 'xxx', time() + 86400, '/', $domain));
+```
 
 ## Model 模型
 
