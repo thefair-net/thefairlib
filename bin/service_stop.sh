@@ -38,6 +38,10 @@ if ! /usr/local/bin/composer test -d $app_path -q; then
 fi
 echo "[start] unit test success..."
 
+echo "[start] manage:stop"
+/usr/bin/php ./bin/hyperf.php manage:stop
+echo "[start] manage:stop"
+
 echo "[start] service stop"
 
 if [ -f "./runtime/hyperf.pid" ]; then
