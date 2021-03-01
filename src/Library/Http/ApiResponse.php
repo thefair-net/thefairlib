@@ -71,13 +71,17 @@ class ApiResponse implements ResponseInterface
 
     private function toArray(): array
     {
-        return [
+        $ret = [
             'code' => $this->code,
-            'message' => [
-                'content' => $this->msg,
-                'action' => $this->action,
-            ],
+            'message' => new \StdClass(),
             'result' => $this->result,
         ];
+        if ($this->msg) {
+            $ret['message'] = [
+                'content' => $this->msg,
+                'action' => $this->action,
+            ];
+        }
+        return $ret;
     }
 }
