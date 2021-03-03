@@ -44,7 +44,7 @@ class ApiResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function showResult(array $result, string $msg = '', int $code = 0, string $action = 'toast')
+    final public function showResult(array $result, string $msg = '', int $code = 0, string $action = 'log')
     {
         $this->result = $result;
         $this->msg = $msg;
@@ -56,7 +56,7 @@ class ApiResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function showError(string $error, array $result = [], int $code = InfoCode::CODE_ERROR, string $action = 'toast')
+    final public function showError(string $error, array $result = [], int $code = InfoCode::CODE_ERROR, string $action = 'log')
     {
         return $this->showResult($result, $error, $code, $action);
     }
@@ -64,7 +64,7 @@ class ApiResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function showSuccess(string $msg = '', string $action = 'toast')
+    final public function showSuccess(string $msg = '', string $action = 'log')
     {
         return $this->showResult(['status' => true], $msg ?: 'success', 0, $action);
     }
