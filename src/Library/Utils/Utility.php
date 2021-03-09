@@ -569,11 +569,14 @@ if (!function_exists('encrypt')) {
     function encrypt(string $data, string $aesKey)
     {
         $aesKey = base64_decode($aesKey . '=', true);
-        return base64_encode(AES::encrypt(
-            $data,
-            $aesKey,
-            substr($aesKey, 0, 16)
-        ));
+        if (is_string($aesKey)) {
+            return base64_encode(AES::encrypt(
+                $data,
+                $aesKey,
+                substr($aesKey, 0, 16)
+            ));
+        }
+        return '';
     }
 }
 
@@ -590,11 +593,14 @@ if (!function_exists('decrypt')) {
     function decrypt(string $data, string $aesKey)
     {
         $aesKey = base64_decode($aesKey . '=', true);
-        return AES::decrypt(
-            base64_decode($data, true),
-            $aesKey,
-            substr($aesKey, 0, 16)
-        );
+        if (is_string($aesKey)) {
+            return AES::decrypt(
+                base64_decode($data, true),
+                $aesKey,
+                substr($aesKey, 0, 16)
+            );
+        }
+        return '';
     }
 }
 
