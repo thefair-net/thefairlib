@@ -16,9 +16,16 @@ use Hyperf\Utils\Contracts\Jsonable;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TheFairLib\Event\OnResponse;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class ServiceMiddleware extends \Hyperf\HttpServer\CoreMiddleware
 {
+    /**
+     * @Inject
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
 
     /**
      * @Inject()
@@ -38,7 +45,9 @@ class ServiceMiddleware extends \Hyperf\HttpServer\CoreMiddleware
         $response = parent::process($request, $handler);
         $response = $this->setPHPSessionId($request, $response);
         Context::set('server:response_body_size', $response->getBody()->getSize());
-        return $response->withHeader('Server', env('SERVER_NAME', 'IIS'));
+        $response = $response->withHeader('Server', env('SERVER_NAME', 'IIS'));
+        $this->eventDispatcher->dispatch(new OnResponse($request, $response));
+        return $response;
     }
 
     /**
