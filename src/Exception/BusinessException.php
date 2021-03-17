@@ -26,12 +26,29 @@ class BusinessException extends ServiceException
 {
     public function __construct(int $code, array $replace = [], array $data = [], Throwable $previous = null, int $httpStatus = ServerCode::BAD_REQUEST)
     {
+        parent::__construct((string)$this->businessCode($code, $replace), $data, $code, $previous, $httpStatus);
+    }
+
+    /**
+     * 业务 code 处理
+     *
+     * @param $code
+     * @param $replace
+     * @return mixed
+     */
+    protected function businessCode($code, $replace)
+    {
         $message = InfoCode::getMessage($code, $replace);
-
-        if (empty($message)) {//如果返回信息为空，就抛默认的错误
-            $message = InfoCode::getMessage(InfoCode::CODE_ERROR_NULL, ['code' => $code]);
+        if (empty($message)) {
+            foreach (['\App\Constants\InfoCode', '\App\Constants\ErrorCode', '\App\Constants\ServerCode'] as $className) {
+                if (class_exists($className)) {
+                    $message = $className::getMessage($code, $replace);
+                    if (!empty($message)) {
+                        return $message;
+                    }
+                }
+            }
         }
-
-        parent::__construct((string)$message, $data, $code, $previous, $httpStatus);
+        return $message;
     }
 }
