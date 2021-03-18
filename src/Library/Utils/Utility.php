@@ -595,3 +595,102 @@ if (!function_exists('decrypt')) {
         );
     }
 }
+
+
+if (!function_exists('container')) {
+
+    /**
+     * 从容器中获得实例
+     *
+     * @param string $id
+     * @return mixed
+     */
+    function container(string $id)
+    {
+        return ApplicationContext::getContainer()->get($id);
+    }
+}
+
+if (!function_exists('getCookies')) {
+
+    /**
+     * cookies
+     *
+     * @return array
+     */
+    function getCookies(): array
+    {
+        return container(RequestInterface::class)->getCookieParams() ?? [];
+    }
+}
+
+
+if (!function_exists('getCookie')) {
+
+    /**
+     * cookie
+     *
+     * @return string
+     */
+    function getCookie(string $name): string
+    {
+        return arrayGet(getCookies(), $name) ?? '';
+    }
+}
+
+if (!function_exists('setCookies')) {
+
+    /**
+     * @param Cookie $cookie
+     */
+    function setCookies(Cookie $cookie): void
+    {
+        Context::override(ResponseInterface::class, function (ResponseInterface $response) use ($cookie) {
+            return $response->withCookie($cookie);
+        });
+    }
+}
+
+if (!function_exists('parseEmoji')) {
+    /**
+     * 将字符串中的表情转为转义字符
+     *
+     * @param string $str
+     * @return string
+     */
+    function parseEmoji(string $str): string
+    {
+        $client = new \Emojione\Client(new \Emojione\Ruleset());
+
+        return $client->toShort($str);
+    }
+}
+
+if (!function_exists('toEmoji')) {
+    /**
+     * 将字符串中的表情字符转为表情
+     *
+     * @param string $str
+     * @return string
+     */
+    function toEmoji(string $str): string
+    {
+        $client = new \Emojione\Client(new \Emojione\Ruleset());
+
+        return html_entity_decode($client->shortnameToUnicode($str));
+    }
+}
+if (!function_exists('redirect')) {
+    /**
+     * 重定向跳转
+     *
+     * @param string $toUrl
+     * @param int $status
+     * @param string $schema
+     * @return mixed
+     */
+    function redirect(string $toUrl, int $status = 302, string $schema = 'http')
+    {
+        return container(\Hyperf\HttpServer\Contract\ResponseInterface::class)->redirect($toUrl, $status, $schema);
+    }
+}
