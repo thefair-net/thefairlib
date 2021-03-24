@@ -98,7 +98,7 @@ class WeChatFactoryService implements WeChatFactoryInterface
      *
      * @return Request
      */
-    protected function setRequest(): Request
+    public function setRequest(): Request
     {
         $get = $this->request->getQueryParams();
         $post = $this->request->getParsedBody();

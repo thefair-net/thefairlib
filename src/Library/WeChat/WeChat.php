@@ -19,6 +19,6 @@ class WeChat
      */
     public static function get(string $type, string $appLabel, string $category = 'thefair')
     {
-        return ApplicationContext::getContainer()->get(WeChatFactoryInterface::class)->getApp($type, $appLabel, $category);
+        return container(WeChatFactoryInterface::class)->getApp($type, $appLabel, $category);
     }
 }
