@@ -86,8 +86,7 @@ abstract class RequestBase
     protected function checkValidityRouteRequest(Dispatched $dispatched): void
     {
         if ($this->shouldHandle($dispatched)) {
-            $routePath = bigCamelize($dispatched->handler->route);
-
+            $routePath = ltrim(bigCamelize($dispatched->handler->route), '/');
             $whitelist = $this->whitelist();//白名单
 
             //如果在路由白名单里面，就不做参数、路由的强制验证
@@ -193,7 +192,7 @@ abstract class RequestBase
                     }
                 }
 
-                $routePath = bigCamelize($dispatched->handler->route);
+                $routePath = ltrim(bigCamelize($dispatched->handler->route), '/');
                 $className = sprintf('App\Request\%s', str_replace('/', '\\', $routePath));
                 if (!class_exists($className)) {
                     throw new ServiceException("Class {$className} not exist");
