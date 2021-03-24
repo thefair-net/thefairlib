@@ -107,7 +107,7 @@ class RequestGenerate extends RequestBase
             throw new ServiceException('Do not use param', $parameters);
         }
 
-        $routePath = ltrim(bigCamelize($handler->route), '/');
+        $routePath = bigCamelize($handler->route);
         $requestClassName = sprintf('App\Request\%s', str_replace('/', '\\', $routePath));
         $requestClassPath = sprintf('%s/app/Request/%s.php', BASE_PATH, $routePath);
 
