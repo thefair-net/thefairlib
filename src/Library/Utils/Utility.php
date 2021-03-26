@@ -240,7 +240,10 @@ if (!function_exists('bigCamelize')) {
      */
     function bigCamelize($words)
     {
-        return ucwords(camelize($words));
+        $separator = '/';
+        return preg_replace_callback("~(?<={$separator})([a-z])~", function ($matches) {
+            return strtoupper($matches[0]);
+        }, $separator . ltrim($words, $separator));
     }
 }
 
