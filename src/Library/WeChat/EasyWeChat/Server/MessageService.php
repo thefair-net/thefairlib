@@ -16,23 +16,18 @@ namespace TheFairLib\Library\WeChat\EasyWeChat\Server;
 use EasyWeChat\Kernel\Exceptions\BadRequestException;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use EasyWeChat\Kernel\Exceptions\InvalidConfigException;
+use EasyWeChat\MiniProgram\Application;
 use Hyperf\Contract\ContainerInterface;
-use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Utils\Context;
 use ReflectionException;
 use TheFairLib\Annotation\Doc;
 use TheFairLib\Constants\WeChatBase;
 use TheFairLib\Contract\WeChatFactoryInterface;
 use TheFairLib\Exception\ServiceException;
-use TheFairLib\Library\WeChat\EasyWeChat\WeChatFactoryService;
 
 abstract class MessageService
 {
-
-    /**
-     * @var RequestInterface
-     */
-    protected $request;
 
     /**
      * @var WeChatFactoryInterface
@@ -64,10 +59,9 @@ abstract class MessageService
     public function __construct(ContainerInterface $container, WeChatFactoryInterface $weChatFactory)
     {
         if (empty($this->appLabel)) {
-            throw new ServiceException(sprintf('%s config info error ', $appLabel));
+            throw new ServiceException(sprintf('%s config info error ', $this->appLabel));
         }
         $this->app = $weChatFactory->getApp($this->weChatType, $this->appLabel, $this->category);
-        $this->request = $container->get(RequestInterface::class);
         $this->weChatFactory = $weChatFactory;
     }
 
@@ -80,35 +74,41 @@ abstract class MessageService
     protected $app;
 
     /**
+     * @param RequestInterface $request
      * @return false|string
      * @throws BadRequestException
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws ReflectionException
      */
-    public function push()
+    public function push(RequestInterface $request)
     {
-        $this->getApp()->server->push(function ($message) {
+        $this->getApp($request)->server->push(function ($message) {
             return $this->handler($message);
         });
-        $response = $this->getApp()->server->serve();
+        $response = $this->getApp($request)->server->serve();
         return $response->getContent();
     }
 
     /**
      * @Doc(name="每次重写 request , 核心代码，非常重要")
      *
-     * @return \EasyWeChat\MiniProgram\Application|\EasyWeChat\OfficialAccount\Application|\EasyWeChat\OpenPlatform\Application
+     * @param RequestInterface|null $request
+     * @return Application|\EasyWeChat\OfficialAccount\Application|\EasyWeChat\OpenPlatform\Application
      */
-    public function getApp()
+    public function getApp(RequestInterface $request = null)
     {
-        $this->app->rebind('request', $this->weChatFactory->setRequest());
+        $id = __CLASS__ . sprintf(':%s.%s.%s', $this->appLabel, $this->category, $this->weChatType);
+        if (!Context::has($id) && $request = $this->weChatFactory->setRequest($request)) {
+            $this->app->rebind('request', $request);
+            Context::set($id, true);
+        }
         return $this->app;
     }
 
     /**
      * @param $app
-     * @return \EasyWeChat\MiniProgram\Application|\EasyWeChat\OfficialAccount\Application|\EasyWeChat\OpenPlatform\Application
+     * @return Application|\EasyWeChat\OfficialAccount\Application|\EasyWeChat\OpenPlatform\Application
      */
     public function setApp($app)
     {

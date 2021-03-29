@@ -29,12 +29,6 @@ class WeChatFactoryService implements WeChatFactoryInterface
     public $weChatConfig;
 
     /**
-     * @Inject
-     * @var RequestInterface
-     */
-    protected $request;
-
-    /**
      * 实例
      *
      * @param string $type
@@ -81,7 +75,6 @@ class WeChatFactoryService implements WeChatFactoryInterface
         // 部分接口在请求数据时，会根据 guzzle_handler 重置 Handler
         $app['guzzle_handler'] = $handler;
         $app->rebind('cache', Redis::getContainer($weChatConfig->getConfig()->get('cache.pool_name', 'default')));
-        $app->rebind('request', $this->setRequest());
 
         if ($app instanceof Application) {
             // 如果使用的是 OfficialAccount，则还需要设置以下参数
@@ -96,23 +89,27 @@ class WeChatFactoryService implements WeChatFactoryInterface
     /**
      * 重写 Request
      *
-     * @return Request
+     * @param RequestInterface|null $request
+     * @return Request|null
      */
-    public function setRequest(): Request
+    public function setRequest(RequestInterface $request = null)
     {
-        $get = $this->request->getQueryParams();
-        $post = $this->request->getParsedBody();
-        $cookie = $this->request->getCookieParams();
-        $uploadFiles = $this->request->getUploadedFiles() ?? [];
-        $server = $this->request->getServerParams();
-        $xml = $this->request->getBody()->getContents();
-        $files = [];
-        /** @var UploadedFile $v */
-        foreach ($uploadFiles as $k => $v) {
-            $files[$k] = $v->toArray();
+        $contextRequest = null;
+        if ($request) {
+            $get = $request->getQueryParams();
+            $post = $request->getParsedBody();
+            $cookie = $request->getCookieParams();
+            $uploadFiles = $request->getUploadedFiles() ?? [];
+            $server = $request->getServerParams();
+            $xml = $request->getBody()->getContents();
+            $files = [];
+            /** @var UploadedFile $v */
+            foreach ($uploadFiles as $k => $v) {
+                $files[$k] = $v->toArray();
+            }
+            $contextRequest = new Request($get, $post, [], $cookie, $files, $server, $xml);
+            $contextRequest->headers = new HeaderBag($request->getHeaders());
         }
-        $request = new Request($get, $post, [], $cookie, $files, $server, $xml);
-        $request->headers = new HeaderBag($this->request->getHeaders());
-        return $request;
+        return $contextRequest;
     }
 }

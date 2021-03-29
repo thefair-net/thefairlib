@@ -59,7 +59,8 @@
         "hyperf/service-governance": "~2.1.0",
         "yurunsoft/phpmailer-swoole": "~1.0",
         "lmz/hyperf-config": "~2.1.0",
-        "emojione/emojione": "^4.5"
+        "emojione/emojione": "^4.5",
+        "overtrue/wechat": "~4.0"
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",
