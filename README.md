@@ -623,6 +623,73 @@ class Test extends \TheFairLib\Server\Client\JsonRpcClient
 make(Test::class)->call('get_test')
 ```
 
+## RocketMq
+
+如新建app启动消息
+
+```php
+<?php
+
+use TheFairLib\Library\Queue\Message\BaseMessage;
+
+class AppStartMessage extends BaseMessage
+{
+   
+    /**
+     * @return int
+     */
+    public function getUid(): int
+    {
+        return $this->uid;
+    }
+
+    /**
+     * @param int $uid
+     * @return AppStartMessage
+     */
+    public function setUid(int $uid): self
+    {
+        $this->uid = $uid;
+        return $this;
+    }
+
+    /**
+     * @var int $uid
+     */
+    public $uid;
+
+    public function toArray()
+    {
+        return decode($this->getOrigin());
+    }
+
+}
+```
+
+生产者消息
+
+```php
+    $clientId = 'default';
+    $client = $this->clientFactory->getClient($clientId);
+    $topic = 'xxx';
+    $msg = new AppStartMessage();
+    $msg->setUid(11111);
+    $data = $client->publishMessage($topic, $msg);
+```
+
+consumeMessage 消息
+
+```php
+    $clientId = 'default';
+    $client = $this->clientFactory->getClient($clientId);
+    $topic = 'xxx';
+    $groupId = 'GID_xxx';
+    $client->consumeMessage($topic, $groupId, function (Message $message) {
+        $msg = new AppStartMessage($message->toArray());
+         rd_debug([$msg->getUid()]);
+    });
+```
+
 ## 线上服务启动 
 
 ### systemd 管理 
