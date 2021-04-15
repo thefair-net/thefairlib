@@ -134,24 +134,30 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
      */
     public function toArray(): array
     {
-        return [
+        $result = [
             'item_list' => $this->items->toArray(),
             'page' => $this->currentPage(),
             'item_per_page' => $this->perPage(),
             'item_count' => $this->total(),
             'page_count' => $this->lastPage(),
-            'last_item_id' => $this->getItemLastId(),
         ];
+        if (($itemLastId = $this->getItemLastId()) >= 0) {
+            $result['last_item_id'] = $itemLastId;
+        }
+        return $result;
     }
 
     /**
-     * Get the current page.
+     * Get the last_item_id page.
      */
     public function getItemLastId(): int
     {
         $itemLastId = 0;
         if ($this->lastPage() > $this->currentPage()) {
             $itemLastId = $this->currentPage() + 1;
+        }
+        if ($this->currentPage() >= $this->lastPage()) {
+            $itemLastId = -1;//最后一页
         }
         return $itemLastId;
     }
