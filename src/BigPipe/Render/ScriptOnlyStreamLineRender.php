@@ -11,7 +11,7 @@ namespace TheFairLib\BigPipe\Render;
 use TheFairLib\BigPipe\Pagelet;
 use TheFairLib\Utility\Utility;
 
-class ScriptOnlyStreamlineRender extends StreamlineRender{
+class ScriptOnlyStreamLineRender extends StreamlineRender{
     protected $skeletonMetaData = array();
     /**
      * 针对单个pl请求的处理

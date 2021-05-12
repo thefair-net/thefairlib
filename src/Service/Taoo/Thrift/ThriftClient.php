@@ -6,7 +6,7 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
-namespace TheFairLib\Service\Taoo\Rpc;
+namespace TheFairLib\Service\Taoo\Thrift;
 use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
 use TheFairLib\Exception\BaseException;

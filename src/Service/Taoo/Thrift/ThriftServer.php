@@ -7,7 +7,7 @@
  * @copyright 2015-2025 TheFair
  */
 
-namespace TheFairLib\Service\Taoo\Rpc;
+namespace TheFairLib\Service\Taoo\Thrift;
 
 use TheFairLib\Controller\Service\Error;
 use TheFairLib\Exception\Service\ServiceException;
