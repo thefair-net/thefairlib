@@ -2,6 +2,7 @@
 
 namespace TheFairLib\Service\Swoole\Client;
 
+use Exception;
 use Swoole\Client;
 use TheFairLib\Config\Config;
 use TheFairLib\Exception\Service\ServiceException;
@@ -74,7 +75,15 @@ class TCP extends Base
 
     public function recv()
     {
-        return $this->client->recv();
+        $data = $this->client->recv();
+        if ($data === '') {
+            $this->client->close();
+            throw new Exception('Connection is closed.');
+        }
+        if ($data === false) {
+            throw new Exception('Error receiving data, errno=' . $this->client->errCode . ' errmsg=' . swoole_strerror($this->client->errCode));
+        }
+        return $data;
     }
 
     protected function _getClientType()
