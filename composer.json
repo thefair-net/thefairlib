@@ -60,6 +60,7 @@
         "hyperf/signal": "~2.1.0",
         "hyperf/service-governance": "~2.1.0",
         "yurunsoft/phpmailer-swoole": "~1.0",
+        "xxtime/flysystem-aliyun-oss": "^1.5",
         "lmz/hyperf-config": "~2.1.0",
         "emojione/emojione": "^4.5",
         "overtrue/wechat": "~4.0"

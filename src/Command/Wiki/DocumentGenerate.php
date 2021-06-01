@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ThefairLib\Command\Wiki;
+namespace TheFairLib\Command\Wiki;
 
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\AnnotationCollector;

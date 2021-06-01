@@ -21,7 +21,7 @@ use Hyperf\HttpServer\Router\Handler;
 use League\Flysystem\FileExistsException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use ThefairLib\Command\Wiki\DocumentGenerate;
+use TheFairLib\Command\Wiki\DocumentGenerate;
 use TheFairLib\Contract\FileInterface;
 use TheFairLib\Event\OnResponse;
 use TheFairLib\Library\Logger\Logger;

@@ -13,11 +13,13 @@ use Hyperf\JsonRpc\JsonRpcPoolTransporter;
 use Hyperf\JsonRpc\JsonRpcTransporter;
 use Hyperf\TfConfig\ConfigFactory;
 use Hyperf\Utils\Serializer\SimpleNormalizer;
+use TheFairLib\Contract\FileInterface;
 use TheFairLib\Contract\LockInterface;
 use TheFairLib\Contract\RequestParamInterface;
 use TheFairLib\Contract\ResponseBuilderInterface;
 use TheFairLib\Contract\ResponseInterface;
 use TheFairLib\Contract\WeChatFactoryInterface;
+use TheFairLib\Library\File\PublicFile;
 use TheFairLib\Library\Http\Request\RequestParam;
 use TheFairLib\Library\Http\ResponseBuilderFactory;
 use TheFairLib\Library\Http\ServiceResponse;
@@ -53,6 +55,7 @@ class ConfigProvider
                 RequestParamInterface::class => RequestParam::class,
                 WeChatFactoryInterface::class => WeChatFactoryService::class,
                 JsonRpcTransporter::class => JsonRpcPoolTransporter::class,
+                FileInterface::class => PublicFile::class,
             ],
             'listeners' => [
                 DocHandleListener::class,
