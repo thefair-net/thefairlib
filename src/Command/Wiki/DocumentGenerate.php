@@ -87,7 +87,6 @@ class DocumentGenerate extends RequestBase
         $this->documentGenerate();
         $output->writeln('------------------ syncing docs ------------------');
         foreach ($this->doc as $path => $item) {
-            $output->writeln(">> API: " . $path);
             $title = $item['name'];
             $method = "POST";
             $desc = $item['desc'];
@@ -108,10 +107,8 @@ class DocumentGenerate extends RequestBase
             $firstTagName = $item['tag'][0] ?? 'default';
             $categoryId = $this->yapiDocService->addCategory(strtolower($firstTagName));
             $result = $this->yapiDocService->addDoc($categoryId, $title, $desc, $item['route'], $status, $method, $reqQuery, [], [], $responseResult);
-            $output->writeln("   API: " . $path . " result: " . $result);
-            $output->writeln("   API: " . $path . " sync success!");
+            $output->writeln("   API: " . $path . " result: " . arrayGet($result, 'errmsg'));
         }
-        $output->writeln('------------------ syncing docs finished ------------------');
         $output->writeln('------------------ success ------------------');
     }
 

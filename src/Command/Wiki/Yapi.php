@@ -92,14 +92,18 @@ class Yapi extends BaseService
         if (!empty($notSyncUrls)) {
             foreach ($notSyncUrls as $notSyncUrlItem) {
                 if ($notSyncUrlItem == $pathWithoutPrefix) {
-                    return false;
+                    return [
+                        'errmsg' => '不更新的接口',
+                    ];
                 }
                 // 根据 /module/controller 设置批量更新
                 $notSyncUrlItem = ltrim($notSyncUrlItem, "/");
                 $notSyncUrlItemArr = explode("/", $notSyncUrlItem);
                 if (count($notSyncUrlItemArr) >= 2) {
                     if (strpos($pathWithoutPrefix, $notSyncUrlItem) != false) {
-                        return false;
+                        return [
+                            'errmsg' => '不更新的接口',
+                        ];
                     }
                 }
             }
@@ -156,7 +160,7 @@ class Yapi extends BaseService
                 ]
             );
 
-            return $result->getBody()->getContents();
+            return decode($result->getBody()->getContents());
         } catch (GuzzleException $e) {
             throw new ServiceException('update doc fail. ' . $e->getMessage());
         }
