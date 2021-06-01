@@ -147,7 +147,6 @@ class DocumentGenerate extends RequestBase
         [$className, $method] = $this->prepareHandler($handler->callback);
 //        rd_debug([$route, $methodType, $handler, $className, $method]);
         $this->docHandler($className, $method, $route, $handler);
-        $this->updateYApi();
     }
 
     /**
@@ -226,15 +225,6 @@ class DocumentGenerate extends RequestBase
             'params' => $this->getRules($requestClassName),
             'response_result' => $responseResult,
         ], (array)$methodDoc);
-    }
-
-    protected function updateYApi()
-    {
-        $config = $this->getConfig();
-        if (!arrayGet($config, 'enable', false)) {
-            return;
-        }
-        $this->fileService->fileLocal(sprintf('doc/%s.json', 'wiki'), encode($this->doc));
     }
 
     protected function getConfig()

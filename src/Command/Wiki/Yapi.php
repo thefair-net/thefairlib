@@ -143,7 +143,7 @@ class Yapi extends BaseService
             "res_body_type" => 'json',
             "res_body" => $resBody,
             "switch_notice" => false,
-//            "message" => $message,
+            "message" => $message,
         ];
 
         $client = $this->clientFactory->create([
@@ -209,7 +209,6 @@ class Yapi extends BaseService
             );
             $result = $result->getBody()->getContents();
             if (!empty($result)) {
-                $result = trim($result, "\"");
                 $categoryList = decode($result);
                 foreach ($categoryList['data'] as $item) {
                     if ($item['name'] == $name) {
@@ -242,7 +241,6 @@ class Yapi extends BaseService
             );
 
             $addCatResult = $addCatResult->getBody()->getContents();
-            $addCatResult = trim($addCatResult, "\"");
             $addCatResult = decode($addCatResult);
             return $addCatResult['data']['_id'] ?? false;
         } catch (GuzzleException $e) {
