@@ -89,7 +89,7 @@ class DocumentGenerate extends RequestBase
         foreach ($this->doc as $path => $item) {
             $output->writeln(">> API: " . $path);
             $title = $item['name'];
-            $method = "GET";
+            $method = "POST";
             $desc = $item['desc'];
             $status = "done";
             $responseResult = encode($item['response_result']);

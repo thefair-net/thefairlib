@@ -57,7 +57,7 @@ class Yapi extends BaseService
         string $desc,
         string $path,
         $status = "undone",
-        $method = "GET",
+        $method = "POST",
         array $reqQuery = [],
         array $reqHeaders = [],
         array $reqBodyForm = [],
@@ -204,7 +204,6 @@ class Yapi extends BaseService
                 ]
             );
             $result = $result->getBody()->getContents();
-            rd_debug([$result, $catListUrl, $yapiConfig]);
             if (!empty($result)) {
                 $result = trim($result, "\"");
                 $categoryList = decode($result);
