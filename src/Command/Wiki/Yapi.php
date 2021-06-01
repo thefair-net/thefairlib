@@ -141,7 +141,7 @@ class Yapi extends BaseService
             "req_params" => $reqParams,
             "req_body_form" => $reqBodyForm,
             "res_body_type" => 'json',
-            "res_body" => $resBody,
+            "res_body" => '',
             "switch_notice" => false,
             "message" => $message,
         ];

@@ -91,7 +91,7 @@ class DocumentGenerate extends RequestBase
             $method = "POST";
             $desc = $item['desc'];
             $status = "done";
-            $responseResult = encode($item['response_result']);
+            $responseResult = arrayGet($item, 'response_result', '');
             $reqQuery = [];
             if (!empty($item['params'])) {
                 foreach ($item['params'] as $paramName => $paramRule) {
@@ -102,6 +102,7 @@ class DocumentGenerate extends RequestBase
                     ];
                 }
             }
+            $desc = "<p>{$desc}</p> <br/>" . !empty($responseResult) ? sprintf("<pre>%s</pre>", $responseResult) : '';
 
             // 取注释里的第一个 tag 作为 category 名
             $firstTagName = $item['tag'][0] ?? 'default';
@@ -210,7 +211,7 @@ class DocumentGenerate extends RequestBase
         }
         $responseResult = '';
         if ($this->factory->get('local')->has($this->getResponseResultPath($handler))) {
-            $responseResult = decode($this->factory->get('local')->read($this->getResponseResultPath($handler)));
+            $responseResult = $this->factory->get('local')->read($this->getResponseResultPath($handler));
         }
         $this->doc[$route] = array_merge([
             'class' => $className,
