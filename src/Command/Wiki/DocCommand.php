@@ -40,7 +40,10 @@ class DocCommand extends HyperfCommand
             $this->container->get(DocumentGenerate::class)->execute($this->input, $this->output);
             $this->output->writeln('------------------ end ------------------');
         } catch (\Throwable $e) {
-            $this->output->warning(sprintf('------------------ error %s ------------------', $e->getMessage()));
+            $this->output->warning(sprintf('------------------ error %s %s %d------------------',
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()));
         }
         return 0;
     }

@@ -201,10 +201,10 @@ class Yapi extends BaseService
                 $catListUrl,
                 [
                     "headers" => self::API_HEADER,
-                    "synchronous" => true,
                 ]
             );
             $result = $result->getBody()->getContents();
+            rd_debug([$result, $catListUrl, $yapiConfig]);
             if (!empty($result)) {
                 $result = trim($result, "\"");
                 $categoryList = decode($result);

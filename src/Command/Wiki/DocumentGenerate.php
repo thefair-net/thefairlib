@@ -106,7 +106,7 @@ class DocumentGenerate extends RequestBase
 
             // 取注释里的第一个 tag 作为 category 名
             $firstTagName = $item['tag'][0] ?? 'default';
-            $categoryId = $this->yapiDocService->addCategory($firstTagName);
+            $categoryId = $this->yapiDocService->addCategory(strtolower($firstTagName));
             $result = $this->yapiDocService->addDoc($categoryId, $title, $desc, $item['route'], $status, $method, $reqQuery, [], [], $responseResult);
             $output->writeln("   API: " . $path . " result: " . $result);
             $output->writeln("   API: " . $path . " sync success!");
