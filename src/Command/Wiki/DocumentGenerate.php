@@ -102,8 +102,11 @@ class DocumentGenerate extends RequestBase
                     ];
                 }
             }
-            $desc = "<p>{$desc}</p> <br/>" . !empty($responseResult) ? sprintf("<pre>%s</pre>", $responseResult) : '';
+            $desc = "<p>{$desc}</p> <br/>";
 
+            if (!empty($responseResult)) {
+                $desc .= sprintf("<pre>%s</pre>", $responseResult);
+            }
             // 取注释里的第一个 tag 作为 category 名
             $firstTagName = $item['tag'][0] ?? 'default';
             $categoryId = $this->yapiDocService->addCategory(strtolower($firstTagName));

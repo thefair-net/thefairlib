@@ -93,7 +93,7 @@ class DocHandleListener implements ListenerInterface
                 }
             }
             if (0 === arrayGet($data, 'code') && (!$this->factory->get('local')->has($path) || $isRefreshPath)) {
-                $this->fileService->fileLocal($path, json_encode($data, JSON_PRETTY_PRINT));
+                $this->fileService->fileLocal($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             }
         }
     }

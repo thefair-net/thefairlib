@@ -617,6 +617,46 @@ function smart(string $method, array $params = [], int $ttl = 0, string $poolNam
 RpcClient::get('content_service')->smart('v1/test/get_test', [], 1000, 'user_info');
 
 
+
+## 文档同步
+
+`composer doc`
+
+##### 使用 tips:
+
+###### 1.注意：默认会在对应的项目下生成与各个接口 Doc 注解中填写的 tag 字段的第一个值为准，
+
+比如在 controller 下定义：
+
+```
+/**
+ * @Doc(name="测试方法", tag={"user", "api"})
+ *
+ * @return array
+ */
+// ...  
+```
+
+那么会在项目下创建一个 user 的分类：
+
+![image-20210304170520601](https://i.loli.net/2021/03/04/53DLdAY7ynlu8JT.png)
+
+###### 2.默认只会新增不存在的接口（以接口的 scheme 做唯一识别，如 `/v1/test/test` ），所以当你做了接口改动，需要覆盖现有接口文档时，你可以：
+
+1. 到文档中删除接口，然后重新在本地执行 `composer gen_doc`
+
+2. 或者在 config/autoload/docs.php 的 force_update 中添加配置，值为你要选择覆盖的接口 path，例如：
+
+   ```php
+   'force_update' => [
+       '/v1/test/test',
+   ],
+   ```
+
+   那么每次执行文档命令，都会以你本地最新的结果为准同步到在线文档。
+###### 3. 接口访问后的 response 文件默认是不覆盖的，可以在 runtime 下删除对应的 .json 文件来更新 response 结果，也可以在 docs.refresh_response_file 中加入配置项，保持 response 文件持续更新
+
+
 ```
 
 ## 线上服务启动 
