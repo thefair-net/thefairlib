@@ -32,6 +32,7 @@ use TheFairLib\Listener\Server\WorkerErrorHandleListener;
 use TheFairLib\Listener\Server\WorkerExitHandleListener;
 use TheFairLib\Listener\Server\WorkerStopHandleListener;
 use TheFairLib\Listener\ValidatorHandleListener;
+use TheFairLib\Listener\Wiki\DocHandleListener;
 use TheFairLib\Middleware\Core\ServiceMiddleware;
 use TheFairLib\Model\Paginator\LengthAwarePaginator;
 
@@ -54,6 +55,7 @@ class ConfigProvider
                 JsonRpcTransporter::class => JsonRpcPoolTransporter::class,
             ],
             'listeners' => [
+                DocHandleListener::class,
                 ErrorHandleListener::class,
                 RouterHandleListener::class,
                 ValidatorHandleListener::class,
@@ -118,6 +120,18 @@ class ConfigProvider
                     'description' => 'The config for email',
                     'source' => __DIR__ . '/../publish/email.php',
                     'destination' => BASE_PATH . '/config/autoload/email.php',
+                ],
+                [
+                    'id' => 'file',
+                    'description' => 'The config for file',
+                    'source' => __DIR__ . '/../publish/file.php',
+                    'destination' => BASE_PATH . '/config/autoload/file.php',
+                ],
+                [
+                    'id' => 'signal',
+                    'description' => 'The config for signal',
+                    'source' => __DIR__ . '/../publish/signal.php',
+                    'destination' => BASE_PATH . '/config/autoload/signal.php',
                 ],
                 [
                     'id' => 'lock',

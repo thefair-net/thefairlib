@@ -56,6 +56,8 @@
         "hyperf/rate-limit": "~2.1.0",
         "hyperf/retry": "~2.1.0",
         "hyperf/crontab": "~2.1.0",
+        "hyperf/filesystem": "~2.1.0",
+        "hyperf/signal": "~2.1.0",
         "hyperf/service-governance": "~2.1.0",
         "yurunsoft/phpmailer-swoole": "~1.0",
         "lmz/hyperf-config": "~2.1.0",

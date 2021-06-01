@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace TheFairLib\Library\Cache;
 
 use Hyperf\Redis\RedisFactory;
+use Hyperf\Redis\RedisProxy;
 use Hyperf\Utils\ApplicationContext;
 
 class Redis
@@ -14,7 +15,7 @@ class Redis
      * redis 对象
      *
      * @param string $poolName
-     * @return \Redis
+     * @return RedisProxy|\Redis
      */
     public static function getContainer($poolName = '')
     {
