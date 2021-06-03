@@ -16,8 +16,10 @@ use Hyperf\Di\Annotation\Inject;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 use Hyperf\Filesystem\FilesystemFactory;
+use Hyperf\Framework\Event\OnReceive;
 use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\HttpServer\Router\Handler;
+use Hyperf\Utils\Context;
 use League\Flysystem\FileExistsException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -50,6 +52,7 @@ class DocHandleListener implements ListenerInterface
     {
         return [
             OnResponse::class,
+            OnReceive::class,
         ];
     }
 
@@ -62,6 +65,11 @@ class DocHandleListener implements ListenerInterface
             if ($event instanceof OnResponse) {
                 if (config('docs.enable', false) && time() % (int)config('docs.response_result_gather_sharding', 1000) === 0) {
                     $this->writeResponseResult($event->request, $event->response);
+                }
+            }
+            if ($event instanceof OnReceive) {
+                if (config('docs.enable', false) && time() % (int)config('docs.response_result_gather_sharding', 1000) === 0) {
+                    $this->writeResponseResult(Context::get(ServerRequestInterface::class), Context::get('server:response_body'));
                 }
             }
         } catch (Throwable $e) {
@@ -78,11 +86,17 @@ class DocHandleListener implements ListenerInterface
      * @param ResponseInterface $response
      * @throws FileExistsException
      */
-    protected function writeResponseResult(ServerRequestInterface $request, ResponseInterface $response)
+    protected function writeResponseResult(ServerRequestInterface $request, $response)
     {
+        $data = [];
+        if ($response instanceof ResponseInterface) {
+            $data = decode((string)$response->getBody());
+        }
+        if (!empty($response) && is_array($response)) {
+            $data = $response;
+        }
         $dispatched = $request->getAttribute(Dispatched::class);
         if ($dispatched instanceof Dispatched && $dispatched->handler instanceof Handler) {
-            $data = decode((string)$response->getBody());
             $path = container(DocumentGenerate::class)->getResponseResultPath($dispatched->handler);
             $refreshResponseList = config('docs.refresh_response_file');
             $isRefreshPath = false;

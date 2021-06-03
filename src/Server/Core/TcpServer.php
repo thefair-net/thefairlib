@@ -23,6 +23,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Server as SwooleServer;
 use Swoole\Server\Port;
+use TheFairLib\Library\Logger\Logger;
 
 class TcpServer extends \Hyperf\JsonRpc\TcpServer
 {
@@ -79,7 +80,15 @@ class TcpServer extends \Hyperf\JsonRpc\TcpServer
         // 利用协程上下文存储请求开始的时间，用来计算程序执行时间
         Context::set('execution_start_time', microtime(true));
         parent::onReceive($server, $fd, $fromId, $data);
-        $this->eventDispatcher->dispatch(new OnReceive($server, $fd, $fromId, $data));
+        try {
+            $this->eventDispatcher->dispatch(new OnReceive($server, $fd, $fromId, $data));
+        } catch (\Throwable $e) {
+            Logger::get()->error('on_receive:event', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+        }
     }
 
     /**
@@ -93,5 +102,16 @@ class TcpServer extends \Hyperf\JsonRpc\TcpServer
     {
         Context::set('server:response_body_size', $response->getBody()->getSize());
         $server->send($fd, (string)$response->getBody());
+        try {
+            if (arrayGet($this->serverConfig, 'name', '') === 'json-rpc') {
+                Context::set('server:response_body', arrayGet($this->packer->unpack((string)$response->getBody()), 'result', ''));
+            }
+        } catch (\Throwable $e) {
+            Logger::get()->error('on_receive_send', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+        }
     }
 }
