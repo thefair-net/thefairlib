@@ -37,6 +37,9 @@ abstract class JsonRpcClient extends AbstractServiceClient
 
     protected function setServicePath(string $path)
     {
+        if (in_array($path, ['.', '..'])) {
+            return;
+        }
         Context::set(__CLASS__ . '::servicePath', $path);
     }
 
