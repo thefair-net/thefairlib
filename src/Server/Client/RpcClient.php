@@ -13,12 +13,9 @@
 
 namespace TheFairLib\Server\Client;
 
-use App\Rpc\Test\TestRpcClient;
-use App\Service\Test\TestService;
-use Hyperf\Contract\ContainerInterface;
-use Hyperf\Di\Annotation\Inject;
 use Hyperf\Utils\ApplicationContext;
 use TheFairLib\Annotation\Doc;
+use Throwable;
 
 class RpcClient
 {
@@ -32,7 +29,7 @@ class RpcClient
     public static function get(string $serviceName): JsonRpcClient
     {
         $serviceName = ucwords(camelize($serviceName));
-        
+
         $class = sprintf('TheFairLib\Server\Client\%s', $serviceName);
         return container($class);
     }
@@ -42,6 +39,7 @@ class RpcClient
      *
      * @param string $serviceName
      * @return JsonRpcClient
+     * @throws Throwable
      */
     public static function make(string $serviceName): JsonRpcClient
     {
