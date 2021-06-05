@@ -40,6 +40,7 @@ class ManageStopCommand extends Command
     {
         $output->writeln('------------------ start ------------------');
         $path = config('app.service_status_path', '');
+        clearstatcache();
         if (!file_exists($path)) {
             file_put_contents($path, '403');
             $i = 1;

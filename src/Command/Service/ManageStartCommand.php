@@ -40,6 +40,7 @@ class ManageStartCommand extends Command
     {
         $output->writeln('------------------ start ------------------');
         $path = config('app.service_status_path', '');
+        clearstatcache();
         if (file_exists($path)) {
             @unlink($path);
         }
