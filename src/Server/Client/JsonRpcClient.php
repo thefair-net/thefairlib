@@ -15,6 +15,10 @@ use Throwable;
 
 abstract class JsonRpcClient extends AbstractServiceClient
 {
+    /**
+     * @var
+     */
+    protected $config;
 
     /**
      * 最大缓存时间
@@ -45,6 +49,23 @@ abstract class JsonRpcClient extends AbstractServiceClient
         Context::set(__CLASS__ . '::servicePath', $path);
     }
 
+    /**
+     * 获得配置文件
+     *
+     * @return array
+     */
+    protected function getConfig(): array
+    {
+        $id = __CLASS__ . '::ConsumerConfig';
+        if (Context::has($id)) {
+            return Context::get($id);
+        }
+        rd_debug([__FILE__, __METHOD__]);
+        $config = $this->getConsumerConfig() ?? [];
+        Context::set($id, $config);
+        return $config;
+    }
+
     protected function __generateRpcPath(string $methodName): string
     {
         if (!$this->serviceName || !$this->getServicePath()) {
@@ -59,7 +80,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
             if (isset($params['__auth']) || isset($params['__header'])) {
                 throw new ServiceException('__auth | __header 是保留关键字');
             }
-            $config = $this->getConsumerConfig();
+            $config = $this->getConfig();
             if (empty($config)) {
                 throw new ServiceException('error config');
             }
@@ -76,7 +97,6 @@ abstract class JsonRpcClient extends AbstractServiceClient
                 ],
             ]);
             $result = $this->__request($this->generate($method), $requestData);
-            rd_debug($result);
             $code = (int)arrayGet($result, 'code', 0);
             $msg = arrayGet($result, 'message.text', '');
             $ret = arrayGet($result, 'result', []);
@@ -108,7 +128,10 @@ abstract class JsonRpcClient extends AbstractServiceClient
      */
     public function smart(string $method, array $params = [], int $ttl = 0, string $poolName = 'default'): array
     {
-        $result = retry(2, function () use ($method, $params, $ttl, $poolName) {
+        $config = $this->getConfig();
+        $retryCount = arrayGet($config, 'options.retry_count', 2);
+        $retryInterval = arrayGet($config, 'options.retry_interval', 100);
+        $result = retry($retryCount, function () use ($method, $params, $ttl, $poolName) {
             $result = null;
             try {
                 switch (true) {
@@ -121,17 +144,15 @@ abstract class JsonRpcClient extends AbstractServiceClient
                         break;
                     default:
                         $result = $this->call($method, $params);
-                        rd_debug($result);
                         break;
                 }
                 return $result;
             } catch (RetryException $e) {
-                rd_debug($e->getMessage());
                 throw $e;
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 return new ExceptionThrower($e);
             }
-        }, 100);
+        }, $retryInterval);
         if ($result instanceof ExceptionThrower) {
             throw $result->getThrowable();
         }
