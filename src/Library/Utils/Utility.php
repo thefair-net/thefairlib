@@ -752,6 +752,7 @@ if (!function_exists('getCookie')) {
     /**
      * cookie
      *
+     * @param string $name
      * @return string
      */
     function getCookie(string $name): string
