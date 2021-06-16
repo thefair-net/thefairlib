@@ -15,10 +15,6 @@ use Throwable;
 
 abstract class JsonRpcClient extends AbstractServiceClient
 {
-    /**
-     * @var
-     */
-    protected $config;
 
     /**
      * 最大缓存时间
@@ -60,7 +56,6 @@ abstract class JsonRpcClient extends AbstractServiceClient
         if (Context::has($id)) {
             return Context::get($id);
         }
-        rd_debug([__FILE__, __METHOD__]);
         $config = $this->getConsumerConfig() ?? [];
         Context::set($id, $config);
         return $config;
