@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace TheFairLib\Middleware;
 
+use TheFairLib\Constants\InfoCode;
+use TheFairLib\Constants\ServerCode;
 use TheFairLib\Contract\RequestParamInterface;
+use TheFairLib\Exception\Service\TermException;
 use TheFairLib\Exception\ServiceException;
-use Hyperf\Contract\ConfigInterface;
 use Hyperf\HttpServer\Router\Dispatched;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -51,9 +53,19 @@ class RequestMiddleware implements MiddlewareInterface
             throw new ServiceException(sprintf('The dispatched object is not a %s object.', Dispatched::class));
         }
 
+        //终止服务
+        $this->termService();
+
         //初始化参数验证
         $this->container->get(RequestParamInterface::class)->initCoreValidation($dispatched);
 
         return $handler->handle($request);
+    }
+
+    protected function termService()
+    {
+        if (file_exists(config('app.service_status_path', ''))) {
+            throw new TermException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::HTTP_NOT_FOUND);
+        }
     }
 }

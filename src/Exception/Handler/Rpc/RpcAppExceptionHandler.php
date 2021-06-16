@@ -26,6 +26,8 @@ use TheFairLib\Exception\Handler\ExceptionHandler;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Psr\Http\Message\ResponseInterface;
+use TheFairLib\Exception\Service\RetryException;
+use TheFairLib\Exception\Service\TermException;
 use TheFairLib\Exception\ServiceException;
 use TheFairLib\Library\Logger\Logger;
 use Throwable;
@@ -68,6 +70,7 @@ class RpcAppExceptionHandler extends ExceptionHandler
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
         $data = [];
+        $fun = 'error';
         switch (get_class($throwable)) {
             case ValidationException::class:
                 /**
@@ -81,11 +84,17 @@ class RpcAppExceptionHandler extends ExceptionHandler
                 $msg = $throwable->getMessage();
                 $data = $throwable->getData();
                 break;
+            case RetryException::class:
+            case TermException::class:
+                $msg = $throwable->getMessage();
+                $data = $throwable->getData();
+                $fun = 'warning';
+                break;
             default:
                 $msg = $throwable->getMessage();
                 break;
         }
-        Logger::get()->error(
+        Logger::get()->$fun(
             sprintf('error_exception:%s', get_class($throwable)),
             array_merge_recursive(
                 [

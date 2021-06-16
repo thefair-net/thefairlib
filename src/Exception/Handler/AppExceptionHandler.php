@@ -21,6 +21,8 @@ use Hyperf\HttpMessage\Stream\SwooleStream;
 use Psr\Http\Message\ResponseInterface;
 use TheFairLib\Exception\BusinessException;
 use TheFairLib\Exception\EmptyException;
+use TheFairLib\Exception\Service\RetryException;
+use TheFairLib\Exception\Service\TermException;
 use TheFairLib\Exception\ServiceException;
 use TheFairLib\Library\Logger\Logger;
 use Throwable;
@@ -60,6 +62,7 @@ class AppExceptionHandler extends ExceptionHandler
     {
         $data = [];
         $status = ServerCode::BAD_REQUEST;
+        $fun = 'error';
         switch (get_class($throwable)) {
             case ValidationException::class:
                 /**
@@ -74,11 +77,18 @@ class AppExceptionHandler extends ExceptionHandler
                 $data = $throwable->getData();
                 $status = $throwable->getHttpStatus();
                 break;
+            case RetryException::class:
+            case TermException::class:
+                $msg = $throwable->getMessage();
+                $data = $throwable->getData();
+                $status = $throwable->getHttpStatus();
+                $fun = 'warning';
+                break;
             default:
                 $msg = $throwable->getMessage();
                 break;
         }
-        Logger::get()->error(
+        Logger::get()->$fun(
             sprintf('error_exception:%s', get_class($throwable)),
             array_merge_recursive(
                 [

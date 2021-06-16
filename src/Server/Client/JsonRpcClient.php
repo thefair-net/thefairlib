@@ -5,8 +5,10 @@ namespace TheFairLib\Server\Client;
 
 use Hyperf\RpcClient\AbstractServiceClient;
 use Hyperf\Utils\Context;
+use Hyperf\Utils\Exception\ExceptionThrower;
 use InvalidArgumentException;
 use TheFairLib\Constants\InfoCode;
+use TheFairLib\Exception\Service\RetryException;
 use TheFairLib\Exception\ServiceException;
 use TheFairLib\Library\Cache\Redis;
 use Throwable;
@@ -74,10 +76,19 @@ abstract class JsonRpcClient extends AbstractServiceClient
                 ],
             ]);
             $result = $this->__request($this->generate($method), $requestData);
-            if (!empty($result['code'])) {
-                throw new ServiceException($result['message']['text'] ?? '', $result['result'] ?? [], (int)$result['code']);
+            rd_debug($result);
+            $code = (int)arrayGet($result, 'code', 0);
+            $msg = arrayGet($result, 'message.text', '');
+            $ret = arrayGet($result, 'result', []);
+            switch (true) {
+                case $code == InfoCode::CODE_SERVER_HTTP_NOT_FOUND:
+                    throw new RetryException($msg, $ret, $code);
+                case !empty($code):
+                    throw new ServiceException($msg, $ret, $code);
             }
             return $result;
+        } catch (RetryException $e) {
+            throw $e;
         } catch (ServiceException $e) {
             throw new ServiceException($e->getMessage(), $e->getData(), (int)$e->getCode(), $e, $e->getHttpStatus());
         } catch (Throwable $e) {
@@ -93,22 +104,37 @@ abstract class JsonRpcClient extends AbstractServiceClient
      * @param int $ttl
      * @param string $poolName
      * @return array
+     * @throws Throwable
      */
     public function smart(string $method, array $params = [], int $ttl = 0, string $poolName = 'default'): array
     {
-        switch (true) {
-            case $ttl > 0 && !config('app.close_rpc_smart_cache', false):
-                $key = $this->getCacheKey($method, $params);
-                if (!($result = $this->getCache($key, $poolName))) {
-                    $result = $this->call($method, $params);
-                    $this->setCache($key, $result, $ttl, $poolName);
+        $result = retry(2, function () use ($method, $params, $ttl, $poolName) {
+            $result = null;
+            try {
+                switch (true) {
+                    case $ttl > 0 && !config('app.close_rpc_smart_cache', false):
+                        $key = $this->getCacheKey($method, $params);
+                        if (!($result = $this->getCache($key, $poolName))) {
+                            $result = $this->call($method, $params);
+                            $this->setCache($key, $result, $ttl, $poolName);
+                        }
+                        break;
+                    default:
+                        $result = $this->call($method, $params);
+                        rd_debug($result);
+                        break;
                 }
-                break;
-            default:
-                $result = $this->call($method, $params);
-                break;
+                return $result;
+            } catch (RetryException $e) {
+                rd_debug($e->getMessage());
+                throw $e;
+            } catch (\Throwable $e) {
+                return new ExceptionThrower($e);
+            }
+        }, 100);
+        if ($result instanceof ExceptionThrower) {
+            throw $result->getThrowable();
         }
-        //@todo
         return arrayGet($result, 'result', []);
     }
 

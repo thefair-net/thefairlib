@@ -22,7 +22,7 @@ use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
-use TheFairLib\Exception\BusinessException;
+use TheFairLib\Exception\Service\TermException;
 
 /**
  * @Aspect
@@ -43,7 +43,7 @@ class Status extends AbstractAspect
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
         if (file_exists(config('app.service_status_path', ''))) {
-            throw new BusinessException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::HTTP_NOT_FOUND);
+            throw new TermException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::HTTP_NOT_FOUND);
         }
         return $proceedingJoinPoint->process();
     }
