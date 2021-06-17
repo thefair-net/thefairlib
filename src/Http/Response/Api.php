@@ -105,7 +105,7 @@ class Api extends Response
         $action = $this->getAction();
         $msg = $this->getMsg();
         return array(
-            'code' => $this->getCode(),
+            'code' => (int)$this->getCode(),
             'message' => !empty($action) ? array('content' => $msg, 'action' => $action) : (!empty($msg) ? array('content' => $msg, 'action' => self::ACTION_LOG) : new \stdClass()),
             'result' => (object) $this->getResult(),
         );
