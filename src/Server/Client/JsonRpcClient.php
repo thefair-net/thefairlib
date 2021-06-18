@@ -31,7 +31,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
 
     protected function getServicePath()
     {
-        if (!$this->serviceName) {
+        if ($this->serviceName) {
             return $this->serviceName;
         }
         return Context::get(__CLASS__ . '::servicePath');
