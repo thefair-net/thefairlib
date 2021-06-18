@@ -64,8 +64,7 @@ class Yapi extends BaseService
         string $resBody = "",
         array $reqParams = [],
         string $message = ""
-    )
-    {
+    ) {
         $url = self::API_ADD;
         $yapiConfig = config('docs.yapi');
 

@@ -9,5 +9,4 @@ use TheFairLib\Exception\ServiceException;
 
 class RetryException extends ServiceException
 {
-
 }

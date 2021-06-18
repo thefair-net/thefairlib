@@ -9,5 +9,4 @@ use TheFairLib\Exception\BusinessException;
 
 class TermException extends BusinessException
 {
-
 }

@@ -78,7 +78,6 @@ class DocumentGenerate extends RequestBase
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-
         if (!config('docs.enable', false)) {
             $output->writeln('------------------ docs disable ------------------');
             return;
