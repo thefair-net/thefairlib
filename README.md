@@ -511,7 +511,7 @@ throw new EmptyException('数据为空', ['uid' => 1]);
 }
 ```
 
-## 新 api 访问 rpc 服务
+## 访问 rpc 服务
 
 
 ```php
@@ -615,7 +615,7 @@ return [
 function smart(string $method, array $params = [], int $ttl = 0, string $poolName = 'default'): array {}
 
 RpcClient::get('content_service')->smart('v1/test/get_test', [], 1000, 'user_info');
-
+```
 
 
 ## 文档同步
@@ -654,10 +654,8 @@ RpcClient::get('content_service')->smart('v1/test/get_test', [], 1000, 'user_inf
    ```
 
    那么每次执行文档命令，都会以你本地最新的结果为准同步到在线文档。
-###### 3. 接口访问后的 response 文件默认是不覆盖的，可以在 runtime 下删除对应的 .json 文件来更新 response 结果，也可以在 docs.refresh_response_file 中加入配置项，保持 response 文件持续更新
+3. 接口访问后的 response 文件默认是不覆盖的，可以在 runtime 下删除对应的 .json 文件来更新 response 结果，也可以在 docs.refresh_response_file 中加入配置项，保持 response 文件持续更新
 
-
-```
 
 ## 线上服务启动 
 
