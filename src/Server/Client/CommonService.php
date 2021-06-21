@@ -33,6 +33,7 @@ class CommonService extends JsonRpcClient
 
     /**
      * @param string $serviceName
+     * @return $this
      */
     public function setServiceName(string $serviceName): self
     {
@@ -41,7 +42,7 @@ class CommonService extends JsonRpcClient
     }
 
     /**
-     * @param string $serviceName
+     * @return string
      */
     public function getServiceName()
     {

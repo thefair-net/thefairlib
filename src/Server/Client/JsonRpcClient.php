@@ -31,10 +31,11 @@ abstract class JsonRpcClient extends AbstractServiceClient
 
     protected function getServicePath()
     {
-        if ($this->serviceName) {
-            return $this->serviceName;
+        $serviceName = Context::get(__CLASS__ . '::servicePath');
+        if (empty($serviceName)) {
+            $serviceName = $this->serviceName;
         }
-        return Context::get(__CLASS__ . '::servicePath');
+        return $serviceName;
     }
 
     protected function setServicePath(string $path)
@@ -63,7 +64,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
 
     protected function __generateRpcPath(string $methodName): string
     {
-        if (!$this->serviceName || !$this->getServicePath()) {
+        if (!$this->getServicePath()) {
             throw new InvalidArgumentException('Parameter $serviceName missing.');
         }
         return $this->pathGenerator->generate($this->getServicePath(), $methodName);
