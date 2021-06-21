@@ -817,3 +817,17 @@ if (!function_exists('redirect')) {
         return container(\Hyperf\HttpServer\Contract\ResponseInterface::class)->redirect($toUrl, $status, $schema);
     }
 }
+
+if (!function_exists('getHostUri')) {
+    /**
+     * 获得当前项目的 Http 完整链接
+     *
+     * @param string $uri
+     * @return string
+     */
+    function getHostUri(string $uri = '/'): string
+    {
+        $host = config('app.host', '');
+        return sprintf('%s/%s', $host, ltrim($uri, '/'));
+    }
+}
