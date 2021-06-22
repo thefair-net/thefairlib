@@ -40,11 +40,13 @@ class ManageStopCommand extends Command
     {
         $output->writeln('------------------ start ------------------');
         $path = config('app.service_status_path', '');
+        $sleep = config('app.service_stop_sleep', 6);
+        $sleep = max(6, $sleep);
         clearstatcache();
         if (!file_exists($path)) {
             file_put_contents($path, '403');
             $i = 1;
-            while ($i <= 4) {
+            while ($i <= $sleep) {
                 $output->writeln(sprintf('------------------ sleep %ds ------------------', $i));
                 sleep(1);
                 $i++;
