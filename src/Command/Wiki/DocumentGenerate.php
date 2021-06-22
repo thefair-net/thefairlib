@@ -12,6 +12,7 @@ use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\HttpServer\Router\DispatcherFactory;
 use Hyperf\HttpServer\Router\Handler;
 use Hyperf\HttpServer\Router\RouteCollector;
+use Hyperf\Validation\Rules\In;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
@@ -97,7 +98,7 @@ class DocumentGenerate extends RequestBase
                     $reqQuery[] = [
                         "name" => $paramName,
                         "required" => intval($paramRule['required']),
-                        "desc" => $paramRule['rule'],
+                        "desc" => $paramRule['rule'] ?? '',
                     ];
                 }
             }
@@ -253,6 +254,11 @@ class DocumentGenerate extends RequestBase
                         break;
                     case 'array':
                         $params[$name]['rule'] = implode('|', $rule);
+                        break;
+                    case 'object':
+                        if ($rule instanceof In) {
+                            $params[$name]['rule'] = (string)$rule;
+                        }
                         break;
                 }
                 $params[$name]['required'] = $this->getRequired($rule);//是否必填
