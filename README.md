@@ -714,3 +714,6 @@ composer cs-fix
 composer analyse
 ```
 
+
+## 其他问题
+rpc或http 返回结果 `500404`，请重试
