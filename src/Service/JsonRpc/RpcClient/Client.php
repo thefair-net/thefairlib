@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace TheFairLib\Service\JsonRpc\RpcClient;
 
-use Hyperf\Utils\Exception\ExceptionThrower;
 use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
+use TheFairLib\Exception\Service\ExceptionThrower;
 use TheFairLib\Exception\Service\RetryException;
 use TheFairLib\Exception\Service\ServiceException;
 use TheFairLib\Service\Swoole\Client\TCP;
