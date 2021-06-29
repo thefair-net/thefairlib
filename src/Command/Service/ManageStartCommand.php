@@ -39,11 +39,7 @@ class ManageStartCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('------------------ start ------------------');
-        $path = config('app.service_status_path', '');
-        clearstatcache();
-        if (file_exists($path)) {
-            @unlink($path);
-        }
+        $this->container->get(ManageServer::class)->start($input, $output);
         $output->writeln('------------------ success ------------------');
         return 0;
     }

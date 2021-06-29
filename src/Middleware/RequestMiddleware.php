@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TheFairLib\Middleware;
 
+use TheFairLib\Command\Service\ManageServer;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
 use TheFairLib\Contract\RequestParamInterface;
@@ -64,7 +65,8 @@ class RequestMiddleware implements MiddlewareInterface
 
     protected function termService()
     {
-        if (file_exists(config('app.service_status_path', ''))) {
+        $path = $this->container->get(ManageServer::class)->getConnPath();
+        if (file_exists($path)) {
             throw new TermException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::HTTP_NOT_FOUND);
         }
     }

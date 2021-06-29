@@ -39,19 +39,7 @@ class ManageStopCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('------------------ start ------------------');
-        $path = config('app.service_status_path', '');
-        $sleep = config('app.service_stop_sleep', 8);
-        $sleep = max(8, $sleep);
-        clearstatcache();
-        if (!file_exists($path)) {
-            file_put_contents($path, '403');
-            $i = 1;
-            while ($i <= $sleep) {
-                $output->writeln(sprintf('------------------ sleep %ds ------------------', $i));
-                sleep(1);
-                $i++;
-            }
-        }
+        $this->container->get(ManageServer::class)->stop($input, $output);
         $output->writeln('------------------ success ------------------');
         return 0;
     }

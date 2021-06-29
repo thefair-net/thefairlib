@@ -20,6 +20,7 @@ use Hyperf\Contract\ContainerInterface;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
+use TheFairLib\Command\Service\ManageServer;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
 use TheFairLib\Exception\Service\TermException;
@@ -42,7 +43,8 @@ class Status extends AbstractAspect
 
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        if (file_exists(config('app.service_status_path', ''))) {
+        $path = $this->container->get(ManageServer::class)->getNodePath();
+        if (file_exists($path)) {
             throw new TermException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::HTTP_NOT_FOUND);
         }
         return $proceedingJoinPoint->process();
