@@ -56,11 +56,9 @@ class ManageServer
     {
         if (file_exists($this->getConnPath())) {
             @unlink($this->getConnPath());
-            $output->writeln(sprintf('------------------ conn unlink %s ------------------', $this->getConnPath()));
         }
         if (file_exists($this->getNodePath())) {
             @unlink($this->getNodePath());
-            $output->writeln(sprintf('------------------ node unlink %s ------------------', $this->getNodePath()));
         }
     }
 
