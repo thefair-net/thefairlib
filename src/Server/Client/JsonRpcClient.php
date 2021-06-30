@@ -131,7 +131,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
             $result = null;
             try {
                 switch (true) {
-                    case $ttl > 0 && !config('app.close_rpc_smart_cache', false):
+                    case $ttl > 0 && config('app.close_rpc_smart_cache', false):
                         $key = $this->getCacheKey($method, $params);
                         if (!($result = $this->getCache($key, $poolName))) {
                             $result = $this->call($method, $params);
@@ -205,7 +205,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
      * @param $ttl
      * @param $poolName
      */
-    protected function setCache(string $id, array $data, $ttl, $poolName)
+    protected function setCache(string $id, array $data, string $ttl, string $poolName)
     {
         if ($ttl > 0) {
             $ttl = min($ttl, self::TTL_MAX);
