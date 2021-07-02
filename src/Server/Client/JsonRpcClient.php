@@ -3,6 +3,7 @@
 
 namespace TheFairLib\Server\Client;
 
+use Hyperf\JsonRpc\JsonRpcPoolTransporter;
 use Hyperf\RpcClient\AbstractServiceClient;
 use Hyperf\Utils\Context;
 use Hyperf\Utils\Exception\ExceptionThrower;
@@ -11,6 +12,7 @@ use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\Service\RetryException;
 use TheFairLib\Exception\ServiceException;
 use TheFairLib\Library\Cache\Redis;
+use TheFairLib\Library\Logger\Logger;
 use Throwable;
 
 abstract class JsonRpcClient extends AbstractServiceClient
@@ -109,6 +111,27 @@ abstract class JsonRpcClient extends AbstractServiceClient
             throw new ServiceException($e->getMessage(), $e->getData(), (int)$e->getCode(), $e, $e->getHttpStatus());
         } catch (Throwable $e) {
             throw new ServiceException($e->getMessage(), [], (int)$e->getCode() > 0 ? (int)$e->getCode() : InfoCode::CODE_ERROR);
+        }
+    }
+
+    public function flushAll()
+    {
+        $id = sprintf('%s:%s:pool', __CLASS__, $this->getServicePath());
+        /**
+         * @var JsonRpcPoolTransporter $transporter
+         */
+        $transporter = $this->client->getTransporter();
+        if (get_class($transporter) == JsonRpcPoolTransporter::class && !Context::has($id)) {
+            try {
+                $min = $transporter->getPool()->getOption()->getMinConnections();
+                if ($transporter->getPool()->getConnectionsInChannel() > $min) {
+                    $transporter->getPool()->flush();
+                }
+            } catch (\Throwable $e) {
+                Logger::get()->error('flush_all:' . $e->getMessage());
+            } finally {
+                Context::set($id, true);
+            }
         }
     }
 
