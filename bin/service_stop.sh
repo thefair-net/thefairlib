@@ -24,6 +24,10 @@ if ! which composer; then
   exit
 fi
 
+echo "[start] manage:stop"
+/usr/bin/php ./bin/hyperf.php manage:stop
+echo "[start] manage:stop"
+
 # systemctl 里面没有找具体的项目目录，必须指定路径
 /usr/local/bin/composer dump-autoload -o -d $app_path -q
 
@@ -37,10 +41,6 @@ if ! /usr/local/bin/composer test -d $app_path -q; then
     exit
 fi
 echo "[start] unit test success..."
-
-echo "[start] manage:stop"
-/usr/bin/php ./bin/hyperf.php manage:stop
-echo "[start] manage:stop"
 
 echo "[start] service stop"
 
