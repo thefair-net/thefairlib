@@ -415,8 +415,8 @@ if (!function_exists('getHttpLogArguments')) {
             'session_id' => $sessionId,
             'x_thefair_ua' => $request->getHeader('x-thefair-ua'),
             'user_agent' => [
-                'default' => $request->getHeader('user-agent') ?? '',
-                'x-thefair-ua' => $request->getHeader('x-thefair-ua') ?? '',
+                'default' => $request->getHeaderLine('user-agent') ?? '',
+                'x-thefair-ua' => $request->getHeaderLine('x-thefair-ua') ?? '',
             ],
             'cid' => $request->getHeader('x-thefair-cid'),
             'uri' => $uri,
