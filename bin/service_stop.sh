@@ -12,6 +12,12 @@ if [ ! -f "composer.lock" ]; then
   echo "Not found composer.lock, please composer install first."
   exit
 fi
+
+echo "[start] manage:stop"
+/usr/bin/php ./bin/hyperf.php manage:stop
+echo "[start] manage:stop"
+
+
 echo "[start] git pull"
 git pull
 echo "[start] init cache"
@@ -23,10 +29,6 @@ if ! which composer; then
   echo "Not found composer. install path /usr/local/bin/composer"
   exit
 fi
-
-echo "[start] manage:stop"
-/usr/bin/php ./bin/hyperf.php manage:stop
-echo "[start] manage:stop"
 
 # systemctl 里面没有找具体的项目目录，必须指定路径
 /usr/local/bin/composer dump-autoload -o -d $app_path -q
