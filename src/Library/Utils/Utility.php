@@ -280,7 +280,7 @@ if (!function_exists('getHttpClientIp')) {
          * @var RequestInterface $request
          */
         $request = ApplicationContext::getContainer()->get(RequestInterface::class);
-        $xForwardedFor = $request->getHeader('x-forwarded-for') ?? '';
+        $xForwardedFor = $request->getHeaderLine('x-forwarded-for') ?? '';
         return $xForwardedFor ?: $request->server('remote_addr') ?? '';
     }
 }
@@ -417,7 +417,7 @@ if (!function_exists('getHttpLogArguments')) {
                 'default' => $request->getHeaderLine('user-agent') ?? '',
                 'x-thefair-ua' => $request->getHeaderLine('x-thefair-ua') ?? '',
             ],
-            'cid' => $request->getHeader('x-thefair-cid'),
+            'cid' => $request->getHeaderLine('x-thefair-cid'),
             'uri' => $uri,
             'url' => $request->fullUrl(),
             'params' => $len <= 2048 ? $params : ['len' => $len, 'msg' => '...'],
