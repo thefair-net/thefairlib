@@ -413,7 +413,6 @@ if (!function_exists('getHttpLogArguments')) {
             'server_time' => now(),
             'pid' => posix_getpid(),//得到当前 Worker 进程的操作系统进程 ID
             'session_id' => $sessionId,
-            'x_thefair_ua' => $request->getHeader('x-thefair-ua'),
             'user_agent' => [
                 'default' => $request->getHeaderLine('user-agent') ?? '',
                 'x-thefair-ua' => $request->getHeaderLine('x-thefair-ua') ?? '',
