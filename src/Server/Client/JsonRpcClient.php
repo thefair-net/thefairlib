@@ -228,7 +228,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
      * @param $ttl
      * @param $poolName
      */
-    protected function setCache(string $id, array $data, string $ttl, string $poolName)
+    protected function setCache(string $id, array $data, int $ttl, string $poolName)
     {
         if ($ttl > 0) {
             $ttl = min($ttl, self::TTL_MAX);
