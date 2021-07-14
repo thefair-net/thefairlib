@@ -268,6 +268,23 @@ if (!function_exists('getServerLocalIp')) {
     }
 }
 
+if (!function_exists('getHttpClientIp')) {
+    /**
+     * 获取服务端内网ip地址
+     *
+     * @return string
+     */
+    function getHttpClientIp(): string
+    {
+        /**
+         * @var RequestInterface $request
+         */
+        $request = ApplicationContext::getContainer()->get(RequestInterface::class);
+        $xForwardedFor = $request->getHeader('x-forwarded-for') ?? '';
+        return $xForwardedFor ?: $request->server('remote_addr') ?? '';
+    }
+}
+
 if (!function_exists('input')) {
     /**
      * 参数请求
@@ -392,7 +409,7 @@ if (!function_exists('getHttpLogArguments')) {
         }
         return [
             'server_ip' => getServerLocalIp(),
-            'client_ip' => $request->getServerParams(),
+            'client_ip' => getHttpClientIp(),
             'server_time' => now(),
             'pid' => posix_getpid(),//得到当前 Worker 进程的操作系统进程 ID
             'session_id' => $sessionId,
