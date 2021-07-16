@@ -40,7 +40,7 @@ class QueryExceptionHandler extends ExceptionHandler
         $result = $this->serviceResponse->showError($throwable->getMessage(), [
             'sql' => $throwable->getSql(),
             'bindings' => $throwable->getBindings(),
-        ], $throwable->getCode());
+        ]);
         return $response->withBody(new SwooleStream(encode($result)));
     }
 

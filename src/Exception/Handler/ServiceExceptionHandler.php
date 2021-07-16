@@ -46,7 +46,7 @@ class ServiceExceptionHandler extends ExceptionHandler
                 'file' => str_replace(BASE_PATH, '.', $throwable->getFile()),
                 'line' => $throwable->getLine(),
             ]),
-            $throwable->getCode()
+            (int)$throwable->getCode()
         );
         return $response->withBody(new SwooleStream(encode($result)));
     }

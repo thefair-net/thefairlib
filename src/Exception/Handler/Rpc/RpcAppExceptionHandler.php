@@ -71,6 +71,7 @@ class RpcAppExceptionHandler extends ExceptionHandler
     {
         $data = [];
         $fun = 'error';
+        $code = (int)$throwable->getCode() ?? 0;
         switch (get_class($throwable)) {
             case ValidationException::class:
                 /**
@@ -101,7 +102,7 @@ class RpcAppExceptionHandler extends ExceptionHandler
                     'msg' => $msg,
                     'line' => $throwable->getLine(),
                     'file' => $throwable->getFile(),
-                    'code' => $throwable->getCode(),
+                    'code' => $code,
                     'trace_string' => $throwable->getTraceAsString(),
                     'ext_data' => $data,
                 ],
@@ -112,7 +113,7 @@ class RpcAppExceptionHandler extends ExceptionHandler
         $result = $this->serviceResponse->showError(
             $throwable->getMessage(),
             ['data' => $response->getBody(), 'exception' => get_class($throwable)],
-            $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR
+            $code > 0 ? $code : InfoCode::CODE_ERROR
         );
 
         return $this->responseBuilder->buildResponse(

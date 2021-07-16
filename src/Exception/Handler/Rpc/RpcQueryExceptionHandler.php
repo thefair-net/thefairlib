@@ -50,7 +50,7 @@ class RpcQueryExceptionHandler extends ExceptionHandler
             'sql' => $throwable->getSql(),
             'bindings' => $throwable->getBindings(),
             'exception' => get_class($throwable)
-        ], $throwable->getCode());
+        ]);
         return $this->responseBuilder->buildResponse(
             Context::get(ServerRequestInterface::class),
             $result

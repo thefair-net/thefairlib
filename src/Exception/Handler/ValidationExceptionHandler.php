@@ -7,6 +7,7 @@ use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
+use TheFairLib\Constants\InfoCode;
 use Throwable;
 
 /**
@@ -38,7 +39,8 @@ class ValidationExceptionHandler extends \Hyperf\Validation\ValidationExceptionH
         $body = $throwable->validator->errors()->first();
         $result = $this->serviceResponse->showError($body, [
             'errors' => $throwable->validator->errors(),
-        ]);
+        ],
+            (int)$throwable->getCode() > 0 ? (int)$throwable->getCode() : InfoCode::CODE_ERROR);
         return $response->withBody(new SwooleStream(encode($result)));
     }
 

@@ -63,6 +63,7 @@ class AppExceptionHandler extends ExceptionHandler
         $data = [];
         $status = ServerCode::BAD_REQUEST;
         $fun = 'error';
+        $code = (int)$throwable->getCode() ?? 0;
         switch (get_class($throwable)) {
             case ValidationException::class:
                 /**
@@ -95,7 +96,7 @@ class AppExceptionHandler extends ExceptionHandler
                     'msg' => $msg,
                     'line' => $throwable->getLine(),
                     'file' => $throwable->getFile(),
-                    'code' => $throwable->getCode(),
+                    'code' => $code,
                     'trace_string' => $throwable->getTraceAsString(),
                     'ext_data' => $data,
                 ],
@@ -109,7 +110,7 @@ class AppExceptionHandler extends ExceptionHandler
                 'file' => str_replace(BASE_PATH, '.', $throwable->getFile()),
                 'line' => $throwable->getLine(),
             ],
-            $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR
+            $code > 0 ? $code : InfoCode::CODE_ERROR
         );
         return $response->withStatus($status)
             ->withAddedHeader('content-type', 'application/json')

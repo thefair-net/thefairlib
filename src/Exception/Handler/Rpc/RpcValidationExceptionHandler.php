@@ -45,7 +45,7 @@ class RpcValidationExceptionHandler extends ValidationExceptionHandler
                 'exception' => get_class($throwable),
                 'errors' => $throwable->validator->errors(),
             ],
-            $throwable->getCode() > 0 ? $throwable->getCode() : InfoCode::CODE_ERROR
+            (int)$throwable->getCode() > 0 ? (int)$throwable->getCode() : InfoCode::CODE_ERROR
         );
         return $this->responseBuilder->buildResponse(
             Context::get(ServerRequestInterface::class),
