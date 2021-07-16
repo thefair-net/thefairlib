@@ -11,6 +11,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
  */
 
+use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 use Hyperf\HttpMessage\Cookie\Cookie;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
@@ -850,3 +851,17 @@ if (!function_exists('getHostUri')) {
         return sprintf('%s/%s', $host, ltrim($uri, '/'));
     }
 }
+
+if (!function_exists('formatter')) {
+    /**
+     * 统一格式化异常
+     *
+     * @param Throwable $throwable
+     * @return string
+     */
+    function formatter(Throwable $throwable): string
+    {
+        return container(FormatterInterface::class)->format($throwable);
+    }
+}
+
