@@ -717,3 +717,46 @@ composer analyse
 
 ## 其他问题
 rpc或http 返回结果 `500404`，请重试
+
+## 常用方法，可全局调用
+```php
+arrayGet
+bigCamelize
+camelize
+container
+decode
+decrypt
+encode
+encrypt
+esFormatDate
+formatter
+formatTimeText
+getClientInfo
+getConfig
+getCookie
+getCookies
+getHostUri
+getHttpClientIp
+getHttpLogArguments
+getItemListByPageFromCache
+getItemRankFromCache
+getPrefix
+getRpcClientIp
+getRpcLogArguments
+getServerLocalIp
+getStaging
+getUuid
+hideStr
+input
+inputs
+listItemFromCache
+now
+parseEmoji
+rd_debug
+redirect
+setCookies
+stringToInt
+toEmoji
+unCamelize
+utf8Len
+```
