@@ -94,7 +94,9 @@
         }
     },
     "bin": [
-        "bin/service_stop.sh"
+        "bin/service_stop.sh",
+        "bin/tf_start.sh",
+        "bin/tf_stop.sh"
     ],
     "repositories": {
         "packagist": {
