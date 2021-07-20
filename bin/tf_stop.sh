@@ -4,8 +4,14 @@ basepath=$(cd `dirname $0`; pwd)
 cd $basepath
 cd ../../
 
+signal=$1
+
 if [ -f "./runtime/hyperf.pid" ]; then
     pid=$(cat ./runtime/hyperf.pid)
     echo $pid
-    /bin/kill -TERM $pid
+    if [ $signal -eq 9 ]; then
+         /bin/kill -9 $pid
+    else
+        /bin/kill -TERM $pid
+    fi
 fi
