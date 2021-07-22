@@ -67,7 +67,7 @@ class RequestMiddleware implements MiddlewareInterface
     {
         $path = $this->container->get(ManageServer::class)->getConnPath();
         if (file_exists($path)) {
-            throw new TermException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::FORBIDDEN);
+            throw new TermException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::HTTP_NOT_FOUND);
         }
     }
 }
