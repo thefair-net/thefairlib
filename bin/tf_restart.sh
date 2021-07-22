@@ -9,6 +9,7 @@ if [ -f "./runtime/hyperf.pid" ]; then
     echo $pid
     /bin/kill -TERM $pid
     sleep 4
+     /bin/kill -9 $pid
 fi
 
 php ./bin/hyperf.php manage:start
