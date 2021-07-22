@@ -14,7 +14,7 @@ if [ ! -f "composer.lock" ]; then
 fi
 
 echo "[start] manage:stop"
-/usr/bin/php ./bin/hyperf.php manage:stop
+php ./bin/hyperf.php manage:stop
 echo "[start] manage:stop"
 
 

@@ -11,5 +11,5 @@ if [ -f "./runtime/hyperf.pid" ]; then
     sleep 4
 fi
 
-/usr/bin/php ./bin/hyperf.php manage:start
-nohup /usr/bin/php ./bin/hyperf.php start > ./runtime/info.log 2>&1 &
+php ./bin/hyperf.php manage:start
+nohup php ./bin/hyperf.php start > ./runtime/info.log 2>&1 &
