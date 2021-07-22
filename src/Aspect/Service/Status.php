@@ -45,7 +45,7 @@ class Status extends AbstractAspect
     {
         $path = $this->container->get(ManageServer::class)->getNodePath();
         if (file_exists($path)) {
-            throw new TermException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::HTTP_NOT_FOUND);
+            throw new TermException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::FORBIDDEN);
         }
         return $proceedingJoinPoint->process();
     }
