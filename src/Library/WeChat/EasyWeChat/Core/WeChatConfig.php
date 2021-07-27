@@ -48,6 +48,7 @@ class WeChatConfig
         if (!$config) {
             throw new ServiceException(sprintf('%s config info error ', $appLabel));
         }
+
         $this->init($config);
         return $this;
     }

@@ -699,6 +699,9 @@ systemctl status push.service
 
 ```shell
 composer test
+
+composer test -- --filter=testUserDao
+
 ```
 
 

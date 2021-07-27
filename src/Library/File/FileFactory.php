@@ -13,20 +13,17 @@
 
 namespace TheFairLib\Library\File;
 
-use Hyperf\Redis\RedisFactory;
-use Hyperf\Utils\ApplicationContext;
-use TheFairLib\Contract\FileInterface;
-
 class FileFactory
 {
 
     /**
      * file 对象
      *
-     * @return FileInterface
+     * @param string $bucket
+     * @return PublicFile
      */
-    public static function get()
+    public static function get(string $bucket = ''): PublicFile
     {
-        return ApplicationContext::getContainer()->get(PublicFile::class);
+        return make(PublicFile::class, [$bucket]);
     }
 }

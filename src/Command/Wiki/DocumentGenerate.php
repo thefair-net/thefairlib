@@ -7,7 +7,6 @@ namespace TheFairLib\Command\Wiki;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Di\Aop\Ast;
 use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\HttpServer\Router\DispatcherFactory;
 use Hyperf\HttpServer\Router\Handler;
@@ -22,7 +21,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TheFairLib\Annotation\Doc;
-use TheFairLib\Contract\FileInterface;
 use TheFairLib\Exception\ServiceException;
 use TheFairLib\Library\Http\Request\RequestBase;
 use Throwable;
@@ -44,12 +42,6 @@ class DocumentGenerate extends RequestBase
      * @var array
      */
     private $doc = [];
-
-    /**
-     * @Inject()
-     * @var FileInterface
-     */
-    protected $fileService;
 
     /**
      * @Inject()
