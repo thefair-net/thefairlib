@@ -13,6 +13,7 @@
 
 namespace TheFairLib\Library\File;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\Guzzle\ClientFactory;
@@ -64,7 +65,7 @@ class PublicFile
      * @throws FileExistsException
      * @throws FileNotFoundException
      */
-    public function rename(string $name, string $newName)
+    public function rename(string $name, string $newName): bool
     {
         $file = $this->filesystem($this->bucket);
         if (!$file->has($name) || !$file->has($newName)) {
@@ -134,17 +135,18 @@ class PublicFile
      *
      * @param string $base64
      * @param string $path
+     * @param string $ossSaveFilename
      * @return array
      * @throws FileExistsException
      * @throws Throwable
      */
-    public function uploadImage(string $base64, $path = 'public')
+    public function uploadImage(string $base64, string $path = '', string $ossSaveFilename = '')
     {
         $contents = base64_decode($base64);
         if (!$contents) {
             throw new ServiceException('base64 解码错误');
         }
-        $filename = $this->getFilenamePath($path, 'base64.' . self::DEFAULT_IMAGE_TYPE);
+        $filename = $this->getFilenamePath($path, $ossSaveFilename ?: 'base64.' . self::DEFAULT_IMAGE_TYPE);
         return $this->upload($filename, $contents);
     }
 
@@ -158,7 +160,7 @@ class PublicFile
      * @throws FileExistsException
      * @throws Throwable
      */
-    public function fileUpload(string $filename, $content, $path = 'public'): array
+    public function fileUpload(string $filename, $content, $path = ''): array
     {
         $filename = $this->getFilenamePath($path, $filename);
 
@@ -175,9 +177,8 @@ class PublicFile
      * @throws FileExistsException
      * @throws Throwable
      */
-    public function filePathUpload(string $filename, string $ossSaveFilename, $path = 'public'): array
+    public function filePathUpload(string $filename, string $ossSaveFilename, string $path = ''): array
     {
-
         if (!file_exists($filename)) {
             throw new ServiceException('文件不存在：' . $filename);
         }
@@ -235,7 +236,7 @@ class PublicFile
      * @param $pathStr
      * @return string
      */
-    private function getOssFolder($pathStr)
+    private function getOssFolder($pathStr): string
     {
         if (strrchr($pathStr, "/") != "/") {
             $pathStr .= "/";
@@ -250,8 +251,11 @@ class PublicFile
      * @param string $filename
      * @return string
      */
-    private function getFilenamePath($pathStr, string $filename)
+    private function getFilenamePath($pathStr, string $filename): string
     {
+        if (empty($pathStr)) {
+            return $filename;
+        }
         return $this->getOssFolder($pathStr) . '/' . md5(strval(microtime(true)) . mt_rand(1, 1000000)) . $this->getType($filename);
     }
 
@@ -316,14 +320,17 @@ class PublicFile
      *
      * @param string $url
      * @param string $path
+     * @param string $ossSaveFilename
      * @return array
+     * @throws FileExistsException
      * @throws Throwable
+     * @throws GuzzleException
      */
-    public function urlUpload(string $url, string $path)
+    public function urlUpload(string $url, string $path = '', string $ossSaveFilename = ''): array
     {
         try {
             $client = $this->clientFactory->create([
-                'timeout' => 5.0,
+                'timeout' => 60.0,//有可能大文件
             ]);
             $response = $client->get($url, [
                 'headers' => [
@@ -341,7 +348,7 @@ class PublicFile
                     'content' => $response->getBody()->getSize(),
                 ]);
             }
-            $data = $this->uploadImage(base64_encode($content), $path);
+            $data = $this->uploadImage(base64_encode($content), $path, $ossSaveFilename);
             Logger::get()->info('url_upload:info', [
                 'data' => $data,
                 'url' => $url,
