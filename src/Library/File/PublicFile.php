@@ -140,7 +140,7 @@ class PublicFile
      * @throws FileExistsException
      * @throws Throwable
      */
-    public function uploadImage(string $base64, string $path = '', string $ossSaveFilename = '')
+    public function uploadImage(string $base64, string $path = 'public', string $ossSaveFilename = '')
     {
         $contents = base64_decode($base64);
         if (!$contents) {
@@ -160,7 +160,7 @@ class PublicFile
      * @throws FileExistsException
      * @throws Throwable
      */
-    public function fileUpload(string $filename, $content, $path = ''): array
+    public function fileUpload(string $filename, $content, string $path = 'public'): array
     {
         $filename = $this->getFilenamePath($path, $filename);
 
@@ -177,7 +177,7 @@ class PublicFile
      * @throws FileExistsException
      * @throws Throwable
      */
-    public function filePathUpload(string $filename, string $ossSaveFilename, string $path = ''): array
+    public function filePathUpload(string $filename, string $ossSaveFilename, string $path = 'public'): array
     {
         if (!file_exists($filename)) {
             throw new ServiceException('文件不存在：' . $filename);
@@ -326,7 +326,7 @@ class PublicFile
      * @throws Throwable
      * @throws GuzzleException
      */
-    public function urlUpload(string $url, string $path = '', string $ossSaveFilename = ''): array
+    public function urlUpload(string $url, string $path = 'public', string $ossSaveFilename = ''): array
     {
         try {
             $client = $this->clientFactory->create([
