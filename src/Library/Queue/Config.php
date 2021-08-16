@@ -1,7 +1,7 @@
 <?php
 
 /**
- * File: Cinfig.php
+ * File: Config.php
  * File Created: Thursday, 28th May 2020 3:59:40 pm
  * Author: Yin
  */
