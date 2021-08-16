@@ -8,7 +8,7 @@
 
 namespace TheFairLib\Library\Queue;
 
-use Hyperf\Contract\ConfigInterface;
+use Hyperf\Utils\Collection;
 use Hyperf\Utils\Context;
 use TheFairLib\Exception\ServiceException;
 
@@ -20,6 +20,9 @@ use TheFairLib\Exception\ServiceException;
  * @property string $app_key
  * @property string $driver
  * @property string $instance_id
+ * @property array $topic
+ * @property array $group_id
+ * @property Collection $config
  */
 class Config
 {
@@ -29,16 +32,40 @@ class Config
         'app_key',
         'driver',
         'instance_id',
+        'topic',
+        'group_id',
+        'config',
     ];
 
     /**
-     * @var ConfigInterface
+     * @var Collection
      */
     protected $config;
 
-    public function __construct(ConfigInterface $config)
+    public function __construct(string $clientId)
     {
-        $this->config = $config;
+        $config = config("queue.$clientId");
+        if (!$config) {
+            throw new ServiceException(sprintf('%s config info error ', $clientId));
+        }
+        $this->init($config);
+    }
+
+    /**
+     * 初始化项目信息
+     *
+     * @param $config
+     */
+    private function init($config)
+    {
+        $this->config = collect($config);
+        $this->host = $config['host'] ?? '';
+        $this->app_id = $config['app_id'] ?? '';
+        $this->app_key = $config['app_key'] ?? '';
+        $this->driver = $config['driver'] ?? '';
+        $this->instance_id = $config['instance_id'] ?? '';
+        $this->topic = $config['topic'] ?? [];
+        $this->group_id = $config['group_id'] ?? [];
     }
 
     /**
@@ -48,19 +75,22 @@ class Config
      *
      * @return Config
      */
-    public function getConfig($clientId): Config
+    public function getConfig(string $clientId): Config
     {
         $config = $this->config->get('queue.' . $clientId);
 
         if (!$config) {
             throw new ServiceException(sprintf('%s queue config info error ', $clientId));
         }
+        $this->config = collect($config);
 
-        $this->host = isset($config['host']) ? $config['host'] : null;
-        $this->app_id = isset($config['app_id']) ? $config['app_id'] : null;
-        $this->app_key = isset($config['app_key']) ? $config['app_key'] : null;
-        $this->driver = isset($config['driver']) ? $config['driver'] : null;
-        $this->instance_id = isset($config['instance_id']) ? $config['instance_id'] : null;
+        $this->host = $config['host'] ?? '';
+        $this->app_id = $config['app_id'] ?? '';
+        $this->app_key = $config['app_key'] ?? '';
+        $this->driver = $config['driver'] ?? '';
+        $this->instance_id = $config['instance_id'] ?? '';
+        $this->topic = $config['topic'] ?? [];
+        $this->group_id = $config['group_id'] ?? [];
 
         return $this;
     }
@@ -84,7 +114,7 @@ class Config
     /**
      * Get the value of host
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -92,7 +122,7 @@ class Config
     /**
      * Get the value of app_id
      */
-    public function getAppId()
+    public function getAppId(): string
     {
         return $this->app_id;
     }
@@ -100,7 +130,7 @@ class Config
     /**
      * Get the value of app_key
      */
-    public function getAppKey()
+    public function getAppKey(): string
     {
         return $this->app_key;
     }
@@ -108,7 +138,7 @@ class Config
     /**
      * Get the value of driver
      */
-    public function getDriver()
+    public function getDriver(): string
     {
         return $this->driver;
     }
@@ -116,8 +146,18 @@ class Config
     /**
      * Get the value of instance_id
      */
-    public function getInstanceId()
+    public function getInstanceId(): string
     {
         return $this->instance_id;
+    }
+
+    public function getTopic(string $topicName)
+    {
+        return $this->topic[$topicName] ?? '';
+    }
+
+    public function getGroupId(string $groupId)
+    {
+        return $this->group_id[$groupId] ?? '';
     }
 }

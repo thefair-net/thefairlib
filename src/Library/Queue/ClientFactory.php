@@ -3,25 +3,19 @@
 namespace TheFairLib\Library\Queue;
 
 use TheFairLib\Library\Queue\Client\RocketMQ;
-use Hyperf\Di\Annotation\Inject;
 use TheFairLib\Exception\ServiceException;
 
 class ClientFactory
 {
-    /**
-     * @Inject
-     * @var Config
-     */
-    private $config;
 
     /**
      * @param string $clientId
      *
-     * @return RocketMQ
+     * @return RocketMQ|null
      */
-    public function getClient($clientId)
+    public function getClient(string $clientId): ?RocketMQ
     {
-        $config = $this->config->getConfig($clientId);
+        $config = new Config($clientId);
 
         switch ($config->getDriver()) {
             case 'rocketmq':

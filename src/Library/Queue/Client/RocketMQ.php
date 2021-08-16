@@ -29,6 +29,7 @@ use Throwable;
  * @property string $access_key
  * @property string $instance_id
  * @property MQClient $client
+ * @property Config $config
  */
 class RocketMQ
 {
@@ -38,7 +39,13 @@ class RocketMQ
         'access_key',
         'instance_id',
         'client',
+        'config',
     ];
+
+    /**
+     * @var Config
+     */
+    protected $config;
 
     public function __construct(Config $config)
     {
@@ -46,7 +53,7 @@ class RocketMQ
         $this->access_id = $config->getAppId();
         $this->access_key = $config->getAppKey();
         $this->instance_id = $config->getInstanceId();
-
+        $this->config = $config;
         $this->client = new MQClient($this->end_point, $this->access_id, $this->access_key);
     }
 
