@@ -8,6 +8,7 @@
 
 namespace TheFairLib\Library\Queue\Client;
 
+use Hyperf\Process\ProcessManager;
 use TheFairLib\Library\Logger\Logger;
 use TheFairLib\Library\Queue\Config;
 use TheFairLib\Library\Queue\Message\BaseMessage;
@@ -141,7 +142,7 @@ class RocketMQ
     {
         $consumer = $this->getConsumer($topic, $groupId, $messageTag);
 
-        while (true) {
+        while (ProcessManager::isRunning()) {
             try {
                 // 长轮询消费消息
                 // 长轮询表示如果topic没有消息则请求会在服务端挂住3s，3s内如果有消息可以消费则立即返回
