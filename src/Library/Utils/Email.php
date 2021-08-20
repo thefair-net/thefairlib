@@ -3,6 +3,7 @@
 
 namespace TheFairLib\Library\Utils;
 
+use PHPMailer\PHPMailer\Exception;
 use TheFairLib\Exception\EmptyException;
 use TheFairLib\Library\Cache\Redis;
 use TheFairLib\Library\Logger\Logger;
@@ -18,16 +19,18 @@ class Email
      * @param $subject
      * @param $content
      * @param string $title
+     * @param string $configLabel
      * @throws Throwable
+     * @throws Exception
      */
-    public static function send($email, $subject, $content, $title = '系统通知')
+    public static function send($email, $subject, $content, string $title = '系统通知', string $configLabel = 'system_notice')
     {
         if (!$email || !$subject || !$content) {
             return;
         }
 
         $mail = new PHPMailer(true);
-        $config = getConfig('email.system_notice');
+        $config = getConfig(sprintf('email.%s', $configLabel));
         try {
             if (!$config['username']) {
                 throw new EmptyException('email config null');
