@@ -42,7 +42,7 @@ class WeChatConfig
      * @param string $category
      * @return WeChatConfig
      */
-    public function getConfigInfo($appLabel, $category = 'thefair'): WeChatConfig
+    public function getConfigInfo($appLabel, string $category = 'thefair'): WeChatConfig
     {
         $config = config(sprintf('api.wechat.%s.%s', $category, $appLabel));
         if (!$config) {
@@ -65,12 +65,12 @@ class WeChatConfig
         $this->secret = $config['secret'] ?? '';
     }
 
-    public function getAppId()
+    public function getAppId(): string
     {
         return $this->app_id;
     }
 
-    public function getAppSecret()
+    public function getAppSecret(): string
     {
         return $this->secret;
     }

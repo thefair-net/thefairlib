@@ -19,7 +19,7 @@ interface ResponseInterface
     /**
      * 正常返回.
      *
-     * @param $result
+     * @param array $result
      * @param string $msg
      * @param int $code
      * @param string $action
@@ -30,7 +30,7 @@ interface ResponseInterface
     /**
      * 失败返回.
      *
-     * @param $error
+     * @param string $error
      * @param array $result
      * @param int $code
      * @param string $action
