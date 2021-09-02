@@ -6,13 +6,15 @@ namespace TheFairLib\Service\JsonRpc\RpcClient;
 
 use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
+use TheFairLib\Exception\Service\ExceptionThrower;
+use TheFairLib\Exception\Service\RetryException;
 use TheFairLib\Exception\Service\ServiceException;
 use TheFairLib\Service\Swoole\Client\TCP;
 use TheFairLib\Service\JsonRpc\DataFormatter;
 use TheFairLib\Service\JsonRpc\JsonLengthPacker;
+use TheFairLib\Utility\Backoff;
 use TheFairLib\Utility\Utility;
 use Throwable;
-use Yaf\Exception;
 
 class Client extends TCP
 {
@@ -54,11 +56,15 @@ class Client extends TCP
                 $dataFormatter->generate(),
             ]);
             $packer = JsonLengthPacker::instance();
-            $response = $packer->unpack((string)$this->send($packer->pack($data))) ?? [];
+            $this->send($packer->pack($data));
+            $response = $packer->unpack($this->recv()) ?? [];
             if (array_key_exists('result', $response)) {
                 $result = $response['result'];
-                if (!empty($result['code'])) {
-                    throw new ServiceException($result['message']['text'] ?? '', $result['result'] ?? [], $result['code']);
+                switch (true) {
+                    case !empty($result['code']) && $result['code'] == 500404:
+                        throw new RetryException($result['message']['text'] ?? '', $result['result'] ?? [], $result['code']);
+                    case !empty($result['code']):
+                        throw new ServiceException($result['message']['text'] ?? '', $result['result'] ?? [], $result['code']);
                 }
                 return $response['result'];
             }
@@ -69,6 +75,8 @@ class Client extends TCP
             }
 
             throw new ServiceException('Invalid response.');
+        } catch (RetryException $e) {
+            throw $e;
         } catch (ServiceException $e) {
             throw new ServiceException($e->getMessage(), $e->getExtData(), $e->getExtCode());
         } catch (Throwable $e) {
@@ -83,36 +91,45 @@ class Client extends TCP
      * @param array $params
      * @param bool $showResultOnly
      * @return bool|mixed|string
-     * @throws Exception
-     * @throws \TheFairLib\Service\Exception
+     * @throws Throwable
      */
     public function smart($url, $params = [], $showResultOnly = true)
     {
-        $cacheTtl = $this->_getServiceCacheTtl($url);
-        //获取缓存的key
-        $cacheKey = $this->_getServiceCacheKey($url, $params);
-        if ($cacheTtl !== false) {
-            $result = $this->_getCache()->get($cacheKey);
-        }
-
-        if (empty($result)) {
-            $result = $this->call($url, $params);
-            if ($cacheTtl !== false) {
-                $this->_getCache()->setex($cacheKey, $cacheTtl, Utility::encode($result));
+        $result = $this->retry(2, function () use ($url, $params) {
+            try {
+                return $this->call($url, $params);
+            } catch (RetryException $e) {
+                throw $e;
+            } catch (Throwable $e) {
+                return new ExceptionThrower($e);
             }
-        } else {
-            $result = Utility::decode($result);
-        }
+        }, 100);
 
-        //如果设置了只返回结果,当code!=0的时候,直接抛出异常
-        if ($showResultOnly === true) {
-            if (!empty($result['code'])) {
-                throw new \TheFairLib\Service\Exception($result['message'], $result['code']);
-            } else {
-                return $result['result'];
+        if ($result instanceof ExceptionThrower) {
+            throw $result->getThrowable();
+        }
+        return Utility::arrayGet($result, 'result', []);
+    }
+
+    /**
+     * @param $times
+     * @param callable $callback
+     * @param int $sleep
+     * @return mixed
+     * @throws Throwable
+     */
+    protected function retry($times, callable $callback, int $sleep = 0)
+    {
+        $backoff = new Backoff($sleep);
+        beginning:
+        try {
+            return $callback();
+        } catch (\Throwable $e) {
+            if (--$times < 0) {
+                throw $e;
             }
-        } else {
-            return $result;
+            $backoff->sleep();
+            goto beginning;
         }
     }
 

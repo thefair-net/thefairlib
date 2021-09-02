@@ -1,13 +1,42 @@
 <?php
+
 namespace TheFairLib\Service\Swoole\Client;
 
+use Exception;
+use Swoole\Client;
 use TheFairLib\Config\Config;
+use TheFairLib\Exception\Service\RetryException;
+use TheFairLib\Exception\Service\ServiceException;
 
 class TCP extends Base
 {
-    public function send($data, callable $callback = NULL)
+
+    /**
+     * @var Client
+     */
+    protected $client;
+
+    /**
+     * @var bool
+     */
+    protected $isConnected = false;
+
+    /**
+     * 单连接请求
+     *
+     * @throws ServiceException
+     */
+    protected function connect(): void
     {
-        $client = new \Swoole\Client(SWOOLE_SOCK_TCP, $this->_getSyncType($this->_syncType));
+        if ($this->isConnected && $this->client->isConnected()) {
+            return;
+        }
+        if ($this->client) {
+            $this->isConnected = false;
+            $this->client->close();
+            unset($this->client);
+        }
+        $client = new Client(SWOOLE_SOCK_TCP, $this->_getSyncType($this->_syncType));
         $client->set([
             'open_length_check' => true,
             'package_length_type' => 'N',
@@ -16,13 +45,48 @@ class TCP extends Base
             'package_max_length' => 1024 * 1024 * 10,  //协议最大长度
         ]);
         if (!$client->connect($this->_ip, $this->_port, $this->_timeout)) {
-            exit("connect failed. Error: {$client->errCode}\n");
+            throw new ServiceException(sprintf("connect failed. code: %d", $client->errCode), [
+                'ip' => $this->_ip,
+                'port' => $this->_port,
+                'timeout' => $this->_timeout,
+            ]);
         }
-        $client->send($data);
-        $result = $client->recv();
-        $client->close();
+        $this->client = $client;
+        $this->isConnected = true;
+    }
 
-        return $result;
+    public function __destruct()
+    {
+        $this->isConnected = false;
+        $this->client->close();
+    }
+
+    /**
+     * 发送
+     *
+     * @param $data
+     * @param callable|NULL $callback
+     * @throws ServiceException
+     */
+    public function send($data, callable $callback = NULL)
+    {
+        $this->connect();
+        $this->client->send($data);
+    }
+
+    public function recv()
+    {
+        $data = $this->client->recv();
+        if ($data === '') {
+            $this->client->close();
+            $this->isConnected = false;
+            $this->client = null;
+            throw new RetryException('Connection is closed.');
+        }
+        if ($data === false) {
+            throw new RetryException('Error receiving data, errno=' . $this->client->errCode . ' errmsg=' . swoole_strerror($this->client->errCode));
+        }
+        return $data;
     }
 
     protected function _getClientType()
