@@ -127,7 +127,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
                 if ($transporter->getPool()->getConnectionsInChannel() > $min) {
                     $transporter->getPool()->flush();
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Logger::get()->error('flush_all:' . $e->getMessage());
             } finally {
                 Context::set($id, true);
@@ -151,7 +151,6 @@ abstract class JsonRpcClient extends AbstractServiceClient
         $retryCount = arrayGet($config, 'options.retry_count', 2);
         $retryInterval = arrayGet($config, 'options.retry_interval', 100);
         $result = retry($retryCount, function () use ($method, $params, $ttl, $poolName) {
-            $result = null;
             try {
                 switch (true) {
                     case $ttl > 0 && config('app.close_rpc_smart_cache', false):
@@ -197,7 +196,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
      * @param string $method
      * @return string
      */
-    protected function generate(string $method)
+    protected function generate(string $method): string
     {
         $handledNamespace = trim($method, '/');
         $this->setServicePath(dirname($handledNamespace));
@@ -211,7 +210,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
      * @param string $poolName
      * @return array
      */
-    protected function getCache(string $id, string $poolName = 'default')
+    protected function getCache(string $id, string $poolName = 'default'): array
     {
         $data = [];
         if (Redis::getContainer($poolName)->exists($id)) {
@@ -225,8 +224,8 @@ abstract class JsonRpcClient extends AbstractServiceClient
      *
      * @param string $id
      * @param array $data
-     * @param $ttl
-     * @param $poolName
+     * @param int $ttl
+     * @param string $poolName
      */
     protected function setCache(string $id, array $data, int $ttl, string $poolName)
     {

@@ -9,7 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ManageServer
 {
-
     public function getNodePath()
     {
         return $this->getPath('node');
@@ -103,5 +102,4 @@ class ManageServer
             }
         }
     }
-
 }

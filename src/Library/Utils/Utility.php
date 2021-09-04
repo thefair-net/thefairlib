@@ -864,4 +864,3 @@ if (!function_exists('formatter')) {
         return container(FormatterInterface::class)->format($throwable);
     }
 }
-
