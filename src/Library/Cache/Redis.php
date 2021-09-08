@@ -17,7 +17,7 @@ class Redis
      * @param string $poolName
      * @return RedisProxy|\Redis
      */
-    public static function getContainer($poolName = '')
+    public static function getContainer(string $poolName = '')
     {
         return ApplicationContext::getContainer()->get(RedisFactory::class)->get($poolName ?: self::SERVER_NAME);
     }

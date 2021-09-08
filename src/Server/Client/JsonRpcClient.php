@@ -89,6 +89,7 @@ abstract class JsonRpcClient extends AbstractServiceClient
                     'app_key' => $config['app_key'],
                     'sign' => $sign,
                     'time' => $time,
+                    'app_name' => env('APP_NAME'),
                 ],
                 '__header' => [
                     'client_ip' => getServerLocalIp(),
