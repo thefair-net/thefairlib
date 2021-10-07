@@ -8,6 +8,9 @@
 
 namespace TheFairLib\Library\Queue\Client;
 
+use GuzzleHttp\HandlerStack;
+use Hyperf\Guzzle\CoroutineHandler;
+use Hyperf\Guzzle\PoolHandler;
 use Hyperf\Process\ProcessManager;
 use TheFairLib\Library\Logger\Logger;
 use TheFairLib\Library\Queue\Config;
@@ -55,7 +58,36 @@ class RocketMQ
         $this->access_key = $config->getAppKey();
         $this->instance_id = $config->getInstanceId();
         $this->config = $config;
-        $this->client = new MQClient($this->end_point, $this->access_id, $this->access_key);
+        $this->client = new MQClient($this->end_point, $this->access_id, $this->access_key, null, $this->getMqConfig($config));
+    }
+
+    /**
+     * 配置文件转换
+     *
+     * @param Config $config
+     * @return \TheFairLib\RocketMQ\Config
+     */
+    protected function getMqConfig(Config $config): ?\TheFairLib\RocketMQ\Config
+    {
+        $mqConfig = new \TheFairLib\RocketMQ\Config();
+        $config = $config->config->toArray();
+        if (arrayGet($config, 'http_guzzle.handler') == PoolHandler::class) {
+            $option = arrayGet($config, 'http_guzzle.option');
+            $mqConfig->setConnectTimeout($option['connect_timeout'] ?? 10.0);
+            $mqConfig->setRequestTimeout($option['wait_timeout'] ?? 3.0);
+//            $mqConfig->setHandler(HandlerStack::create(new CoroutineHandler()));
+            $mqConfig->setHandler(make(PoolHandler::class, [
+                'option' => [
+                    'min_connections' => $option['min_connections'] ?? 10,
+                    'max_connections' => $option['max_connections'] ?? 100,
+                    'connect_timeout' => $option['connect_timeout'] ?? 5.0,
+                    'wait_timeout' => $option['wait_timeout'] ?? 3.0,
+                    'heartbeat' => $option['heartbeat'] ?? -1,
+                    'max_idle_time' => $option['max_idle_time'] ?? 30.0,
+                ],
+            ]));
+        }
+        return $mqConfig;
     }
 
     public function __get($name)
@@ -81,7 +113,7 @@ class RocketMQ
      *
      * @return MQProducer
      */
-    public function getProducer($topic)
+    public function getProducer(string $topic): MQProducer
     {
         return $this->client->getProducer($this->instance_id, $topic);
     }
@@ -94,7 +126,7 @@ class RocketMQ
      *
      * @return TopicMessage
      */
-    public function publishMessage($topic, BaseMessage $message): TopicMessage
+    public function publishMessage(string $topic, BaseMessage $message): TopicMessage
     {
         $producer = $this->getProducer($topic);
 
@@ -117,11 +149,11 @@ class RocketMQ
      *
      * @param string $topic
      * @param string $groupId
-     * @param string $messageTag
+     * @param string|null $messageTag
      *
      * @return MQConsumer
      */
-    public function getConsumer($topic, $groupId, $messageTag = null)
+    public function getConsumer(string $topic, string $groupId, string $messageTag = null): MQConsumer
     {
         return $this->client->getConsumer($this->instance_id, $topic, $groupId, $messageTag);
     }
@@ -132,13 +164,14 @@ class RocketMQ
      * @param string $topic
      * @param string $groupId
      * @param callable $func
-     * @param null $messageTag
+     * @param string|null $messageTag
      * @param int $numOfMessages 1~16
+     * @param bool $coroutine 是否开启协程并发消费
      *
      * @return void
      * @throws Throwable
      */
-    public function consumeMessage($topic, $groupId, callable $func, $messageTag = null, $numOfMessages = 1)
+    public function consumeMessage(string $topic, string $groupId, callable $func, string $messageTag = null, int $numOfMessages = 1, bool $coroutine = false)
     {
         $consumer = $this->getConsumer($topic, $groupId, $messageTag);
 
@@ -158,14 +191,24 @@ class RocketMQ
 
                 throw $e;
             }
-
-            $receiptHandles = [];
-
-            foreach ($messages as $message) {
-                $func($message);
-                $receiptHandles[] = $message->getReceiptHandle();
+            if ($coroutine) {
+                $receiptHandles = [];
+                $callback = [];
+                foreach ($messages as $key => $message) {
+                    $callback[$key] = function () use ($message, $func) {
+                        $func($message);
+                        return $message->getReceiptHandle();
+                    };
+                }
+                $receiptHandles = parallel($callback);
+                $consumer->ackMessage($receiptHandles);
+            } else {
+                $receiptHandles = [];
+                foreach ($messages as $message) {
+                    $func($message);
+                    $receiptHandles[] = $message->getReceiptHandle();
+                }
             }
-
             try {
                 $consumer->ackMessage($receiptHandles);
             } catch (Throwable $e) {

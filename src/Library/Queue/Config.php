@@ -40,7 +40,7 @@ class Config
     /**
      * @var Collection
      */
-    protected $config;
+    public $config;
 
     public function __construct(string $clientId)
     {
