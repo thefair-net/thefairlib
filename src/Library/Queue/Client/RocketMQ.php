@@ -81,9 +81,9 @@ class RocketMQ
                     'min_connections' => $option['min_connections'] ?? 10,
                     'max_connections' => $option['max_connections'] ?? 100,
                     'connect_timeout' => $option['connect_timeout'] ?? 5.0,
-                    'wait_timeout' => $option['wait_timeout'] ?? 3.0,
+                    'wait_timeout' => $option['wait_timeout'] ?? 30.0,
                     'heartbeat' => $option['heartbeat'] ?? -1,
-                    'max_idle_time' => $option['max_idle_time'] ?? 30.0,
+                    'max_idle_time' => $option['max_idle_time'] ?? 60.0,
                 ],
             ]));
         }
@@ -171,7 +171,7 @@ class RocketMQ
      * @return void
      * @throws Throwable
      */
-    public function consumeMessage(string $topic, string $groupId, callable $func, string $messageTag = null, int $numOfMessages = 1, bool $coroutine = false)
+    public function consumeMessage(string $topic, string $groupId, callable $func, string $messageTag = null, int $numOfMessages = 1, int $waitSeconds = 5, bool $coroutine = false)
     {
         $consumer = $this->getConsumer($topic, $groupId, $messageTag);
 
@@ -181,7 +181,7 @@ class RocketMQ
                 // 长轮询表示如果topic没有消息则请求会在服务端挂住3s，3s内如果有消息可以消费则立即返回
                 $messages = $consumer->consumeMessage(
                     $numOfMessages, // 一次最多消费3条(最多可设置为16条)
-                    5 // 长轮询时间（最多可设置为30秒）
+                    $waitSeconds // 长轮询时间（最多可设置为30秒）
                 );
             } catch (Throwable $e) {
                 if ($e instanceof MessageNotExistException) {
@@ -191,8 +191,8 @@ class RocketMQ
 
                 throw $e;
             }
+            $receiptHandles = [];
             if ($coroutine) {
-                $receiptHandles = [];
                 $callback = [];
                 foreach ($messages as $key => $message) {
                     $callback[$key] = function () use ($message, $func) {
@@ -201,9 +201,7 @@ class RocketMQ
                     };
                 }
                 $receiptHandles = parallel($callback);
-                $consumer->ackMessage($receiptHandles);
             } else {
-                $receiptHandles = [];
                 foreach ($messages as $message) {
                     $func($message);
                     $receiptHandles[] = $message->getReceiptHandle();
