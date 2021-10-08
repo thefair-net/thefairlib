@@ -73,14 +73,14 @@ class RocketMQ
         $config = $config->config->toArray();
         if (arrayGet($config, 'http_guzzle.handler') == PoolHandler::class) {
             $option = arrayGet($config, 'http_guzzle.option');
-            $mqConfig->setConnectTimeout($option['connect_timeout'] ?? 10.0);
-            $mqConfig->setRequestTimeout($option['wait_timeout'] ?? 3.0);
+            $mqConfig->setConnectTimeout($option['connect_timeout'] ?? 3.0);
+            $mqConfig->setRequestTimeout($option['wait_timeout'] ?? 30.0);
 //            $mqConfig->setHandler(HandlerStack::create(new CoroutineHandler()));
             $mqConfig->setHandler(make(PoolHandler::class, [
                 'option' => [
                     'min_connections' => $option['min_connections'] ?? 10,
                     'max_connections' => $option['max_connections'] ?? 100,
-                    'connect_timeout' => $option['connect_timeout'] ?? 5.0,
+                    'connect_timeout' => $option['connect_timeout'] ?? 3.0,
                     'wait_timeout' => $option['wait_timeout'] ?? 30.0,
                     'heartbeat' => $option['heartbeat'] ?? -1,
                     'max_idle_time' => $option['max_idle_time'] ?? 60.0,
@@ -166,6 +166,7 @@ class RocketMQ
      * @param callable $func
      * @param string|null $messageTag
      * @param int $numOfMessages 1~16
+     * @param int $waitSeconds
      * @param bool $coroutine 是否开启协程并发消费
      *
      * @return void
@@ -185,8 +186,8 @@ class RocketMQ
                 );
             } catch (Throwable $e) {
                 if ($e instanceof MessageNotExistException) {
-                    // 队列为空，结束消费
-                    return;
+                    // 队列为空，结束消费，重新轮询
+                    continue;
                 }
 
                 throw $e;
