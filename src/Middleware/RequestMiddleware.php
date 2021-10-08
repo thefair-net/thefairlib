@@ -66,7 +66,7 @@ class RequestMiddleware implements MiddlewareInterface
     protected function termService()
     {
         $path = $this->container->get(ManageServer::class)->getConnPath();
-        if (file_exists($path)) {
+        if (file_exists($path) && $this->container->get(ManageServer::class)->getStatus()) {
             throw new TermException(InfoCode::CODE_SERVER_HTTP_NOT_FOUND, [], [], null, ServerCode::HTTP_NOT_FOUND);
         }
     }

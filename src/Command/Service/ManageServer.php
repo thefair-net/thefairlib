@@ -9,12 +9,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ManageServer
 {
-    public function getNodePath()
+    /**
+     * slb 负载状态检测
+     *
+     * @return bool
+     */
+    public function getStatus(): bool
+    {
+        return config('app.service_status', true);
+    }
+
+    public function getNodePath(): string
     {
         return $this->getPath('node');
     }
 
-    public function getConnPath()
+    public function getConnPath(): string
     {
         return $this->getPath('conn');
     }
@@ -25,7 +35,7 @@ class ManageServer
      * @param string $type
      * @return string
      */
-    protected function getPath(string $type)
+    protected function getPath(string $type): string
     {
         $path = config('app.service_status_path', '');
         if (!empty($path)) {
