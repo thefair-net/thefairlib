@@ -69,16 +69,18 @@ class Email
      * @param $content
      * @param string $title
      * @param int $ttl
+     * @param string $configLabel
      * @return bool
+     * @throws Exception
      * @throws Throwable
      */
-    public static function smartSendMail($email, $subject, $content, $title = '新世相系统', int $ttl = 600)
+    public static function smartSendMail($email, $subject, $content, string $title = '新世相系统', int $ttl = 600, string $configLabel = 'system_notice'): bool
     {
         $md5 = md5(encode(['email' => $email]) . $subject);
         $key = env('APP_NAME') . '#SMART_SEND_MAIL#' . $md5;
         $redis = Redis::getContainer();
         if (empty($redis->get($key))) {
-            self::send($email, $subject, $content, $title);
+            self::send($email, $subject, $content, $title, $configLabel);
             $redis->setex($key, $ttl, encode(['email' => $email]));
         }
         return true;
