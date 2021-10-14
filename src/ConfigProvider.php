@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace TheFairLib;
 
+use GuzzleHttp\Client;
+use Hyperf\AsyncQueue\Driver\RedisDriver;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\LengthAwarePaginatorInterface;
 use Hyperf\Contract\NormalizerInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpServer\CoreMiddleware;
+use Hyperf\HttpServer\ResponseEmitter;
 use Hyperf\JsonRpc\JsonRpcPoolTransporter;
 use Hyperf\JsonRpc\JsonRpcTransporter;
 use Hyperf\TfConfig\ConfigFactory;
 use Hyperf\Utils\Serializer\SimpleNormalizer;
+use Overtrue\Flysystem\Qiniu\QiniuAdapter;
 use TheFairLib\Contract\LockInterface;
 use TheFairLib\Contract\RequestParamInterface;
 use TheFairLib\Contract\ResponseBuilderInterface;
@@ -35,6 +39,7 @@ use TheFairLib\Listener\ValidatorHandleListener;
 use TheFairLib\Listener\Wiki\DocHandleListener;
 use TheFairLib\Middleware\Core\ServiceMiddleware;
 use TheFairLib\Model\Paginator\LengthAwarePaginator;
+use Xxtime\Flysystem\Aliyun\OssAdapter;
 
 class ConfigProvider
 {
@@ -70,6 +75,7 @@ class ConfigProvider
                     'paths' => [
                         __DIR__,
                     ],
+                    'class_map' => $this->getClassMap(),
                 ],
             ],
             'publish' => [
@@ -171,5 +177,42 @@ class ConfigProvider
                 ],
             ],
         ];
+    }
+
+    /**
+     * class map 重写
+     *
+     * @return array
+     */
+    protected function getClassMap(): array
+    {
+        $baseVendor = BASE_PATH . '/vendor/';
+        $data = [
+            $baseVendor . 'guzzlehttp/guzzle/src/Client.php' => [
+                Client::class => $baseVendor . 'thefair/thefairlib/class_map/GuzzleHttp/Client.php',
+            ],
+            $baseVendor . 'hyperf/http-server/src/ResponseEmitter.php' => [
+                ResponseEmitter::class => $baseVendor . 'thefair/thefairlib/class_map/Hyperf/HttpServer/ResponseEmitter.php',
+            ],
+            $baseVendor . 'hyperf/json-rpc/src/JsonRpcPoolTransporter.php' => [
+                JsonRpcPoolTransporter::class => $baseVendor . 'thefair/thefairlib/class_map/Hyperf/JsonRpc/JsonRpcPoolTransporter.php',
+            ],
+            $baseVendor . 'hyperf/async-queue/src/Driver/RedisDriver.php' => [
+                RedisDriver::class => $baseVendor . 'thefair/thefairlib/class_map/Hyperf/AsyncQueue/Driver/RedisDriver.php',
+            ],
+            $baseVendor . 'xxtime/flysystem-aliyun-oss/src/OssAdapter.php' => [
+                OssAdapter::class => $baseVendor . 'Xxtime/Flysystem/Aliyun/OssAdapter.php',
+            ],
+            $baseVendor . 'overtrue/flysystem-qiniu/src/QiniuAdapter.php' => [
+                QiniuAdapter::class => $baseVendor . 'Overtrue/Flysystem/Qiniu/QiniuAdapter.php',
+            ],
+        ];
+        $classMap = [];
+        foreach ($data as $file => $class) {
+            if (file_exists($file)) {
+                $classMap = array_merge($classMap, $class);
+            }
+        }
+        return $classMap;
     }
 }
