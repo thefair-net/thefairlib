@@ -18,7 +18,7 @@ class Logger
      *
      * @return LoggerInterface
      */
-    public static function get()
+    public static function get(): LoggerInterface
     {
         return ApplicationContext::getContainer()->get(LoggerFactory::class)->get(env('APP_NAME'));
     }

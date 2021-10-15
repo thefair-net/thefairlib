@@ -39,12 +39,12 @@ class LoggerHandleListener implements ListenerInterface
         try {
             if ($event instanceof OnReceive) {
                 if ($log = getRpcLogArguments()) {
-                    Logger::get()->info(sprintf("access_logger"), $log);
+                    Logger::get()->info('access_logger', $log);
                 }
             }
             if ($event instanceof OnRequest) {
                 if ($log = getHttpLogArguments()) {
-                    Logger::get()->info(sprintf("access_logger"), $log);
+                    Logger::get()->info('access_logger', $log);
                 }
             }
         } catch (Throwable $e) {

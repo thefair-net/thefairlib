@@ -11,6 +11,8 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
  */
 
+use Emojione\Client;
+use Emojione\Ruleset;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 use Hyperf\HttpMessage\Cookie\Cookie;
 use TheFairLib\Constants\InfoCode;
@@ -34,9 +36,9 @@ if (!function_exists('encode')) {
      *
      * @param $data
      * @param string $format
-     * @return string
+     * @return mixed|string
      */
-    function encode($data, $format = 'json')
+    function encode($data, string $format = 'json')
     {
         switch ($format) {
             case 'json':
@@ -64,7 +66,7 @@ if (!function_exists('decode')) {
      * @param string $format
      * @return mixed|string
      */
-    function decode($data, $format = 'json')
+    function decode($data, string $format = 'json')
     {
         switch ($format) {
             case 'json':
@@ -156,12 +158,12 @@ if (!function_exists('getUuid')) {
      * @param string $dbname
      * @return int uuid
      */
-    function getUuid(string $dbname = 'default')
+    function getUuid(string $dbname = 'default'): int
     {
         $ret = Db::connection($dbname)->select('select uuid_short() as uuid');
         $uuid = $ret[0] ?? null;
         if (!empty($uuid->uuid)) {
-            return intval(substr("{$uuid->uuid}", -19));
+            return intval(substr("$uuid->uuid", -19));
         }
         throw new ServiceException('uuid error', [], InfoCode::SERVER_CODE_ERROR);
     }
@@ -211,7 +213,7 @@ if (!function_exists('unCamelize')) {
      * @param $words
      * @return string
      */
-    function unCamelize($words)
+    function unCamelize($words): string
     {
         return strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $words));
     }
@@ -225,7 +227,7 @@ if (!function_exists('camelize')) {
      * @param $words
      * @return string
      */
-    function camelize($words)
+    function camelize($words): string
     {
         return lcfirst(str_replace([' ', '_', '-'], '', ucwords($words, ' _-')));
     }
@@ -239,10 +241,10 @@ if (!function_exists('bigCamelize')) {
      * @param $words
      * @return string
      */
-    function bigCamelize($words)
+    function bigCamelize($words): string
     {
         $separator = '/';
-        return preg_replace_callback("~(?<={$separator})([a-z])~", function ($matches) {
+        return preg_replace_callback("~(?<=" . $separator . ")([a-z])~", function ($matches) {
             return strtoupper($matches[0]);
         }, $separator . ltrim($words, $separator));
     }
@@ -290,8 +292,8 @@ if (!function_exists('input')) {
     /**
      * 参数请求
      *
-     * @param $name
-     * @param $default
+     * @param string $name
+     * @param mixed $default
      * @return mixed
      */
     function input(string $name, $default = '')
@@ -360,7 +362,7 @@ if (!function_exists('getRpcLogArguments')) {
      *
      * @return array
      */
-    function getRpcLogArguments()
+    function getRpcLogArguments(): array
     {
         /**
          * @var RequestInterface $request
@@ -393,7 +395,7 @@ if (!function_exists('getHttpLogArguments')) {
      *
      * @return array
      */
-    function getHttpLogArguments()
+    function getHttpLogArguments(): array
     {
         /**
          * @var RequestInterface $request
@@ -405,7 +407,7 @@ if (!function_exists('getHttpLogArguments')) {
         $sessionId = $request->cookie('PHPSESSID');
         $len = strlen(encode($params));
         $uri = $request->getUri()->getPath();
-        if (in_array($uri, ['/favicon.ico'])) {
+        if (in_array($uri, ['/favicon.ico']) || ('/ping' == $uri && env('CLOSE_PING_LOGGER', false))) {
             return [];
         }
         return [
@@ -482,7 +484,7 @@ if (!function_exists('stringToInt')) {
      */
     function stringToInt(string $stringToInt): int
     {
-        return intval(crc32(md5((string)$stringToInt)));
+        return crc32(md5($stringToInt));
     }
 }
 
@@ -501,7 +503,7 @@ if (!function_exists('getPrefix')) {
      * @param $dataType
      * @return string
      */
-    function getPrefix($type, $dataType)
+    function getPrefix($type, $dataType): string
     {
         $productPrefix = '';
         if (env('PRODUCT_NAME')) {
@@ -570,7 +572,7 @@ if (!function_exists('getItemRankFromCache')) {
      * @param string $order
      * @return int
      */
-    function getItemRankFromCache(string $pool, $listCacheKey, $lastItemId, $order = 'desc'): int
+    function getItemRankFromCache(string $pool, $listCacheKey, $lastItemId, string $order = 'desc'): int
     {
         return $order == 'desc' ? (int)\TheFairLib\Library\Cache\Redis::getContainer($pool)->zRevRank($listCacheKey, $lastItemId) :
             (int)\TheFairLib\Library\Cache\Redis::getContainer($pool)->zRank($listCacheKey, $lastItemId);
@@ -582,11 +584,11 @@ if (!function_exists('encrypt')) {
      * 加密 说明文档 https://qydev.weixin.qq.com/wiki/index.php?title=%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%96%B9%E6%A1%88%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E
      *
      *
-     * @param $data
-     * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
+     * @param string $data
+     * @param string $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    function encrypt(string $data, string $aesKey)
+    function encrypt(string $data, string $aesKey): string
     {
         $aesKey = base64_decode($aesKey . '=', true);
         if (is_string($aesKey)) {
@@ -606,11 +608,11 @@ if (!function_exists('decrypt')) {
      * https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Message_encryption_and_decryption_instructions.html
      *
      *
-     * @param $data
-     * @param $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
+     * @param string $data
+     * @param string $aesKey https://www.php.net/manual/zh/function.openssl-decrypt.php
      * @return string
      */
-    function decrypt(string $data, string $aesKey)
+    function decrypt(string $data, string $aesKey): string
     {
         $aesKey = base64_decode($aesKey . '=', true);
         if (is_string($aesKey)) {
@@ -716,9 +718,7 @@ if (!function_exists('esFormatDate')) {
 
             $date = str_replace(' ', 'T', $date) . 'Z';
 
-            $date = str_replace('Z', "+08:00", $date);
-
-            return $date;
+            return str_replace('Z', "+08:00", $date);
         } else {
             return '1970-01-01T00:00:01Z';
         }
@@ -803,9 +803,11 @@ if (!function_exists('parseEmoji')) {
      */
     function parseEmoji(string $str): string
     {
-        $client = new \Emojione\Client(new \Emojione\Ruleset());
-
-        return $client->toShort($str);
+        if (class_exists(Client::class)) {
+            $client = new Client(new Ruleset());
+            return $client->toShort($str);
+        }
+        return $str;
     }
 }
 
@@ -818,9 +820,11 @@ if (!function_exists('toEmoji')) {
      */
     function toEmoji(string $str): string
     {
-        $client = new \Emojione\Client(new \Emojione\Ruleset());
-
-        return html_entity_decode($client->shortnameToUnicode($str));
+        if (class_exists(Client::class)) {
+            $client = new Client(new Ruleset());
+            return html_entity_decode($client->shortnameToUnicode($str));
+        }
+        return $str;
     }
 }
 if (!function_exists('redirect')) {
