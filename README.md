@@ -30,38 +30,38 @@
 
 ```
 ├── app
-│   ├── Constants   // 常量约定
-│   ├── Contract    // 接口
-│   ├── Controller  // 控制器
-│   ├── Event       // 事件
-│   ├── Exception   // 异常处理
-│   │   └── Handler // Error 监听器
-│   ├── Job         // 异步任务处理
-│   ├── Library     // 系统自定义库
-│   ├── Middleware  // 中间件
-│   ├── Model       // 数据模型，只处理数据库、缓存相关
-│   ├── Process     // 多进程管理
-│   ├── Request     // 参数约定
-│   ├── Server      // 系统核心服务
-│   └── Service     // 业务处理
+│ ├── Constants   // 常量约定
+│ ├── Contract    // 接口
+│ ├── Controller  // 控制器
+│ ├── Event       // 事件
+│ ├── Exception   // 异常处理
+│ │ └── Handler // Error 监听器
+│ ├── Job         // 异步任务处理
+│ ├── Library     // 系统自定义库
+│ ├── Middleware  // 中间件
+│ ├── Model       // 数据模型，只处理数据库、缓存相关
+│ ├── Process     // 多进程管理
+│ ├── Request     // 参数约定
+│ ├── Server      // 系统核心服务
+│ └── Service     // 业务处理
 ├── listener    // 事件监听器
 ├── bin
-│   └── hyperf.php  // 架构启动文件
+│ └── hyperf.php  // 架构启动文件
 ├── composer.json
 ├── composer.lock
 ├── config          // 配置文件
 ├── docs            // 文档
-│   └── sql
+│ └── sql
 ├── openapi.yaml    // 自动生成文档
 ├── phpunit.xml     // 单元测试
 ├── runtime         // 日志目录
-│   ├── container
-│   ├── hyperf.pid
-│   └── logs
+│ ├── container
+│ ├── hyperf.pid
+│ └── logs
 ├── test            // 测试
-│   ├── Cases
-│   ├── HttpTestCase.php
-│   └── bootstrap.php
+│ ├── Cases
+│ ├── HttpTestCase.php
+│ └── bootstrap.php
 ├── Jenkinsfile     // 自动化测试
 ├── README.md       // 说明文档
 ├── .env            // 开发配置
@@ -103,8 +103,8 @@ config
 ├── config.php // 用于管理用户或框架的配置，如配置相对独立亦可放于 autoload 文件夹内
 ├── container.php // 负责容器的初始化，作为一个配置文件运行并最终返回一个 Psr\Container\ContainerInterface 对象
 ├── dependencies.php // 用于管理 DI 的依赖关系和类对应关系
-│   ├── i18n    // 国际化具体信息
-│   │   └── languages
+│ ├── i18n    // 国际化具体信息
+│ │ └── languages
 └── routes.php // 用于管理路由
 ```
 
@@ -450,6 +450,12 @@ getItemListByPageFromCache(self::REDIS_POOL, $name, $lastItemId, 'asc', $itemPer
 
 //页码 
 listItemFromCache(self::REDIS_POOL, $name, 1,'desc', $itemPerPage, true);
+```
+
+### 新增穿透缓存注解
+
+```php
+@CacheSet(prefix="str:xxxx", value="#{xxx}", ttl=5, group="pool_name")
 ```
 
 ## 异常
