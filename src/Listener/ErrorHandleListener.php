@@ -34,6 +34,12 @@ class ErrorHandleListener implements ListenerInterface
         ];
     }
 
+    /**
+     * 异常处理
+     *
+     * @param object $event
+     * @throws ErrorException
+     */
     public function process(object $event)
     {
         set_error_handler(function ($level, $message, $file = '', $line = 0, $context = []) {
@@ -54,10 +60,7 @@ class ErrorHandleListener implements ListenerInterface
 
         set_exception_handler(function (Throwable $e) {
             Logger::get()->critical('set_exception_handler', [
-                'msg' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace_string' => $e->getTraceAsString(),
+                'msg' => formatter($e),
             ]);
         });
 
