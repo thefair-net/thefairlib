@@ -215,6 +215,9 @@ class ConfigProvider
             $baseVendor . 'hyperf/cache/src/AnnotationManager.php' => [
                 AnnotationManager::class => $classMapPath . 'Hyperf/Cache/AnnotationManager.php',
             ],
+            $baseVendor . 'hyperf/nacos/src/Client.php' => [
+                \Hyperf\Nacos\Client::class => $classMapPath . 'Hyperf/Nacos/Client.php',
+            ],
         ];
         $classMap = [];
         foreach ($data as $file => $class) {

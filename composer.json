@@ -60,6 +60,7 @@
         "hyperf/filesystem": "~2.1.0",
         "hyperf/signal": "~2.1.0",
         "hyperf/service-governance": "~2.1.0",
+        "hyperf/nacos": "~2.1.0",
         "yurunsoft/phpmailer-swoole": "~1.0",
         "xxtime/flysystem-aliyun-oss": "^1.5",
         "overtrue/flysystem-qiniu": "~1.0",
