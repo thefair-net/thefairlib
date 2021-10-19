@@ -16,6 +16,9 @@ use Hyperf\HttpServer\ResponseEmitter;
 use Hyperf\JsonRpc\JsonRpcPoolTransporter;
 use Hyperf\JsonRpc\JsonRpcTransporter;
 use Hyperf\JsonRpc\Pool\RpcConnection;
+use Hyperf\Nacos\Api\AbstractNacos;
+use Hyperf\Nacos\Listener\MainWorkerStartListener;
+use Hyperf\Nacos\Listener\OnShutdownListener;
 use Hyperf\TfConfig\ConfigFactory;
 use Hyperf\Utils\Serializer\SimpleNormalizer;
 use Overtrue\Flysystem\Qiniu\QiniuAdapter;
@@ -23,7 +26,9 @@ use TheFairLib\Contract\LockInterface;
 use TheFairLib\Contract\RequestParamInterface;
 use TheFairLib\Contract\ResponseBuilderInterface;
 use TheFairLib\Contract\ResponseInterface;
+use TheFairLib\Contract\StsInterface;
 use TheFairLib\Contract\WeChatFactoryInterface;
+use TheFairLib\Library\File\AliYun\Sts;
 use TheFairLib\Library\Http\Request\RequestParam;
 use TheFairLib\Library\Http\ResponseBuilderFactory;
 use TheFairLib\Library\Http\ServiceResponse;
@@ -34,6 +39,7 @@ use TheFairLib\Listener\DbQueryExecutedListener;
 use TheFairLib\Listener\ErrorHandleListener;
 use TheFairLib\Listener\Logger\LoggerHandleListener;
 use TheFairLib\Listener\RouterHandleListener;
+use TheFairLib\Listener\Server\TermSignalHandler;
 use TheFairLib\Listener\Server\WorkerErrorHandleListener;
 use TheFairLib\Listener\Server\WorkerExitHandleListener;
 use TheFairLib\Listener\Server\WorkerStopHandleListener;
@@ -60,6 +66,7 @@ class ConfigProvider
                 RequestParamInterface::class => RequestParam::class,
                 WeChatFactoryInterface::class => WeChatFactoryService::class,
                 JsonRpcTransporter::class => JsonRpcPoolTransporter::class,
+                StsInterface::class => Sts::class,
             ],
             'listeners' => [
                 DocHandleListener::class,
@@ -68,6 +75,7 @@ class ConfigProvider
                 ValidatorHandleListener::class,
                 DbQueryExecutedListener::class,
                 LoggerHandleListener::class,
+                TermSignalHandler::class,
                 WorkerStopHandleListener::class,
                 WorkerErrorHandleListener::class,
                 WorkerExitHandleListener::class,
@@ -217,6 +225,15 @@ class ConfigProvider
             ],
             $baseVendor . 'hyperf/nacos/src/Client.php' => [
                 \Hyperf\Nacos\Client::class => $classMapPath . 'Hyperf/Nacos/Client.php',
+            ],
+            $baseVendor . 'hyperf/nacos/src/Client.php' => [
+                AbstractNacos::class => $classMapPath . 'Hyperf/Nacos/Api/AbstractNacos.php',
+            ],
+            $baseVendor . 'hyperf/nacos/src/Listener/MainWorkerStartListener.php' => [
+                MainWorkerStartListener::class => $classMapPath . 'Hyperf/Nacos/Listener/MainWorkerStartListener.php',
+            ],
+            $baseVendor . 'hyperf/nacos/src/Listener/OnShutdownListener.php' => [
+                OnShutdownListener::class => $classMapPath . 'Hyperf/Nacos/Listener/OnShutdownListener.php',
             ],
         ];
         $classMap = [];
