@@ -80,6 +80,7 @@ class DataModelCommand extends Command
     public function __construct(ContainerInterface $container)
     {
         parent::__construct('gen:dataModel');
+        $this->setDescription('orm 数据模型生成');
         $this->container = $container;
     }
 
@@ -286,7 +287,7 @@ class DataModelCommand extends Command
         }
 
         if ($result === $nonInput) {
-            $result = $this->config->get("databases.{$pool}.{$key}", $default);
+            $result = $this->config->get("databases.$pool.$key", $default);
         }
 
         return $result;
@@ -397,7 +398,7 @@ class DataModelCommand extends Command
 
     protected function replaceUses(string &$stub, string $uses): self
     {
-        $uses = $uses ? "use {$uses};" : '';
+        $uses = $uses ? "use $uses;" : '';
         $stub = str_replace(
             ['%USES%'],
             [$uses],

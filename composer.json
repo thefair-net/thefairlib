@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": ">=7.3",
         "ext-swoole": ">=4.5",
         "ext-json": "*",
         "ext-redis": "*",
@@ -59,22 +59,23 @@
         "hyperf/crontab": "~2.2.0",
         "hyperf/filesystem": "~2.2.0",
         "hyperf/signal": "~2.2.0",
-        "hyperf/service-governance": "~2.2.0",
-        "hyperf/nacos": "~2.2.0",
+        "hyperf/config-nacos": "~2.2.0",
+        "hyperf/service-governance-nacos": "~2.2.0",
         "yurunsoft/phpmailer-swoole": "~1.0",
-        "xxtime/flysystem-aliyun-oss": "^1.5",
-        "overtrue/flysystem-qiniu": "~1.0",
+        "hyperf/flysystem-oss": "^1.0",
+        "overtrue/flysystem-qiniu": "^2.0",
         "lmz/hyperf-config": "~2.2.0",
         "emojione/emojione": "^4.5",
         "overtrue/wechat": "~4.0"
     },
     "require-dev": {
-        "swoole/ide-helper": "^4.5",
         "friendsofphp/php-cs-fixer": "^3.0",
-        "hyperf/testing": "2.2.*",
+        "hyperf/devtool": "~2.2.0",
+        "hyperf/ide-helper": "~2.2.0",
+        "hyperf/testing": "~2.2.0",
         "mockery/mockery": "^1.0",
-        "phpstan/phpstan": "^0.12.18",
-        "symfony/var-dumper": "^5.1"
+        "phpstan/phpstan": "^0.12",
+        "swoole/ide-helper": "^4.5"
     },
     "autoload": {
         "psr-4": {
