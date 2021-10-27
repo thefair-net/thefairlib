@@ -48,13 +48,9 @@ class LoggerHandleListener implements ListenerInterface
                 }
             }
         } catch (Throwable $e) {
-            Logger::get()->error(sprintf(
-                "write access logger error, %s,code:%d,file:%s,line:%d",
-                $e->getMessage(),
-                $e->getCode(),
-                $e->getFile(),
-                $e->getLine()
-            ));
+            Logger::get()->error('error_logger', [
+                'error' => formatter($e),
+            ]);
         }
     }
 }

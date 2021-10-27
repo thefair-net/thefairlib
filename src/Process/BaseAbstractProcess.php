@@ -26,7 +26,7 @@ abstract class BaseAbstractProcess extends AbstractProcess
      *
      * @var bool
      */
-    protected $enable = true;
+    protected bool $enable = true;
 
     public function __construct(ContainerInterface $container, ConfigInterface $config)
     {

@@ -17,13 +17,13 @@ use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\Guzzle\ClientFactory;
-use League\Flysystem\FileExistsException;
-use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemAdapter;
+use League\Flysystem\FilesystemException;
 use OSS\OssClient;
+use Overtrue\Flysystem\Qiniu\QiniuAdapter;
 use Qiniu\Storage\BucketManager;
 use TheFairLib\Exception\ServiceException;
-use TheFairLib\Library\Logger\Logger;
 use Throwable;
 
 class PublicFile
@@ -34,18 +34,18 @@ class PublicFile
      * @Inject
      * @var FilesystemFactory
      */
-    public $factory;
+    public FilesystemFactory $factory;
 
     /**
      * @var string
      */
-    protected $bucket;
+    protected string $bucket;
 
     /**
      * @Inject()
      * @var ClientFactory
      */
-    private $clientFactory;
+    protected ClientFactory $clientFactory;
 
     /**
      * PublicFile constructor.
@@ -62,16 +62,20 @@ class PublicFile
      * @param string $name
      * @param string $newName
      * @return bool
-     * @throws FileExistsException
-     * @throws FileNotFoundException
+     * @throws FilesystemException|Throwable
      */
     public function rename(string $name, string $newName): bool
     {
-        $file = $this->filesystem($this->bucket);
-        if (!$file->has($name) || !$file->has($newName)) {
-            throw new ServiceException('文件不存在: ' . $name . ' ' . $newName);
+        try {
+            $file = $this->filesystem($this->bucket);
+            if (!$file->fileExists($name) || !$file->fileExists($newName)) {
+                throw new ServiceException('文件不存在: ' . $name . ' ' . $newName);
+            }
+            $file->move($name, $newName);
+            return true;
+        } catch (Throwable $e) {
+            throw  $e;
         }
-        return $file->rename($name, $newName);
     }
 
     /**
@@ -86,14 +90,14 @@ class PublicFile
     public function copy(string $name, string $newName, string $newBucket): bool
     {
         $file = $this->filesystem($this->bucket);
-        if (!$file->has($name)) {
+        if (!$file->fileExists($name)) {
             throw new ServiceException('文件不存在: ' . $name);
         }
         try {
             /**
-             * @var OssClient|BucketManager $client
+             * @var BucketManager|OssClient
              */
-            $client = $file->getAdapter()->getClient();
+            $client = $this->getAdapter()->getClient();
             switch (get_class($client)) {
                 case OssClient::class:
                     $data = $client->copyObject($this->bucket, $name, $newBucket, $newName);
@@ -108,11 +112,6 @@ class PublicFile
                         'name' => $name,
                     ]);
             }
-            Logger::get()->info('copy_file', [
-                'ret' => $data,
-                'name' => $name,
-                'bucket' => $this->bucket,
-            ]);
             return !empty($data);
         } catch (Throwable $e) {
             throw $e;
@@ -131,16 +130,27 @@ class PublicFile
     }
 
     /**
+     * @return FilesystemAdapter
+     */
+    protected function getAdapter(): FilesystemAdapter
+    {
+        /**
+         * @var OssClient|BucketManager $client
+         */
+        $options = config('file', []);
+        return $this->factory->getAdapter($options, $this->bucket);
+    }
+
+    /**
      * 上传文件到阿里云
      *
      * @param string $base64
      * @param string $path
      * @param string $ossSaveFilename
      * @return array
-     * @throws FileExistsException
      * @throws Throwable
      */
-    public function uploadImage(string $base64, string $path = 'public', string $ossSaveFilename = '')
+    public function uploadImage(string $base64, string $path = 'public', string $ossSaveFilename = ''): array
     {
         $contents = base64_decode($base64);
         if (!$contents) {
@@ -157,7 +167,6 @@ class PublicFile
      * @param $content
      * @param string $path
      * @return array
-     * @throws FileExistsException
      * @throws Throwable
      */
     public function fileUpload(string $filename, $content, string $path = 'public'): array
@@ -174,7 +183,6 @@ class PublicFile
      * @param string $ossSaveFilename
      * @param string $path
      * @return array
-     * @throws FileExistsException
      * @throws Throwable
      */
     public function filePathUpload(string $filename, string $ossSaveFilename, string $path = 'public'): array
@@ -197,23 +205,24 @@ class PublicFile
      * @param $filename
      * @param $contents
      * @return array
-     * @throws FileExistsException
      * @throws Throwable
      */
-    private function upload($filename, $contents)
+    private function upload($filename, $contents): array
     {
-        $file = $this->filesystem($this->bucket);
-        if (!$file->write($filename, $contents)) {
-            throw new ServiceException('上传文件失败');
-        }
         try {
-            $client = $file->getAdapter()->getClient();
+            $file = $this->filesystem($this->bucket);
+            $file->write($filename, $contents);//写入文件
+            /**
+             * @var BucketManager|OssClient
+             */
+            $client = $this->getAdapter()->getClient();
+            $config = config(sprintf('file.storage.%s', $this->bucket), []);
             switch (get_class($client)) {
                 case OssClient::class:
-                    $url = rtrim($file->getConfig()->get('origin', '/')) . '/' . $filename;
+                    $url = rtrim(arrayGet($config, 'origin', '/')) . '/' . $filename;
                     break;
                 case BucketManager::class:
-                    $url = rtrim($file->getConfig()->get('domain', '/')) . '/' . $filename;
+                    $url = rtrim(arrayGet($config, 'domain', '/')) . '/' . $filename;
                     break;
                 default:
                     throw new ServiceException('目前只支持阿里云与七牛云', [
@@ -221,7 +230,7 @@ class PublicFile
                         'name' => $filename,
                     ]);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw  $e;
         }
         return [
@@ -256,10 +265,10 @@ class PublicFile
         if (empty($pathStr)) {
             return $filename;
         }
-        return $this->getOssFolder($pathStr) . '/' . md5(strval(microtime(true)) . mt_rand(1, 1000000)) . $this->getType($filename);
+        return $this->getOssFolder($pathStr) . '/' . md5(microtime(true) . mt_rand(1, 1000000)) . $this->getType($filename);
     }
 
-    private function getType(string $filename)
+    private function getType(string $filename): string
     {
         $basename = basename($filename);
         $type = arrayGet(pathinfo($basename), 'extension');
@@ -275,17 +284,18 @@ class PublicFile
      * @param string $filename
      * @param $content
      * @return array
-     * @throws FileExistsException
-     * @throws FileNotFoundException
+     * @throws FilesystemException|Throwable
      */
     public function fileLocal(string $filename, $content): array
     {
-        $file = $this->filesystem($this->bucket);
-        if ($file->has($filename)) {
-            $file->delete($filename);
-        }
-        if (!$file->write($filename, $content)) {
-            throw new ServiceException('上传文件失败');
+        try {
+            $file = $this->filesystem($this->bucket);
+            if ($file->fileExists($filename)) {
+                $file->delete($filename);
+            }
+            $file->write($filename, $content);
+        } catch (Throwable $e) {
+            throw $e;
         }
         return [
             'filepath' => $filename,
@@ -303,14 +313,14 @@ class PublicFile
     {
         try {
             $file = $this->filesystem($this->bucket);
-            if (!$file->has($filename)) {
+            if (!$file->fileExists($filename)) {
                 return true;
             }
-            return $file->delete($filename);
+            $file->delete($filename);
+            return true;
         } catch (Throwable $e) {
             throw new ServiceException('删除文件失败 .' . $e->getMessage(), [
-                'str' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
+                'error' => formatter($e),
             ]);
         }
     }
@@ -321,23 +331,26 @@ class PublicFile
      * @param string $url
      * @param string $path
      * @param string $ossSaveFilename
+     * @param array $header
      * @return array
-     * @throws FileExistsException
-     * @throws Throwable
      * @throws GuzzleException
+     * @throws Throwable
      */
-    public function urlUpload(string $url, string $path = 'public', string $ossSaveFilename = ''): array
+    public function urlUpload(string $url, string $path = 'public', string $ossSaveFilename = '', array $header = []): array
     {
         try {
             $client = $this->clientFactory->create([
                 'timeout' => 60.0,//有可能大文件
             ]);
-            $response = $client->get($url, [
-                'headers' => [
+            if (empty($header)) {
+                $header = [
                     'referer' => $url,
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
                     'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-                ],
+                ];
+            }
+            $response = $client->get($url, [
+                'headers' => $header,
             ]);
             $content = $response->getBody()->getContents();
 
@@ -348,14 +361,46 @@ class PublicFile
                     'content' => $response->getBody()->getSize(),
                 ]);
             }
-            $data = $this->uploadImage(base64_encode($content), $path, $ossSaveFilename);
-            Logger::get()->info('url_upload:info', [
-                'data' => $data,
-                'url' => $url,
-                'path' => $path,
-            ]);
-            return $data;
-        } catch (\Throwable $e) {
+            return $this->uploadImage(base64_encode($content), $path, $ossSaveFilename);
+        } catch (Throwable $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * 私有库
+     *
+     * @param string $path
+     * @param int $expires
+     * @return string
+     * @throws Throwable
+     */
+    public function privateDownloadUrl(string $path, int $expires = 3600): string
+    {
+        $url = '';
+        try {
+            /**
+             * @var OssClient|BucketManager $client
+             */
+            $client = $this->getAdapter()->getClient();
+            switch (get_class($client)) {
+                case OssClient::class:
+                    break;
+                case BucketManager::class:
+                    /**
+                     * @var QiniuAdapter $adapter
+                     */
+                    $adapter = $this->getAdapter();
+                    $url = $adapter->privateDownloadUrl($path, $expires);
+                    break;
+                default:
+                    throw new ServiceException('目前只支持阿里云与七牛云', [
+                        'client' => get_class($client),
+                        'name' => $this->bucket,
+                    ]);
+            }
+            return $url;
+        } catch (Throwable $e) {
             throw $e;
         }
     }

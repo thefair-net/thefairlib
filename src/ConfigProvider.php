@@ -11,14 +11,14 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\LengthAwarePaginatorInterface;
 use Hyperf\Contract\NormalizerInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\Flysystem\OSS\Adapter;
 use Hyperf\HttpServer\CoreMiddleware;
 use Hyperf\HttpServer\ResponseEmitter;
 use Hyperf\JsonRpc\JsonRpcPoolTransporter;
 use Hyperf\JsonRpc\JsonRpcTransporter;
 use Hyperf\JsonRpc\Pool\RpcConnection;
-use Hyperf\Nacos\Api\AbstractNacos;
-use Hyperf\Nacos\Listener\MainWorkerStartListener;
-use Hyperf\Nacos\Listener\OnShutdownListener;
+use Hyperf\ServiceGovernanceNacos\Listener\MainWorkerStartListener;
+use Hyperf\ServiceGovernanceNacos\Listener\OnShutdownListener;
 use Hyperf\TfConfig\ConfigFactory;
 use Hyperf\Utils\Serializer\SimpleNormalizer;
 use Overtrue\Flysystem\Qiniu\QiniuAdapter;
@@ -47,7 +47,7 @@ use TheFairLib\Listener\ValidatorHandleListener;
 use TheFairLib\Listener\Wiki\DocHandleListener;
 use TheFairLib\Middleware\Core\ServiceMiddleware;
 use TheFairLib\Model\Paginator\LengthAwarePaginator;
-use Xxtime\Flysystem\Aliyun\OssAdapter;
+use TheFairLib\Process\Nacos\InstanceBeatProcess;
 
 class ConfigProvider
 {
@@ -75,10 +75,15 @@ class ConfigProvider
                 ValidatorHandleListener::class,
                 DbQueryExecutedListener::class,
                 LoggerHandleListener::class,
-                TermSignalHandler::class,
+//                TermSignalHandler::class,
+                MainWorkerStartListener::class,
+                OnShutdownListener::class,
                 WorkerStopHandleListener::class,
                 WorkerErrorHandleListener::class,
                 WorkerExitHandleListener::class,
+            ],
+            'processes' => [
+                InstanceBeatProcess::class,
             ],
             'annotations' => [
                 'scan' => [
@@ -214,8 +219,8 @@ class ConfigProvider
             $baseVendor . 'hyperf/async-queue/src/Driver/RedisDriver.php' => [
                 RedisDriver::class => $classMapPath . 'Hyperf/AsyncQueue/Driver/RedisDriver.php',
             ],
-            $baseVendor . 'xxtime/flysystem-aliyun-oss/src/OssAdapter.php' => [
-                OssAdapter::class => $classMapPath . 'Xxtime/Flysystem/Aliyun/OssAdapter.php',
+            $baseVendor . 'hyperf/flysystem-aliyun-oss/src/OSS/Adapter.php' => [
+                Adapter::class => $classMapPath . 'Hyperf/Flysystem/OSS/Adapter.php',
             ],
             $baseVendor . 'overtrue/flysystem-qiniu/src/QiniuAdapter.php' => [
                 QiniuAdapter::class => $classMapPath . 'Overtrue/Flysystem/Qiniu/QiniuAdapter.php',
@@ -223,18 +228,18 @@ class ConfigProvider
             $baseVendor . 'hyperf/cache/src/AnnotationManager.php' => [
                 AnnotationManager::class => $classMapPath . 'Hyperf/Cache/AnnotationManager.php',
             ],
-            $baseVendor . 'hyperf/nacos/src/Client.php' => [
-                \Hyperf\Nacos\Client::class => $classMapPath . 'Hyperf/Nacos/Client.php',
-            ],
-            $baseVendor . 'hyperf/nacos/src/Client.php' => [
-                AbstractNacos::class => $classMapPath . 'Hyperf/Nacos/Api/AbstractNacos.php',
-            ],
-            $baseVendor . 'hyperf/nacos/src/Listener/MainWorkerStartListener.php' => [
-                MainWorkerStartListener::class => $classMapPath . 'Hyperf/Nacos/Listener/MainWorkerStartListener.php',
-            ],
-            $baseVendor . 'hyperf/nacos/src/Listener/OnShutdownListener.php' => [
-                OnShutdownListener::class => $classMapPath . 'Hyperf/Nacos/Listener/OnShutdownListener.php',
-            ],
+//            $baseVendor . 'hyperf/nacos/src/Client.php' => [
+//                \Hyperf\Nacos\Client::class => $classMapPath . 'Hyperf/Nacos/Client.php',
+//            ],
+//            $baseVendor . 'hyperf/nacos/src/Client.php' => [
+//                AbstractNacos::class => $classMapPath . 'Hyperf/Nacos/Api/AbstractNacos.php',
+//            ],
+//            $baseVendor . 'hyperf/nacos/src/Listener/MainWorkerStartListener.php' => [
+//                MainWorkerStartListener::class => $classMapPath . 'Hyperf/Nacos/Listener/MainWorkerStartListener.php',
+//            ],
+//            $baseVendor . 'hyperf/nacos/src/Listener/OnShutdownListener.php' => [
+//                OnShutdownListener::class => $classMapPath . 'Hyperf/Nacos/Listener/OnShutdownListener.php',
+//            ],
         ];
         $classMap = [];
         foreach ($data as $file => $class) {

@@ -15,7 +15,6 @@ namespace TheFairLib\Listener\Server;
 
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Process\ProcessManager;
-use Hyperf\Signal\Annotation\Signal;
 use Hyperf\Signal\SignalHandlerInterface;
 use Psr\Container\ContainerInterface;
 use Swoole\Server;
@@ -23,16 +22,17 @@ use TheFairLib\Library\Logger\Logger;
 use Throwable;
 
 /**
- * @Signal
+ * Class TermSignalHandler
+ * @package TheFairLib\Listener\Server
  */
 class TermSignalHandler implements SignalHandlerInterface
 {
-    protected $processed = false;
+    protected bool $processed = false;
 
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    protected ContainerInterface $container;
 
     /**
      * @var ConfigInterface
@@ -57,7 +57,7 @@ class TermSignalHandler implements SignalHandlerInterface
         try {
             ProcessManager::setRunning(false);
             if ($signal !== SIGINT) {
-                $time = $this->config->get('server.settings.max_wait_time', 1);
+                $time = $this->config->get('server.settings.max_wait_time', 3);
                 sleep($time);
             }
         } catch (Throwable $e) {
