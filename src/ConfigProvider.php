@@ -78,9 +78,9 @@ class ConfigProvider
 //                TermSignalHandler::class,
                 MainWorkerStartListener::class,
                 OnShutdownListener::class,
-                WorkerStopHandleListener::class,
-                WorkerErrorHandleListener::class,
-                WorkerExitHandleListener::class,
+//                WorkerStopHandleListener::class,
+//                WorkerErrorHandleListener::class,
+//                WorkerExitHandleListener::class,
             ],
             'processes' => [
                 InstanceBeatProcess::class,

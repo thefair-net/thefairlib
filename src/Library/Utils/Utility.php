@@ -868,3 +868,42 @@ if (!function_exists('formatter')) {
         return container(FormatterInterface::class)->format($throwable);
     }
 }
+
+if (!function_exists('mobileHideStr')) {
+
+    /**
+     * 隐藏字符串
+     *
+     * @param $str
+     * @param string $symbol
+     * @param int $count
+     * @return string
+     */
+    function mobileHideStr($str, int $count = 0, string $symbol = '*'): string
+    {
+        $str = strval($str);
+        $len = mb_strlen($str, 'UTF-8');
+        if ($len < 8) {
+            return $str;
+        }
+        return mb_substr($str, 0, 3) . str_repeat($symbol, $count ?: $len - 7) . mb_substr($str, -4);
+    }
+}
+
+if (!function_exists('dynamicConfig')) {
+    /**
+     * 动态配置.
+     *
+     * @param string $key
+     * @param null $default
+     * @return mixed
+     */
+    function dynamicConfig(string $key = '', $default = null)
+    {
+        $name = config('nacos.config_append_node', 'dynamic_config');
+        if (!empty($key)) {
+            $name = sprintf('%s.%s', $name, $key);
+        }
+        return config($name, $default);
+    }
+}
