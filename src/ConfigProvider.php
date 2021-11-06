@@ -76,14 +76,14 @@ class ConfigProvider
                 DbQueryExecutedListener::class,
                 LoggerHandleListener::class,
 //                TermSignalHandler::class,
-                MainWorkerStartListener::class,
-                OnShutdownListener::class,
+//                MainWorkerStartListener::class,
+//                OnShutdownListener::class,
 //                WorkerStopHandleListener::class,
 //                WorkerErrorHandleListener::class,
 //                WorkerExitHandleListener::class,
             ],
             'processes' => [
-                InstanceBeatProcess::class,
+//                InstanceBeatProcess::class,
             ],
             'annotations' => [
                 'scan' => [
@@ -204,9 +204,9 @@ class ConfigProvider
         $baseVendor = BASE_PATH . '/vendor/';
         $classMapPath = $baseVendor . 'thefair/thefairlib/class_map/';
         $data = [
-            $baseVendor . 'guzzlehttp/guzzle/src/Client.php' => [
-                Client::class => $classMapPath . 'GuzzleHttp/Client.php',
-            ],
+//            $baseVendor . 'guzzlehttp/guzzle/src/Client.php' => [
+//                Client::class => $classMapPath . 'GuzzleHttp/Client.php',
+//            ],
             $baseVendor . 'hyperf/http-server/src/ResponseEmitter.php' => [
                 ResponseEmitter::class => $classMapPath . 'Hyperf/HttpServer/ResponseEmitter.php',
             ],
