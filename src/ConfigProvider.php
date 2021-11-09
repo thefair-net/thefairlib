@@ -204,9 +204,6 @@ class ConfigProvider
         $baseVendor = BASE_PATH . '/vendor/';
         $classMapPath = $baseVendor . 'thefair/thefairlib/class_map/';
         $data = [
-//            $baseVendor . 'guzzlehttp/guzzle/src/Client.php' => [
-//                Client::class => $classMapPath . 'GuzzleHttp/Client.php',
-//            ],
             $baseVendor . 'hyperf/http-server/src/ResponseEmitter.php' => [
                 ResponseEmitter::class => $classMapPath . 'Hyperf/HttpServer/ResponseEmitter.php',
             ],
@@ -228,18 +225,6 @@ class ConfigProvider
             $baseVendor . 'hyperf/cache/src/AnnotationManager.php' => [
                 AnnotationManager::class => $classMapPath . 'Hyperf/Cache/AnnotationManager.php',
             ],
-//            $baseVendor . 'hyperf/nacos/src/Client.php' => [
-//                \Hyperf\Nacos\Client::class => $classMapPath . 'Hyperf/Nacos/Client.php',
-//            ],
-//            $baseVendor . 'hyperf/nacos/src/Client.php' => [
-//                AbstractNacos::class => $classMapPath . 'Hyperf/Nacos/Api/AbstractNacos.php',
-//            ],
-//            $baseVendor . 'hyperf/nacos/src/Listener/MainWorkerStartListener.php' => [
-//                MainWorkerStartListener::class => $classMapPath . 'Hyperf/Nacos/Listener/MainWorkerStartListener.php',
-//            ],
-//            $baseVendor . 'hyperf/nacos/src/Listener/OnShutdownListener.php' => [
-//                OnShutdownListener::class => $classMapPath . 'Hyperf/Nacos/Listener/OnShutdownListener.php',
-//            ],
         ];
         $classMap = [];
         foreach ($data as $file => $class) {
