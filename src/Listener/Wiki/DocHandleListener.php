@@ -20,8 +20,7 @@ use Hyperf\Framework\Event\OnReceive;
 use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\HttpServer\Router\Handler;
 use Hyperf\Utils\Context;
-use League\Flysystem\FileExistsException;
-use League\Flysystem\FileNotFoundException;
+use League\Flysystem\FilesystemException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TheFairLib\Command\Wiki\DocumentGenerate;
@@ -77,8 +76,9 @@ class DocHandleListener implements ListenerInterface
      * 采集返回结果
      *
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @throws FileExistsException|FileNotFoundException
+     * @param $response
+     * @throws Throwable
+     * @throws FilesystemException
      */
     protected function writeResponseResult(ServerRequestInterface $request, $response)
     {
@@ -100,7 +100,7 @@ class DocHandleListener implements ListenerInterface
                     break;
                 }
             }
-            if (0 === arrayGet($data, 'code') && (!$this->factory->get('local')->has($path) || $isRefreshPath)) {
+            if (0 === arrayGet($data, 'code') && (!$this->factory->get('local')->fileExists($path) || $isRefreshPath)) {
                 FileFactory::get('local')->fileLocal($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             }
         }

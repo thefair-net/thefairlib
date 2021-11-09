@@ -16,7 +16,9 @@ use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
 use PhpParser\PrettyPrinterAbstract;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -53,7 +55,7 @@ class DocumentGenerate extends RequestBase
      * @Inject
      * @var Yapi
      */
-    private $yapiDocService;
+    protected $yapiDocService;
 
     public function __construct(ContainerInterface $container, ServerRequestInterface $request, ConfigInterface $config)
     {
@@ -66,7 +68,7 @@ class DocumentGenerate extends RequestBase
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void
+     * @return void
      * @throws Throwable
      */
     public function execute(InputInterface $input, OutputInterface $output)
@@ -205,7 +207,7 @@ class DocumentGenerate extends RequestBase
             $methodDoc->tag[] = $controller;
         }
         $responseResult = '';
-        if ($this->factory->get('local')->has($this->getResponseResultPath($handler))) {
+        if ($this->factory->get('local')->fileExists($this->getResponseResultPath($handler))) {
             $responseResult = $this->factory->get('local')->read($this->getResponseResultPath($handler));
         }
         $this->doc[$route] = array_merge([
@@ -233,6 +235,8 @@ class DocumentGenerate extends RequestBase
      *
      * @param string $requestClassName
      * @return array
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function getRules(string $requestClassName): array
     {
