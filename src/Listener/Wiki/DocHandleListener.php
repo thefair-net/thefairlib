@@ -101,7 +101,7 @@ class DocHandleListener implements ListenerInterface
                 }
             }
             if (0 === arrayGet($data, 'code') && (!$this->factory->get('local')->has($path) || $isRefreshPath)) {
-                FileFactory::get('local')->fileLocal($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                $this->factory->get('local')->write($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             }
         }
     }
