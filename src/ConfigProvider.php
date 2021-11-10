@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TheFairLib;
 
-use GuzzleHttp\Client;
 use Hyperf\AsyncQueue\Driver\RedisDriver;
 use Hyperf\Cache\AnnotationManager;
 use Hyperf\Contract\ConfigInterface;
@@ -75,7 +74,7 @@ class ConfigProvider
                 ValidatorHandleListener::class,
                 DbQueryExecutedListener::class,
                 LoggerHandleListener::class,
-//                TermSignalHandler::class,
+                TermSignalHandler::class,
 //                MainWorkerStartListener::class,
 //                OnShutdownListener::class,
 //                WorkerStopHandleListener::class,
@@ -83,7 +82,7 @@ class ConfigProvider
 //                WorkerExitHandleListener::class,
             ],
             'processes' => [
-//                InstanceBeatProcess::class,
+                InstanceBeatProcess::class,
             ],
             'annotations' => [
                 'scan' => [

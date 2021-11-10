@@ -13,13 +13,21 @@ declare(strict_types=1);
 namespace TheFairLib\Process\Nacos;
 
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Nacos\Application;
 use Hyperf\Process\AbstractProcess;
+use Hyperf\Process\Annotation\Process;
 use Hyperf\Process\ProcessManager;
-use Hyperf\ServiceGovernance\IPReaderInterface;
 use Hyperf\Server\Server;
+use Hyperf\ServiceGovernance\IPReaderInterface;
+use TheFairLib\Command\Service\ManageServer;
+use TheFairLib\Library\Logger\Logger;
 
+/**
+ * @Process(name="nacos-heartbeat")
+ *
+ * Class InstanceBeatProcess
+ * @package TheFairLib\Process\Nacos
+ */
 class InstanceBeatProcess extends AbstractProcess
 {
     /**
@@ -30,7 +38,6 @@ class InstanceBeatProcess extends AbstractProcess
     public function handle(): void
     {
         $config = $this->container->get(ConfigInterface::class);
-        $logger = $this->container->get(StdoutLoggerInterface::class);
         $client = $this->container->get(Application::class);
 
         $serviceConfig = $config->get('nacos.service', []);
@@ -52,7 +59,11 @@ class InstanceBeatProcess extends AbstractProcess
             foreach ($ports as $portServer) {
                 $port = (int)$portServer['port'];
                 $type = (int)$portServer['type'];
-                if ($type != Server::SERVER_BASE) {
+                if (Server::SERVER_BASE != $type) {
+                    continue;
+                }
+                //下线节点
+                if (file_exists($this->container->get(ManageServer::class)->getNodePath())) {
                     continue;
                 }
                 $response = $client->instance->beat(
@@ -68,11 +79,12 @@ class InstanceBeatProcess extends AbstractProcess
                     $namespaceId,
                     $ephemeral
                 );
-
-                if ($response->getStatusCode() === 200) {
-                    $logger->debug(sprintf('Instance %s:%d heartbeat successfully!', $ip, $port));
-                } else {
-                    $logger->error(sprintf('Instance %s:%d heartbeat failed!', $ip, $port));
+                if ($response->getStatusCode() !== 200) {
+                    Logger::get()->error('nacos-heartbeat:error', [
+                        'ip' => $ip,
+                        'port' => $port,
+                        'msg' => $response->getBody()->getContents(),
+                    ]);
                 }
             }
         }

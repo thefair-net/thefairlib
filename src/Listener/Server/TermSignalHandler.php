@@ -27,12 +27,12 @@ use Throwable;
  */
 class TermSignalHandler implements SignalHandlerInterface
 {
-    protected bool $processed = false;
+    protected $processed = false;
 
     /**
      * @var ContainerInterface
      */
-    protected ContainerInterface $container;
+    protected $container;
 
     /**
      * @var ConfigInterface
