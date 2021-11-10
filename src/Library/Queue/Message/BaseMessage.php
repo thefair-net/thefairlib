@@ -1,12 +1,14 @@
 <?php
 
 /**
- * File: BaseMessage.php
+ * File: self .php
  * File Created: Thursday, 28th May 2020 6:00:07 pm
  * Author: Yin
  */
 
 namespace TheFairLib\Library\Queue\Message;
+
+use TheFairLib\Exception\ServiceException;
 
 /**
  * 队列消息实体
@@ -14,32 +16,33 @@ namespace TheFairLib\Library\Queue\Message;
 abstract class BaseMessage
 {
     /**
-     * 消息投递时间戳（秒）
+     * 定时消息，单位毫秒（ms），在指定时间戳（当前时间之后）进行投递。
+     * 如果被设置成当前时间戳之前的某个时刻，消息将立刻投递给消费者
      *
      * @var int
      */
-    protected $startDeliverTime;
+    protected $startDeliverTime = 0;
 
     /**
      * 消息类型
      *
      * @var string
      */
-    protected $messageType;
+    protected $messageType = '';
 
     /**
      * 消息Tag
      *
      * @var string
      */
-    protected $messageTag;
+    protected $messageTag = '';
 
     /**
      * 原始数据
      *
      * @var string
      */
-    protected $origin;
+    protected $origin = '';
 
     /**
      * 初始化
@@ -83,9 +86,9 @@ abstract class BaseMessage
     /**
      * Get the value of startDeliverTime
      *
-     * @return mixed
+     * @return int
      */
-    public function getStartDeliverTime()
+    public function getStartDeliverTime(): int
     {
         return $this->startDeliverTime;
     }
@@ -97,8 +100,12 @@ abstract class BaseMessage
      *
      * @return self
      */
-    public function setStartDeliverTime($startDeliverTime)
+    public function setStartDeliverTime(int $startDeliverTime): self
     {
+        if ($startDeliverTime && strlen($startDeliverTime) != 13) {
+            throw new ServiceException('定时消息，单位毫秒（ms）');
+        }
+
         $this->startDeliverTime = $startDeliverTime;
 
         return $this;
@@ -109,7 +116,7 @@ abstract class BaseMessage
      *
      * @return string
      */
-    public function getMessageType()
+    public function getMessageType(): string
     {
         return $this->messageType;
     }
@@ -121,7 +128,7 @@ abstract class BaseMessage
      *
      * @return self
      */
-    public function setMessageType(string $messageType)
+    public function setMessageType(string $messageType): self
     {
         $this->messageType = $messageType;
 
@@ -134,7 +141,7 @@ abstract class BaseMessage
      *
      * @return string
      */
-    public function getMessageTag()
+    public function getMessageTag(): string
     {
         return $this->messageTag;
     }
@@ -146,7 +153,7 @@ abstract class BaseMessage
      *
      * @return self
      */
-    public function setMessageTag(string $messageTag)
+    public function setMessageTag(string $messageTag): self
     {
         $this->messageTag = $messageTag;
 
@@ -158,7 +165,7 @@ abstract class BaseMessage
      *
      * @return string
      */
-    public function getOrigin()
+    public function getOrigin(): string
     {
         return $this->origin;
     }
@@ -170,7 +177,7 @@ abstract class BaseMessage
      *
      * @return self
      */
-    public function setOrigin(string $origin)
+    public function setOrigin(string $origin): self
     {
         $this->origin = $origin;
 
