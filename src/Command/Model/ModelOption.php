@@ -261,4 +261,9 @@ class ModelOption
     {
         return $this->keyType;
     }
+
+    public function isWithIde(): bool
+    {
+        return false;
+    }
 }

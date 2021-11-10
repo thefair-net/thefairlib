@@ -15,7 +15,6 @@ use Hyperf\Contract\Castable;
 use Hyperf\Contract\CastsAttributes;
 use Hyperf\Contract\CastsInboundAttributes;
 use Hyperf\Database\Commands\Ast\GenerateModelIDEVisitor;
-use Hyperf\Database\Commands\ModelOption;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\Relations\BelongsTo;
@@ -35,6 +34,7 @@ use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use RuntimeException;
+use TheFairLib\Command\Model\ModelOption;
 
 class ModelUpdateVisitor extends NodeVisitorAbstract
 {
