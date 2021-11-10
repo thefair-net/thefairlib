@@ -23,7 +23,6 @@ use TheFairLib\Command\Service\ManageServer;
 use TheFairLib\Library\Logger\Logger;
 
 /**
- * @Process(name="nacos-heartbeat")
  *
  * Class InstanceBeatProcess
  * @package TheFairLib\Process\Nacos
