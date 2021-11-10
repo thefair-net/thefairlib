@@ -35,18 +35,18 @@ class PublicFile
      * @Inject
      * @var FilesystemFactory
      */
-    public FilesystemFactory $factory;
+    public $factory;
 
     /**
      * @var string
      */
-    protected string $bucket;
+    protected $bucket;
 
     /**
      * @Inject()
      * @var ClientFactory
      */
-    protected ClientFactory $clientFactory;
+    protected $clientFactory;
 
     /**
      * PublicFile constructor.
