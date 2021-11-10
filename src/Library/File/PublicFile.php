@@ -24,6 +24,7 @@ use OSS\OssClient;
 use Overtrue\Flysystem\Qiniu\QiniuAdapter;
 use Qiniu\Storage\BucketManager;
 use TheFairLib\Exception\ServiceException;
+use TheFairLib\Library\Logger\Logger;
 use Throwable;
 
 class PublicFile
@@ -400,6 +401,46 @@ class PublicFile
                     ]);
             }
             return $url;
+        } catch (Throwable $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * 签名
+     *
+     * @param null $key
+     * @param int $expires
+     * @param null $policy
+     * @param null $strictPolice
+     * @return array
+     * @throws Throwable
+     */
+    public function getUploadToken($key = null, int $expires = 3600, $policy = null, $strictPolice = null): array
+    {
+        try {
+            /**
+             * @var BucketManager $client
+             */
+            $client = $this->getAdapter()->getClient();
+            switch (get_class($client)) {
+                case BucketManager::class:
+                    $token = $this->getAdapter()->getUploadToken($key, $expires, $policy, $strictPolice);
+                    $data = [
+                        'token' => $token,
+                    ];
+                    break;
+                default:
+                    throw new ServiceException('目前只支持七牛云', [
+                        'client' => get_class($client),
+                        'name' => $this->bucket,
+                    ]);
+            }
+            Logger::get()->info('get_upload_token', [
+                'ret' => $data,
+                'bucket' => $this->bucket,
+            ]);
+            return $data;
         } catch (Throwable $e) {
             throw $e;
         }

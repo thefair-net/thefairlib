@@ -14,6 +14,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TheFairLib\Exception\ServiceException;
 use TheFairLib\Library\Logger\Logger;
 use Throwable;
 use Hyperf\Nacos\Exception\RequestException;
@@ -202,6 +203,7 @@ class ManageServer
                         'code' => $response->getStatusCode(),
                         'msg' => $response->getBody()->getContents(),
                     ]);
+                    throw new ServiceException('service_governance_shutdown:' . $response->getBody()->getContents());
                 }
                 Logger::get()->info('service_governance_shutdown:info', [
                     'code' => $response->getStatusCode(),
