@@ -199,8 +199,8 @@ class JsonRpcPoolTransporter implements TransporterInterface
             }
         }
         $connection = $this->getPool()->get();
-        if ($force) {
-            $connection->reconnect();//
+        if ($force) {//强制重新连接
+            $connection->reconnect();
         }
         defer(function () use ($connection) {
             $connection->release();
