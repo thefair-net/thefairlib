@@ -121,19 +121,6 @@ class RpcConnection extends BaseConnection implements ConnectionInterface
         return true;
     }
 
-    public function check(): bool
-    {
-        $maxIdleTime = $this->pool->getOption()->getMaxIdleTime();
-        $now = microtime(true);
-        if ($now > $maxIdleTime + $this->lastUseTime) {
-            return false;
-        }
-        if ($this->lastUseTime <= 0) {
-            $this->lastUseTime = $now;
-        }
-        return true;
-    }
-
     public function close(): bool
     {
         $this->lastUseTime = 0.0;

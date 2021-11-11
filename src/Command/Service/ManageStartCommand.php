@@ -47,9 +47,11 @@ class ManageStartCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln('------------------ start ------------------');
-        $this->container->get(ManageServer::class)->start($input, $output);
-        $output->writeln('------------------ success ------------------');
+        run(function () use ($input, $output) {
+            $output->writeln('------------------ start ------------------');
+            $this->container->get(ManageServer::class)->start($input, $output);
+            $output->writeln('------------------ success ------------------');
+        });
         return 0;
     }
 }
