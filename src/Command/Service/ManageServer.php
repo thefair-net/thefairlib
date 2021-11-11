@@ -85,12 +85,15 @@ class ManageServer
      */
     public function start(InputInterface $input, OutputInterface $output)
     {
-        $this->serviceGovernanceRegister($output);
         if (file_exists($this->getConnPath())) {
             @unlink($this->getConnPath());
         }
         if (file_exists($this->getNodePath())) {
             @unlink($this->getNodePath());
+        }
+        // 分两步，第一步上线节点 ，第二步上线流量 bin/tf_start.sh
+        if ($input->getArgument('register') == 'nacos') {
+            $this->serviceGovernanceRegister($output);
         }
     }
 

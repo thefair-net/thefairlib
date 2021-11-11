@@ -6,8 +6,11 @@ namespace TheFairLib\Command\Service;
 
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 /**
  * @\Hyperf\Command\Annotation\Command
@@ -29,14 +32,20 @@ class ManageStartCommand extends Command
         $this->setDescription('slb 负载状态检测 start');
     }
 
+    protected function configure()
+    {
+        $this->addArgument('register', InputArgument::OPTIONAL, 'Which table you want to associated with the Model.');
+    }
+
     /**
      * 注销服务
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void
+     * @return int
+     * @throws Throwable
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('------------------ start ------------------');
         $this->container->get(ManageServer::class)->start($input, $output);
