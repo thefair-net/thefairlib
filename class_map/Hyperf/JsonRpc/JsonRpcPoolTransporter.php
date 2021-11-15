@@ -140,9 +140,10 @@ class JsonRpcPoolTransporter implements TransporterInterface
      */
     public function send(string $data)
     {
-        $result = retry($this->retryCount, function () use ($data) {
+        $result = retry($this->retryCount, function ($attempts) use ($data) {
             try {
-                $client = $this->getConnection();
+                $force = $attempts > 1;
+                $client = $this->getConnection($force);
                 if ($client->send($data) === false) {
                     throw new ServiceException('Send data failed. ' . $client->errMsg, [
                         'error' => $client->errCode,
@@ -181,7 +182,7 @@ class JsonRpcPoolTransporter implements TransporterInterface
     /**
      * Get RpcConnection from Context.
      */
-    public function getConnection(): RpcConnection
+    public function getConnection(bool $force = false): RpcConnection
     {
         $class = spl_object_hash($this) . '.Connection';
         /** @var RpcConnection $connection */
@@ -199,6 +200,10 @@ class JsonRpcPoolTransporter implements TransporterInterface
         }
 
         $connection = $this->getPool()->get();
+        if ($force) {
+            $connection->reconnect();
+        }
+
         defer(function () use ($connection) {
             $connection->release();
         });
