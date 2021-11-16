@@ -10,6 +10,7 @@ use Hyperf\Di\Annotation\Inject;
 use Hyperf\Guzzle\CoroutineHandler;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use TheFairLib\Constants\WeChatBase;
 use TheFairLib\Contract\WeChatFactoryInterface;
 use TheFairLib\Exception\ServiceException;
@@ -74,7 +75,8 @@ class WeChatFactoryService implements WeChatFactoryInterface
 
         // 部分接口在请求数据时，会根据 guzzle_handler 重置 Handler
         $app['guzzle_handler'] = $handler;
-        $app->rebind('cache', Redis::getContainer($weChatConfig->getConfig()->get('cache.pool_name', 'default')));
+        $cache = new RedisAdapter(Redis::getContainer($weChatConfig->getConfig()->get('cache.pool_name', 'default')));
+        $app->rebind('cache', $cache);
 
         if ($app instanceof Application) {
             // 如果使用的是 OfficialAccount，则还需要设置以下参数
