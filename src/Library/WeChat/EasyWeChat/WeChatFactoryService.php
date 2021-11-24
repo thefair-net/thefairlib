@@ -35,7 +35,7 @@ class WeChatFactoryService implements WeChatFactoryInterface
      * @param string $type
      * @param string $appLabel
      * @param string $category
-     * @return Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application
+     * @return Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application
      */
     public function getApp(string $type, string $appLabel, string $category = '')
     {
@@ -46,9 +46,15 @@ class WeChatFactoryService implements WeChatFactoryInterface
                 case WeChatBase::MINI_PROGRAM:
                 case WeChatBase::OPEN_PLATFORM:
                     /**
-                     * @var Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application $app
+                     * @var Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application $app
                      */
                     $app = Factory::$type($config->getConfig()->toArray());
+                    return $this->setCommon($app, $config);
+                case WeChatBase::PAYMENT:
+                    /**
+                     * @var Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application $app
+                     */
+                    $app = Factory::$type($config->getPay());
                     return $this->setCommon($app, $config);
                 default:
                     throw new ServiceException('project_id error');
@@ -61,9 +67,9 @@ class WeChatFactoryService implements WeChatFactoryInterface
     }
 
     /**
-     * @param Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application $app
+     * @param Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application $app
      * @param WeChatConfig $weChatConfig
-     * @return \EasyWeChat\MiniProgram\Application|Application|\EasyWeChat\OpenPlatform\Application
+     * @return Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application
      */
     protected function setCommon($app, WeChatConfig $weChatConfig)
     {
@@ -92,7 +98,7 @@ class WeChatFactoryService implements WeChatFactoryInterface
      * @param RequestInterface|null $request
      * @return Request|null
      */
-    public function setRequest(RequestInterface $request = null)
+    public function setRequest(RequestInterface $request = null): ?Request
     {
         $contextRequest = null;
         if ($request) {

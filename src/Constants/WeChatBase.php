@@ -30,4 +30,9 @@ class WeChatBase
      * @var string 开放平台
      */
     const OPEN_PLATFORM = 'openPlatform';
+
+    /**
+     * @var string 支付
+     */
+    const PAYMENT = 'payment';
 }
