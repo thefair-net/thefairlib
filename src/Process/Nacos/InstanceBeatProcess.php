@@ -15,7 +15,6 @@ namespace TheFairLib\Process\Nacos;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Nacos\Application;
 use Hyperf\Process\AbstractProcess;
-use Hyperf\Process\Annotation\Process;
 use Hyperf\Process\ProcessManager;
 use Hyperf\Server\Server;
 use Hyperf\ServiceGovernance\IPReaderInterface;
@@ -23,7 +22,6 @@ use TheFairLib\Command\Service\ManageServer;
 use TheFairLib\Library\Logger\Logger;
 
 /**
- *
  * Class InstanceBeatProcess
  * @package TheFairLib\Process\Nacos
  */

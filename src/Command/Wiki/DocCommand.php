@@ -33,7 +33,7 @@ class DocCommand extends HyperfCommand
      * @return int
      * @throws Throwable
      */
-    public function handle()
+    public function handle(): int
     {
         try {
             $this->output->writeln('------------------ start ------------------');

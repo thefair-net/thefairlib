@@ -12,9 +12,7 @@ namespace TheFairLib\Command\Wiki;
 
 use GuzzleHttp\Exception\GuzzleException;
 use TheFairLib\Exception\ServiceException;
-use TheFairLib\Library\Logger\Logger;
 use TheFairLib\Service\BaseService;
-use Hyperf\Di\Annotation\Inject;
 use Hyperf\Guzzle\ClientFactory;
 
 class Yapi extends BaseService

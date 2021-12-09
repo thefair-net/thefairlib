@@ -235,8 +235,6 @@ class DocumentGenerate extends RequestBase
      *
      * @param string $requestClassName
      * @return array
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      */
     protected function getRules(string $requestClassName): array
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TheFairLib\Middleware\Core;
 
+use Hyperf\HttpServer\CoreMiddleware;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TheFairLib\Constants\ServerCode;
 use Hyperf\Contract\ConfigInterface;
@@ -19,7 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TheFairLib\Event\OnResponse;
 
-class ServiceMiddleware extends \Hyperf\HttpServer\CoreMiddleware
+class ServiceMiddleware extends CoreMiddleware
 {
 
     /**
@@ -55,9 +56,9 @@ class ServiceMiddleware extends \Hyperf\HttpServer\CoreMiddleware
      * Handle the response when cannot found any routes.
      *
      * @param ServerRequestInterface $request
-     * @return array|Arrayable|mixed|ResponseInterface|string
+     * @return ResponseInterface
      */
-    protected function handleNotFound(ServerRequestInterface $request)
+    protected function handleNotFound(ServerRequestInterface $request): ResponseInterface
     {
         // 重写路由找不到的处理逻辑
         $result = $this->serviceResponse->showError('Not Found');
@@ -87,7 +88,7 @@ class ServiceMiddleware extends \Hyperf\HttpServer\CoreMiddleware
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    protected function setPHPSessionId(ServerRequestInterface $request, ResponseInterface $response)
+    protected function setPHPSessionId(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $cookieId = data_get($request->getCookieParams(), 'PHPSESSID');
         if (!$cookieId) {
