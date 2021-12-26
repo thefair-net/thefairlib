@@ -10,6 +10,8 @@ use Hyperf\Di\Annotation\Inject;
 use Hyperf\Guzzle\CoroutineHandler;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Utils\ApplicationContext;
+use Psr\SimpleCache\CacheInterface;
 use TheFairLib\Constants\WeChatBase;
 use TheFairLib\Contract\WeChatFactoryInterface;
 use TheFairLib\Exception\ServiceException;
@@ -45,9 +47,15 @@ class WeChatFactoryService implements WeChatFactoryInterface
                 case WeChatBase::MINI_PROGRAM:
                 case WeChatBase::OPEN_PLATFORM:
                     /**
-                     * @var Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application $app
+                     * @var Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application $app
                      */
                     $app = Factory::$type($config->getConfig()->toArray());
+                    return $this->setCommon($app, $config);
+                case WeChatBase::PAYMENT:
+                    /**
+                     * @var Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application $app
+                     */
+                    $app = Factory::$type($config->getPay());
                     return $this->setCommon($app, $config);
                 default:
                     throw new ServiceException('project_id error');
@@ -60,9 +68,9 @@ class WeChatFactoryService implements WeChatFactoryInterface
     }
 
     /**
-     * @param Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application $app
+     * @param Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application $app
      * @param WeChatConfig $weChatConfig
-     * @return \EasyWeChat\MiniProgram\Application|Application|\EasyWeChat\OpenPlatform\Application
+     * @return Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application
      */
     protected function setCommon($app, WeChatConfig $weChatConfig)
     {
@@ -74,7 +82,7 @@ class WeChatFactoryService implements WeChatFactoryInterface
 
         // 部分接口在请求数据时，会根据 guzzle_handler 重置 Handler
         $app['guzzle_handler'] = $handler;
-        $app->rebind('cache', Redis::getContainer($weChatConfig->getConfig()->get('cache.pool_name', 'default')));
+        $app->rebind('cache', ApplicationContext::getContainer()->get(CacheInterface::class));
 
         if ($app instanceof Application) {
             // 如果使用的是 OfficialAccount，则还需要设置以下参数
@@ -92,7 +100,7 @@ class WeChatFactoryService implements WeChatFactoryInterface
      * @param RequestInterface|null $request
      * @return Request|null
      */
-    public function setRequest(RequestInterface $request = null)
+    public function setRequest(RequestInterface $request = null): ?Request
     {
         $contextRequest = null;
         if ($request) {

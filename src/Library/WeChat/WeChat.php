@@ -15,7 +15,7 @@ class WeChat
      * @param string $type
      * @param string $appLabel
      * @param string $category
-     * @return \EasyWeChat\MiniProgram\Application|Application|\EasyWeChat\OpenPlatform\Application
+     * @return Application|\EasyWeChat\MiniProgram\Application|\EasyWeChat\OpenPlatform\Application|\EasyWeChat\Payment\Application
      */
     public static function get(string $type, string $appLabel, string $category = 'thefair')
     {

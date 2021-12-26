@@ -25,7 +25,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TheFairLib\Command\Wiki\DocumentGenerate;
 use TheFairLib\Event\OnResponse;
-use TheFairLib\Library\File\FileFactory;
 use TheFairLib\Library\Logger\Logger;
 use Throwable;
 
