@@ -31,6 +31,9 @@ class RpcClient
         $serviceName = ucwords(camelize($serviceName));
 
         $class = sprintf('TheFairLib\Server\Client\%s', $serviceName);
+        if (class_exists($class)) {
+            return container($class);
+        }
         return container($class);
     }
 
