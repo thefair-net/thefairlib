@@ -28,13 +28,11 @@ class RpcClient
      */
     public static function get(string $serviceName): JsonRpcClient
     {
-        $serviceName = ucwords(camelize($serviceName));
-
-        $class = sprintf('TheFairLib\Server\Client\%s', $serviceName);
+        $class = sprintf('TheFairLib\Server\Client\%s', ucwords(camelize($serviceName)));
         if (class_exists($class)) {
             return container($class);
         }
-        return container($class);
+        return container($serviceName);
     }
 
     /**
