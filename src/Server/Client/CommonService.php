@@ -44,7 +44,7 @@ class CommonService extends JsonRpcClient
     /**
      * @return string
      */
-    public function getServiceName()
+    public function getServiceName(): string
     {
         return $this->serviceName;
     }
