@@ -140,10 +140,10 @@ class JsonRpcPoolTransporter implements TransporterInterface
      */
     public function send(string $data)
     {
-        $result = retry($this->retryCount, function ($attempts) use ($data) {
+        $result = retry($this->retryCount, function () use ($data) {
             try {
-                $force = $attempts > 1;
-                $client = $this->getConnection($force);
+//                $force = $attempts > 1;
+                $client = $this->getConnection();
                 if ($client->send($data) === false) {
                     throw new ServiceException('Send data failed. ' . $client->errMsg, [
                         'error' => $client->errCode,
