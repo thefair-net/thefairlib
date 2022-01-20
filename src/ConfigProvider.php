@@ -215,7 +215,7 @@ class ConfigProvider
             $baseVendor . 'hyperf/async-queue/src/Driver/RedisDriver.php' => [
                 RedisDriver::class => $classMapPath . 'Hyperf/AsyncQueue/Driver/RedisDriver.php',
             ],
-            $baseVendor . 'hyperf/flysystem-aliyun-oss/src/OSS/Adapter.php' => [
+            $baseVendor . 'hyperf/flysystem-oss/src/Adapter.php' => [
                 Adapter::class => $classMapPath . 'Hyperf/Flysystem/OSS/Adapter.php',
             ],
             $baseVendor . 'overtrue/flysystem-qiniu/src/QiniuAdapter.php' => [

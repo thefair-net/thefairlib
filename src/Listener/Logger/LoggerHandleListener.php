@@ -37,12 +37,14 @@ class LoggerHandleListener implements ListenerInterface
     public function process(object $event)
     {
         try {
-            if ($event instanceof OnReceive) {
+            $rate = (int)config('app.access_logger_rate', 100);
+            $status = ($rate > 0 && mt_rand(1, 100) <= $rate);
+            if ($event instanceof OnReceive && $status) {
                 if ($log = getRpcLogArguments()) {
                     Logger::get()->info('access_logger', $log);
                 }
             }
-            if ($event instanceof OnRequest) {
+            if ($event instanceof OnRequest && $status) {
                 if ($log = getHttpLogArguments()) {
                     Logger::get()->info('access_logger', $log);
                 }
