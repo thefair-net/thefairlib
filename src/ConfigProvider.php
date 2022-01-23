@@ -6,6 +6,7 @@ namespace TheFairLib;
 
 use Hyperf\AsyncQueue\Driver\RedisDriver;
 use Hyperf\Cache\AnnotationManager;
+use Hyperf\Cache\Listener\DeleteListener;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\LengthAwarePaginatorInterface;
 use Hyperf\Contract\NormalizerInterface;
@@ -223,6 +224,9 @@ class ConfigProvider
             ],
             $baseVendor . 'hyperf/cache/src/AnnotationManager.php' => [
                 AnnotationManager::class => $classMapPath . 'Hyperf/Cache/AnnotationManager.php',
+            ],
+            $baseVendor . 'hyperf/cache/src/Listener/DeleteListener.php' => [
+                DeleteListener::class => $classMapPath . 'Hyperf/Cache/Listener/DeleteListener.php',
             ],
         ];
         $classMap = [];
