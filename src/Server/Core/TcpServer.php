@@ -18,7 +18,7 @@ use Hyperf\HttpMessage\Server\Request as Psr7Request;
 use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\JsonRpc\ResponseBuilder;
 use Hyperf\Server\ServerManager;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Server as SwooleServer;

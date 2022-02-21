@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace TheFairLib\Server\Core;
 
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TheFairLib\Event\OnRequest;
 

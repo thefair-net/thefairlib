@@ -14,7 +14,7 @@
 namespace TheFairLib\Server\Security;
 
 use TheFairLib\Library\Logger\Logger;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 
 class DbQuery
 {

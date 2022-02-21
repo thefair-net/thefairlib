@@ -25,7 +25,7 @@ use Hyperf\HttpServer\Contract\RequestInterface;
 //use Hyperf\Snowflake\IdGeneratorInterface;
 //use Hyperf\Snowflake\Meta;
 use Hyperf\Utils\ApplicationContext;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Server as SwooleServer;
 use TheFairLib\Library\Utils\AES;

@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace TheFairLib\Controller;
 
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Exception\ServiceException;
 use Hyperf\Di\Annotation\Inject;

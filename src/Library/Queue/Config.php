@@ -9,7 +9,7 @@
 namespace TheFairLib\Library\Queue;
 
 use Hyperf\Utils\Collection;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use TheFairLib\Exception\ServiceException;
 
 /**

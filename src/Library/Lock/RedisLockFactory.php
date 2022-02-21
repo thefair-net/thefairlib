@@ -4,7 +4,7 @@ namespace TheFairLib\Library\Lock;
 
 use TheFairLib\Contract\LockInterface;
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Psr\Container\ContainerInterface;
 use Redis;
 

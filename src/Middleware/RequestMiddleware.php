@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 
 /**
  * 接到客户端请求，通过该中间件进行一些调整

@@ -4,7 +4,7 @@ namespace TheFairLib\Process;
 
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Process\AbstractProcess;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Psr\Container\ContainerInterface;
 
 /***************************************************************************

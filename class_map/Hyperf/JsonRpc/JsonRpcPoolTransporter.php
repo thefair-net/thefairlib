@@ -24,7 +24,7 @@ use Hyperf\Rpc\Contract\TransporterInterface;
 use Hyperf\Rpc\Protocol;
 use Hyperf\Rpc\ProtocolManager;
 use Hyperf\Utils\ApplicationContext;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Hyperf\Utils\Exception\ExceptionThrower;
 use Psr\Container\ContainerInterface;
 use TheFairLib\Constants\InfoCode;

@@ -7,7 +7,7 @@ namespace TheFairLib\Library\Http;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Contract\ResponseInterface;
 use TheFairLib\Exception\ServiceException;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 
 /**
  * Class Response.

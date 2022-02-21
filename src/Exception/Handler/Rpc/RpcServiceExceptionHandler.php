@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace TheFairLib\Exception\Handler\Rpc;
 
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Psr\Http\Message\ServerRequestInterface;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Contract\ResponseBuilderInterface;

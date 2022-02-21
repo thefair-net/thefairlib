@@ -19,7 +19,7 @@ use EasyWeChat\Kernel\Exceptions\InvalidConfigException;
 use EasyWeChat\MiniProgram\Application;
 use Hyperf\Contract\ContainerInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use ReflectionException;
 use TheFairLib\Annotation\Doc;
 use TheFairLib\Constants\WeChatBase;

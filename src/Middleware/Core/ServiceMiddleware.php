@@ -7,12 +7,10 @@ namespace TheFairLib\Middleware\Core;
 use Hyperf\HttpServer\CoreMiddleware;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TheFairLib\Constants\ServerCode;
-use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\HttpMessage\Cookie\Cookie;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Router\Dispatched;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Hyperf\Utils\Contracts\Arrayable;
 use Hyperf\Utils\Contracts\Jsonable;
 use Psr\Http\Message\ResponseInterface;
@@ -45,7 +43,6 @@ class ServiceMiddleware extends CoreMiddleware
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = parent::process($request, $handler);
-        $response = $this->setPHPSessionId($request, $response);
         Context::set('server:response_body_size', $response->getBody()->getSize());
         $response = $response->withHeader('Server', env('SERVER_NAME', 'IIS'));
         $this->eventDispatcher->dispatch(new OnResponse($request, $response));
@@ -81,21 +78,4 @@ class ServiceMiddleware extends CoreMiddleware
             ->withBody(new SwooleStream(encode($response)));
     }
 
-    /**
-     * set cookie 值
-     *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
-    protected function setPHPSessionId(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
-        $cookieId = data_get($request->getCookieParams(), 'PHPSESSID');
-        if (!$cookieId) {
-            $domain = $this->container->get(ConfigInterface::class)->get('app.cookie.default_domain');
-            $cookie = new Cookie('PHPSESSID', md5(microtime(true) . mt_rand(1, 10000000)), time() + 86400, '/', $domain);
-            return $response->withCookie($cookie);
-        }
-        return $response;
-    }
 }

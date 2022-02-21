@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace TheFairLib\Middleware\Core;
 
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

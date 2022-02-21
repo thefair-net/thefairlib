@@ -14,7 +14,7 @@ namespace TheFairLib\Exception\Handler\Rpc;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ServerRequestInterface;
 use TheFairLib\Constants\InfoCode;

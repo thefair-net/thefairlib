@@ -15,7 +15,7 @@ use Hyperf\Process\ProcessManager;
 use TheFairLib\Library\Logger\Logger;
 use TheFairLib\Library\Queue\Config;
 use TheFairLib\Library\Queue\Message\BaseMessage;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use TheFairLib\RocketMQ\Exception\AckMessageException;
 use TheFairLib\RocketMQ\Exception\MessageNotExistException;
 use TheFairLib\RocketMQ\Model\TopicMessage;

@@ -19,7 +19,7 @@ use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\Framework\Event\OnReceive;
 use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\HttpServer\Router\Handler;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use League\Flysystem\FilesystemException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

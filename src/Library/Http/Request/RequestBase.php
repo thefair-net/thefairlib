@@ -19,7 +19,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\ReflectionManager;
 use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\Utils\Collection;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Hyperf\Validation\Contract\ValidatesWhenResolved;
 use Hyperf\Validation\Request\FormRequest;
 use Hyperf\Validation\UnauthorizedException;

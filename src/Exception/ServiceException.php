@@ -15,7 +15,7 @@ namespace TheFairLib\Exception;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Constants\ServerCode;
 use Hyperf\Server\Exception\ServerException;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Throwable;
 
 /**

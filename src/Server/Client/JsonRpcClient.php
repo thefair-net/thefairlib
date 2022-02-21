@@ -5,7 +5,7 @@ namespace TheFairLib\Server\Client;
 
 use Hyperf\JsonRpc\JsonRpcPoolTransporter;
 use Hyperf\RpcClient\AbstractServiceClient;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Hyperf\Utils\Exception\ExceptionThrower;
 use InvalidArgumentException;
 use TheFairLib\Constants\InfoCode;

@@ -7,7 +7,7 @@ use Hyperf\Validation\ValidationExceptionHandler;
 use TheFairLib\Constants\InfoCode;
 use TheFairLib\Contract\ResponseBuilderInterface;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

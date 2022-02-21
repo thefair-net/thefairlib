@@ -14,17 +14,12 @@ namespace TheFairLib\Model;
 
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
-use TheFairLib\Contract\LockInterface;
 use TheFairLib\Exception\EmptyException;
-use TheFairLib\Exception\ServiceException;
 use Hyperf\Database\ConnectionInterface;
 use Hyperf\DbConnection\Db;
-use Hyperf\Di\Annotation\Inject;
 use Hyperf\Pool\Exception\ConnectionException;
-use Hyperf\Utils\Context;
-use Psr\EventDispatcher\EventDispatcherInterface;
+use Hyperf\Context\Context;
 use Redis;
-use TheFairLib\Model\Builder\PrimaryKeyBuilder;
 use Throwable;
 
 /**

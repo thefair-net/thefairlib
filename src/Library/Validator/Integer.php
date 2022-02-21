@@ -13,7 +13,7 @@
 
 namespace TheFairLib\Library\Validator;
 
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Hyperf\Validation\Validator;
 use Psr\Http\Message\ServerRequestInterface;
 use TheFairLib\Contract\ValidatorExtendInterface;

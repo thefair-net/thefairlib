@@ -5,7 +5,7 @@ namespace TheFairLib\Exception\Handler\Rpc;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\RateLimit\Exception\RateLimitException;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TheFairLib\Contract\ResponseBuilderInterface;
