@@ -109,7 +109,7 @@ class StsConfig
         $this->setAccessKeyId(arrayGet($config, 'access_key_id', ''));
         $this->setAccessKeySecret(arrayGet($config, 'access_secret', ''));
         $this->setRoleArn(arrayGet($config, 'role', ''));
-        $this->setOssOrigin(arrayGet($config, 'oss_origin', ''));
+        $this->setUrl(arrayGet($config, 'url', $this->url));
     }
 
     /**
