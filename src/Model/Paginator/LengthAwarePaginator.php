@@ -22,6 +22,7 @@ use Hyperf\Utils\Contracts\Arrayable;
 use Hyperf\Utils\Contracts\Jsonable;
 use IteratorAggregate;
 use JsonSerializable;
+use RuntimeException;
 use TheFairLib\Exception\ServiceException;
 
 class LengthAwarePaginator extends AbstractPaginator implements Arrayable, ArrayAccess, Countable, IteratorAggregate, JsonSerializable, Jsonable, LengthAwarePaginatorInterface
@@ -49,17 +50,18 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
      * @param null|int $currentPage
      * @param array $options (path, query, fragment, pageName)
      */
-    public function __construct($items, $total, $perPage, $currentPage = 1, array $options = [])
+    public function __construct($items, int $total, int $perPage, int $currentPage = 1, array $options = [])
     {
         foreach ($options as $key => $value) {
             $this->{$key} = $value;
         }
-        if ($perPage > 50) {
-            throw new ServiceException('per page max 50', [
+        $perPageMax = (int)env('PER_PAGE_MAX', 50);
+        if ($perPage > $perPageMax) {
+            throw new ServiceException('per page max ' . $perPageMax, [
                 'per_age' => $perPage,
             ]);
         }
-        $perPage = min(50, $perPage);
+        $perPage = min($perPageMax, $perPage);
         $this->total = $total;
         $this->perPage = $perPage;
         $this->lastPage = max((int)ceil($total / $perPage), 1);
@@ -88,7 +90,7 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
     public function render(?string $view = null, array $data = []): string
     {
         if ($view) {
-            throw new \RuntimeException('WIP.');
+            throw new RuntimeException('WIP.');
         }
         return json_encode(array_merge($data, $this->items()), 0);
     }
