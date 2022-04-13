@@ -42,10 +42,7 @@ class ServiceExceptionHandler extends ExceptionHandler
         $data = $throwable->getData();
         $result = $this->serviceResponse->showError(
             $throwable->getMessage(),
-            array_merge_recursive($data, [
-                'file' => str_replace(BASE_PATH, '.', $throwable->getFile()),
-                'line' => $throwable->getLine(),
-            ]),
+            $data,
             (int)$throwable->getCode()
         );
         return $response->withBody(new SwooleStream(encode($result)));

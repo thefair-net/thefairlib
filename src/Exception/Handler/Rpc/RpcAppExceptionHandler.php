@@ -112,7 +112,7 @@ class RpcAppExceptionHandler extends ExceptionHandler
 
         $result = $this->serviceResponse->showError(
             $throwable->getMessage(),
-            ['data' => $response->getBody(), 'exception' => get_class($throwable)],
+            ['data' => $response->getBody()],
             $code > 0 ? $code : InfoCode::CODE_ERROR
         );
 

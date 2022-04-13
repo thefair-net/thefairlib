@@ -107,8 +107,6 @@ class AppExceptionHandler extends ExceptionHandler
             $throwable->getMessage(),
             [
                 'data' => $response->getBody(),
-                'file' => str_replace(BASE_PATH, '.', $throwable->getFile()),
-                'line' => $throwable->getLine(),
             ],
             $code > 0 ? $code : InfoCode::CODE_ERROR
         );

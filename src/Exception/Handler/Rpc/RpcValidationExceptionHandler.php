@@ -42,7 +42,6 @@ class RpcValidationExceptionHandler extends ValidationExceptionHandler
         $result = $this->serviceResponse->showError(
             $throwable->validator->errors()->first(),
             [
-                'exception' => get_class($throwable),
                 'errors' => $throwable->validator->errors(),
             ],
             (int)$throwable->getCode() > 0 ? (int)$throwable->getCode() : InfoCode::CODE_ERROR

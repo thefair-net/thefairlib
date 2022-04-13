@@ -48,7 +48,7 @@ class RpcServiceExceptionHandler extends ExceptionHandler
 
         $result = $this->serviceResponse->showError(
             $throwable->getMessage(),
-            array_merge_recursive($data, ['exception' => get_class($throwable)]),
+            $data,
             (int)$throwable->getCode()
         );
         return $this->responseBuilder->buildResponse(
