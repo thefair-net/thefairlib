@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TheFairLib\Middleware\Core;
 
 use Hyperf\HttpServer\CoreMiddleware;
+use Hyperf\Utils\Codec\Json;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TheFairLib\Constants\ServerCode;
 use Hyperf\Di\Annotation\Inject;
@@ -73,9 +74,23 @@ class ServiceMiddleware extends CoreMiddleware
      */
     protected function transferToResponse($response, ServerRequestInterface $request): ResponseInterface
     {
-        return $this->response()
-            ->withAddedHeader('content-type', 'application/json; charset=utf-8')
-            ->withBody(new SwooleStream(encode($response)));
+        if (is_string($response)) {
+            return $this->response()->withAddedHeader('content-type', 'text/plain')->withBody(new SwooleStream($response));
+        }
+
+        if (is_array($response) || $response instanceof Arrayable) {
+            return $this->response()
+                ->withAddedHeader('content-type', 'application/json')
+                ->withBody(new SwooleStream(Json::encode($response)));
+        }
+
+        if ($response instanceof Jsonable) {
+            return $this->response()
+                ->withAddedHeader('content-type', 'application/json')
+                ->withBody(new SwooleStream((string)$response));
+        }
+
+        return $this->response()->withAddedHeader('content-type', 'text/plain')->withBody(new SwooleStream((string)$response));
     }
 
 }
