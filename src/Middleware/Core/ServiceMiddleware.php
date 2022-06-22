@@ -75,7 +75,11 @@ class ServiceMiddleware extends CoreMiddleware
     protected function transferToResponse($response, ServerRequestInterface $request): ResponseInterface
     {
         if (is_string($response)) {
-            return $this->response()->withAddedHeader('content-type', 'text/plain')->withBody(new SwooleStream($response));
+            $responseRet = $this->response();
+            if (empty($this->response()->getHeader('content-type'))) {
+                $responseRet = $this->response()->withAddedHeader('content-type', 'text/plain');
+            }
+            return $responseRet->withBody(new SwooleStream($response));
         }
 
         if (is_array($response) || $response instanceof Arrayable) {
@@ -90,7 +94,11 @@ class ServiceMiddleware extends CoreMiddleware
                 ->withBody(new SwooleStream((string)$response));
         }
 
-        return $this->response()->withAddedHeader('content-type', 'text/plain')->withBody(new SwooleStream((string)$response));
+        $responseRet = $this->response();
+        if (empty($this->response()->getHeader('content-type'))) {
+            $responseRet = $this->response()->withAddedHeader('content-type', 'text/plain');
+        }
+        return $responseRet->withBody(new SwooleStream((string)$response));
     }
 
 }
