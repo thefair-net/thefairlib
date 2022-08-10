@@ -43,6 +43,7 @@ class Adapter implements FilesystemAdapter
      *     'token' => '',
      *     'proxy' => null,
      * ]
+     * @throws \OSS\Core\OssException
      */
     public function __construct($config = [])
     {
@@ -56,14 +57,13 @@ class Adapter implements FilesystemAdapter
         $token = $config['token'] ?? null;
         $proxy = $config['proxy'] ?? null;
 
-        $this->client = make(OssClient::class, [
+        $this->client = new OssClient(
             $accessId,
             $accessSecret,
             $endpoint,
             $isCName,
             $token,
-            $proxy,
-        ]);
+            $proxy);
 
         $this->client->setTimeout($timeout);
         $this->client->setConnectTimeout($connectTimeout);
