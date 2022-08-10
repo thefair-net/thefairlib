@@ -404,7 +404,8 @@ if (!function_exists('getHttpLogArguments')) {
 
         $params = $request->all();
         unset($params['__auth']);
-        $sessionId = $request->cookie('PHPSESSID');
+        $sessionId = $request->cookie('session_id');
+        $ad = $request->cookie('ad', '');
         $len = strlen(encode($params));
         $uri = $request->getUri()->getPath();
         if (in_array($uri, ['/favicon.ico']) || ('/ping' == $uri && env('CLOSE_PING_LOGGER', false))) {
@@ -418,9 +419,9 @@ if (!function_exists('getHttpLogArguments')) {
             'session_id' => $sessionId,
             'user_agent' => [
                 'default' => $request->getHeaderLine('user-agent') ?? '',
-                'x-thefair-ua' => $request->getHeaderLine('x-thefair-ua') ?? '',
+                'x-ua' => $request->getHeaderLine('x-ua') ?? '',
             ],
-            'cid' => $request->getHeaderLine('x-thefair-cid'),
+            'aid' => $ad ?? '',
             'uri' => $uri,
             'url' => $request->fullUrl(),
             'params' => $len <= 2048 ? $params : ['len' => $len, 'msg' => '...'],
