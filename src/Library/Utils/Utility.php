@@ -422,6 +422,7 @@ if (!function_exists('getHttpLogArguments')) {
                 'x-ua' => $request->getHeaderLine('x-ua') ?? '',
             ],
             'aid' => $ad ?? '',
+            'cid' => $request->getHeaderLine('x-cid'),
             'uri' => $uri,
             'url' => $request->fullUrl(),
             'params' => $len <= 2048 ? $params : ['len' => $len, 'msg' => '...'],
