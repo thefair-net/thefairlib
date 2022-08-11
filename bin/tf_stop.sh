@@ -2,7 +2,7 @@
 
 basepath=$(cd `dirname $0`; pwd)
 cd $basepath
-cd ../../
+cd ../../../../
 
 signal=$1
 
