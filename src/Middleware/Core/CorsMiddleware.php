@@ -51,7 +51,7 @@ class CorsMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $origin = $request->getHeader('origin');
+        $origin = $request->getHeaderLine('origin');
         if ($this->isOrigin($origin)) {//如果没有配置，默认就是全局跨域
             $response = Context::get(ResponseInterface::class);
             $response = $response->withHeader('Access-Control-Allow-Origin', $origin)
@@ -72,15 +72,15 @@ class CorsMiddleware implements MiddlewareInterface
     /**
      * 判断是否跨域
      *
-     * @param $originHost
+     * @param string $originHost
      * @return bool
      */
-    protected function isOrigin($originHost): bool
+    protected function isOrigin(string $originHost): bool
     {
-        $origin = $this->container->get(ConfigInterface::class)->get('auth.cors.origin', []);
+        $origin = config('auth.cors.origin', []);
         if (empty($origin)) {
             return true;
         }
-        return in_array($origin, $originHost);
+        return in_array($originHost, $origin);
     }
 }
