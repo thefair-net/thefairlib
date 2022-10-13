@@ -163,7 +163,7 @@ if (!function_exists('getUuid')) {
         $ret = Db::connection($dbname)->select('select uuid_short() as uuid');
         $uuid = $ret[0] ?? null;
         if (!empty($uuid->uuid)) {
-            return intval(substr("$uuid->uuid", -19));
+            return intval(substr("$uuid->uuid", -18));
         }
         throw new ServiceException('uuid error', [], InfoCode::SERVER_CODE_ERROR);
     }
