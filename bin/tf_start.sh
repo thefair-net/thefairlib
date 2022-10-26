@@ -2,7 +2,7 @@
 
 basepath=$(cd `dirname $0`; pwd)
 cd $basepath
-cd ../../
+cd ../../../../
 # 开启之后，第一步上线节点
 php ./bin/hyperf.php manage:start
 nohup php ./bin/hyperf.php start > ./runtime/info.log 2>&1 &

@@ -2,7 +2,7 @@
 
 basepath=$(cd `dirname $0`; pwd)
 cd $basepath
-cd ../../
+cd ../../../../
 
 if [ -f "./runtime/hyperf.pid" ]; then
     pid=$(cat ./runtime/hyperf.pid)
