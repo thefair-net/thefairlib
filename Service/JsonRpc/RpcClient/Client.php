@@ -5,6 +5,7 @@ namespace TheFairLib\Service\JsonRpc\RpcClient;
 use Exception;
 use TheFairLib\Config\Config;
 use TheFairLib\DB\Redis\Cache;
+use TheFairLib\Exception\Api\ApiException;
 use TheFairLib\Service\Swoole\Client\TCP;
 use TheFairLib\Service\JsonRpc\DataFormatter;
 use TheFairLib\Service\JsonRpc\JsonLengthPacker;
@@ -54,19 +55,19 @@ class Client extends TCP
             if (array_key_exists('result', $response)) {
                 $result = $response['result'];
                 if (!empty($result['code'])) {
-                    throw new Exception($result['message']['text'], $result['result'], $result['code']);
+                    throw new Exception($result['message']['text']);
                 }
                 return $response['result'];
             }
 
             if ($code = $response['error']['code']) {
                 $error = $response['error'];
-                throw new Exception($error['message'], $error['data'], $error['data']['code']);
+                throw new Exception($error['message']);
             }
 
             throw new Exception('Invalid response.');
         } catch (Exception $e) {
-            throw new Exception($e->getMessage(), [], $e->getCode());
+            throw new Exception($e->getMessage());
         }
     }
 
