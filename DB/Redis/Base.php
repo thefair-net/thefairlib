@@ -6,6 +6,7 @@
  * @version 1.0
  * @copyright 2015-2025 TheFair
  */
+
 namespace TheFairLib\DB\Redis;
 
 abstract class Base
@@ -23,13 +24,17 @@ abstract class Base
     /*
      * config
      */
-    public $config = array();
+    public $config = [];
 
-    final protected function getRedisInstance($name){
+    final protected function getRedisInstance($name)
+    {
         $this->_init();
         $parameters = $this->config($name);
-        $options = array('cluster' => 'redis');
-        return new \Predis\Client($parameters, $options);
+        return new \Predis\Client([
+            'host' => $parameters['host'],
+            'port' => $parameters['port'],
+            'password' => isset($parameters['auth']) ? $parameters['auth'] : null,
+        ]);
 
     }
 
@@ -37,11 +42,13 @@ abstract class Base
 
     abstract public function config($name);
 
-    public static function _getConfigPath(){
+    public static function _getConfigPath()
+    {
         return self::$_redisConfPath;
     }
 
-    public static function _setConfigPath($path){
+    public static function _setConfigPath($path)
+    {
         return self::$_redisConfPath = $path;
     }
 
@@ -49,7 +56,8 @@ abstract class Base
      * @param string $name
      * @return \Redis
      */
-    public static function getInstance($name = 'default'){
+    public static function getInstance($name = 'default')
+    {
         if (!isset(self::$instance[$name])) {
             $class = get_called_class();
             $base = new $class();
@@ -63,10 +71,11 @@ abstract class Base
      * 关闭redis连接
      * 用于service处理结束后手动关闭数据服务的连接
      */
-    public static function closeConnection(){
-        if(!empty(self::$instance)){
-            foreach(self::$instance as $name => $redis){
-                if($redis->isConnected()){
+    public static function closeConnection()
+    {
+        if (!empty(self::$instance)) {
+            foreach (self::$instance as $name => $redis) {
+                if ($redis->isConnected()) {
                     $redis->disconnect();
                 }
             }
