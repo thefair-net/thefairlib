@@ -53,9 +53,11 @@ class Email
             $mail->Body = $content;
             $mail->send();
         } catch (Throwable $e) {
-            Logger::get()->error(sprintf("email error %s, name %s", $e->getMessage(), $email), [
+            Logger::get()->error('email error', [
                 'subject' => $subject,
                 'content' => $content,
+                'config' => $configLabel,
+                'e' => formatter($e),
             ]);
             throw $e;
         }
